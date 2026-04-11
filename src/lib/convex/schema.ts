@@ -1,6 +1,5 @@
 import { defineSchema, defineTable } from 'convex/server';
 import { v } from 'convex/values';
-import { vEmailEvent } from '@convex-dev/resend';
 
 export default defineSchema({
 	// Note: Better Auth component manages its own tables (users, sessions, accounts, verifications)
@@ -12,12 +11,12 @@ export default defineSchema({
 		body: v.string()
 	}).index('by_user', ['userId']),
 
-	// Email event tracking - stores webhook events from Resend
+	// Email event tracking — stores webhook events from Brevo
 	emailEvents: defineTable({
-		emailId: v.string(), // Resend email ID
-		eventType: v.string(), // 'email.delivered', 'email.bounced', etc.
-		timestamp: v.number(), // When the event occurred
-		data: vEmailEvent // Full event payload from Resend
+		emailId: v.string(), // Brevo message-id
+		eventType: v.string(), // 'delivered', 'hard_bounce', 'spam', 'opened', etc.
+		timestamp: v.number(), // When the event was received
+		data: v.record(v.string(), v.any()) // Full Brevo webhook payload
 	})
 		.index('by_email_id', ['emailId'])
 		.index('by_event_type', ['eventType'])

@@ -33,7 +33,7 @@ Key product features to reference:
 - Authentication with Convex Auth (OAuth and email/password)
 - Internationalization with Tolgee (cloud-hosted translations)
 - Billing integration with Autumn
-- Email system with Resend
+- Email system with Brevo
 - Analytics with PostHog
 - UI components from shadcn-svelte and Skeleton UI
 

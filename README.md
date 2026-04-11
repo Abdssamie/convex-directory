@@ -200,17 +200,10 @@ Two runtimes, two schemas, both managed by [varlock](https://github.com/nickrees
 | ------------------------ | ----------------------------------------- | :---: | :-----: | :--: |
 | `BETTER_AUTH_SECRET`     | Session/token signing secret              |   ·   |    ✓    |  ✓   |
 | `SITE_URL`               | Base URL for OAuth redirects              |   ·   |    ·    |  ✓   |
-| `RESEND_API_KEY`         | Resend API key for transactional email    |   ○   |    ✓    |  ✓   |
-| `AUTH_EMAIL`             | Sender address for auth emails            |   ○   |    ✓    |  ✓   |
-| `EMAIL_ASSET_URL`        | Public URL for email images (always prod) |   ○   |    ✓    |  ✓   |
-| `AUTUMN_SECRET_KEY`      | Autumn billing secret key                 |   ○   |    ✓    |  ✓   |
-| `OPENROUTER_API_KEY`     | OpenRouter API key for AI support chat    |   ○   |    ✓    |  ✓   |
-| `AUTH_E2E_TEST_SECRET`   | Secret for E2E test mutations             |   ○   |    ○    |      |
-| `AUTH_GOOGLE_ID`         | Google OAuth client ID                    |   ○   |    ○    |  ○   |
-| `AUTH_GOOGLE_SECRET`     | Google OAuth client secret                |   ○   |    ○    |  ○   |
-| `AUTH_GITHUB_ID`         | GitHub OAuth client ID                    |   ○   |    ○    |  ○   |
-| `AUTH_GITHUB_SECRET`     | GitHub OAuth client secret                |   ○   |    ○    |  ○   |
-| `RESEND_WEBHOOK_SECRET`  | Resend webhook signing secret             |   ○   |    ○    |  ○   |
+| `BREVO_API_KEY`          | Brevo API key for transactional email      |   ○   |    ✓    |  ✓   |
+| `BREVO_SENDER_NAME`      | Sender display name                        |   ○   |    ✓    |  ✓   |
+| `BREVO_SENDER_EMAIL`     | Verified sender email address              |   ○   |    ✓    |  ✓   |
+| `EMAIL_ASSET_URL`        | Public URL for email images (always prod)  |   ○   |    ✓    |  ✓   |
 | `SUPPORT_EMAIL`          | Support contact email                     |   ○   |    ○    |  ○   |
 | `PREVIEW_ADMIN_PASSWORD` | Password for auto-seeded preview admin    |       |    ·    |      |
 
@@ -250,7 +243,7 @@ An AI agent built on [Convex Agent](https://www.convex.dev/components/agent) and
 
 ### Email System
 
-Transactional email delivered through [Resend](https://www.convex.dev/components/resend) with automatic retries, idempotency, and delivery tracking. Templates are written as Svelte components using a shadcn-style email component library (same `tv()` variants, same design tokens) and compiled to inline HTML at build time. Your logo is converted to an email-safe PNG automatically. During development, preview every template in the browser at `/emails` and optionally send a real test email when a Resend key is configured.
+Transactional email delivered through [Brevo](https://brevo.com) via a direct HTTP client with 3-attempt exponential backoff. Templates are written as Svelte components using a shadcn-style email component library (same `tv()` variants, same design tokens) and compiled to inline HTML at build time. Your logo is converted to an email-safe PNG automatically. During development, preview every template in the browser at `/emails`. Use `bun run sync:brevo-templates` to push rendered templates to Brevo for dashboard preview.
 
 ### Internationalization
 
@@ -321,7 +314,7 @@ Renovate groups non-major updates into a single PR and creates separate PRs for 
 
 ### Email Development
 
-Email templates are Svelte components compiled to inline HTML on `postinstall` and during builds. Preview every template in the browser at `/emails` with mock data, and optionally send a real test email when a Resend key is configured.
+Email templates are Svelte components compiled to inline HTML on `postinstall` and during builds. Preview every template in the browser at `/emails` with mock data. Run `bun run sync:brevo-templates` to push them to your Brevo dashboard for visual inspection.
 
 </details>
 

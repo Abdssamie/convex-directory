@@ -65,7 +65,7 @@ Local dev notes (`bun run dev`):
 - Seeds a verified local admin automatically after startup.
 - Local seeded admin credentials: `admin@local.dev` / `LocalDevAdmin123!`
 - Convex backend env vars are loaded from `.env.convex.local` (optional services like email, OAuth, billing, AI).
-- `RESEND_API_KEY` and `AUTH_EMAIL` in `.env.convex.local` are only needed for real signup, verification, and password reset email flows.
+- `BREVO_API_KEY` and `BREVO_SENDER_EMAIL` in `.env.convex.local` are only needed for real signup, verification, and password reset email flows.
 - Local Convex state is isolated per branch/worktree under `.convex/`.
 - `RESET_LOCAL_BACKEND=true bun run dev` clears the existing local Convex state before startup and restores the default seeded admin credentials.
 
@@ -144,7 +144,7 @@ See [official docs](https://docs.convex.dev/scheduling/scheduled-functions) for 
 
 **Components with Built-in Durability:**
 
-- `@convex-dev/resend`: Idempotency keys guarantee exactly-once email delivery, durable execution via workpools (default: 5 retries, 30s initial backoff). Catching errors from `resend.sendEmail()` is valid - they indicate permanent failures (invalid config), not transient network issues. See [component docs](https://www.convex.dev/components/resend).
+- `@convex-dev/resend` has been **removed**. Email is now sent via a direct Brevo HTTP client (`emails/brevo.ts`) using `internalAction` functions with 3-attempt exponential backoff retry. Actions are at-most-once (not exactly-once like the old workpool). Brevo's API provides its own deduplication via `message-id`.
 - `@convex-dev/workpool`: Configurable retry with backoff/jitter, `onComplete` callbacks, parallelism control.
 
 - `@useautumn/convex`: SDK has built-in fail-open (returns `allowed: true` on 5xx/network errors). No manual fail-open logic needed in `autumn.check()` calls.
@@ -251,38 +251,35 @@ Runtime files:
 
 ### Email System
 
-Use the @convex-dev/resend email system for production-ready email delivery. Use btca with `convexResend` resource for component docs. For svelte email docs and templates, use btca with `betterSvelteEmail` resource.
+Use the **Brevo** email system for transactional email delivery. Direct HTTP client — no Convex component. For svelte email docs and templates, use btca with `betterSvelteEmail` resource.
 
 #### Email System Architecture
 
 ```text
 src/lib/convex/emails/
-├── resend.ts              # Resend client configuration
-├── events.ts              # Webhook event handlers
-├── send.ts                # Email sending mutations
+├── brevo.ts               # Brevo HTTP client + webhook HMAC verifier
+├── events.ts              # Webhook event handler (disabled — uncomment in http.ts to enable)
+├── send.ts                # Email sending actions
 ├── queries.ts             # Email status queries
-└── mutations.ts           # Email management (cancel, status)
+└── mutations.ts           # Email management
 ```
 
-Emails are sent via internal mutations using the Resend component.
+Emails are sent via `internalAction` functions using the Brevo REST API (`/v3/smtp/email`).
 
 #### Email Event Tracking
 
-Email events are automatically stored in the `emailEvents` table:
+Email events are **disabled by default** (webhook not registered in `http.ts`). To enable:
+1. Uncomment the `/brevo-webhook` route in `http.ts`
+2. Set `BREVO_WEBHOOK_SECRET` in Convex env
+3. Configure webhook URL in Brevo dashboard: Settings → Tracking & Emails → Transactional → Webhooks
 
-- `email.delivered` - Successfully delivered
-- `email.bounced` - Hard or soft bounce
-- `email.complained` - Marked as spam
-- `email.opened` - Email opened (requires tracking enabled in Resend)
-- `email.clicked` - Link clicked (requires tracking enabled in Resend)
-
-Query email events using:
-
-```typescript
-const events = await ctx.runQuery(api.emails.queries.getEmailEvents, {
-	emailId: 'email-id'
-});
-```
+Brevo event types stored in `emailEvents` table:
+- `delivered` - Email reached inbox
+- `hard_bounce` / `soft_bounce` - Delivery failure
+- `spam` - Recipient marked as spam
+- `opened` - Email opened (requires paid Brevo plan)
+- `clicks` - Link clicked (requires paid Brevo plan)
+- `unsubscribed` - Recipient unsubscribed
 
 ### PostHog Analytics
 

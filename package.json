@@ -39,14 +39,15 @@
 		"_tolgee:push": "TOLGEE_API_KEY=$VITE_TOLGEE_API_KEY tolgee push",
 		"_tolgee:cleanup": "TOLGEE_API_KEY=$VITE_TOLGEE_API_KEY tolgee tag --filter-not-extracted --filter-tag production --tag deprecated --untag production",
 		"worktree": "bun scripts/create-worktree.ts",
-		"worktree:setup": "bun scripts/create-worktree.ts --setup-only"
+		"worktree:setup": "bun scripts/create-worktree.ts --setup-only",
+		"sync:brevo-templates": "bun --env-file=.env.local --env-file=.env.convex.local scripts/sync-brevo-templates.ts"
 	},
 	"dependencies": {
 		"@better-auth/passkey": "^1.4.10",
 		"@convex-dev/agent": "^0.3.0",
 		"@convex-dev/better-auth": "^0.10.0",
 		"@convex-dev/rate-limiter": "^0.3.2",
-		"@convex-dev/resend": "^0.2.0",
+
 		"@formkit/auto-animate": "^0.9.0",
 		"@gilhrpenner/convex-files-control": "^0.5.1",
 		"@humanspeak/svelte-markdown": "^1.0.4",
@@ -77,7 +78,7 @@
 		"motion-sv": "^0.1.2",
 		"paneforge": "^1.0.2",
 		"posthog-js": "^1.290.0",
-		"resend": "^6.5.2",
+
 		"runed": "^0.37.0",
 		"svelte-infinite": "^0.5.1",
 		"svelte-konva": "^1.0.1",
@@ -118,7 +119,7 @@
 		"bits-ui": "2.16.3",
 		"bun-tasks": "0.1.2",
 		"clsx": "^2.1.1",
-		"convex": "1.33.1",
+		"convex": "1.35.1",
 		"convex-svelte": "npm:@mmailaender/convex-svelte@0.17.1",
 		"convex-vite-plugin": "^0.4.0",
 		"d3-scale": "4.0.2",

@@ -122,16 +122,19 @@ For complete documentation, see `docs/i18n-setup.md`.
 ```
 
 ```markdown
-#### RESEND Webhook Setup
+#### Email Webhook Setup (optional)
 
-Configure webhook in Resend dashboard to point to:
+Email event tracking is disabled by default. To enable delivery/bounce/spam tracking:
+
+1. Uncomment the `/brevo-webhook` route in `src/lib/convex/http.ts`
+2. Set `BREVO_WEBHOOK_SECRET` in your Convex environment
+3. Configure your webhook URL in Brevo: Settings → Tracking & Emails → Transactional → Webhooks
+
+```
+https://your-deployment.convex.site/brevo-webhook
 ```
 
-[https://your-deployment.convex.site/resend-webhook](https://your-deployment.convex.site/resend-webhook)
-
-````
-
-The webhook endpoint is configured in `src/lib/convex/http.ts`.#
+The webhook endpoint is configured in `src/lib/convex/http.ts`.
 ### PostHog Analytics & Proxy
 
 
@@ -255,8 +258,8 @@ This project uses multiple environment variable configurations organized by purp
 **4. Convex Backend** (via CLI)
 
 ```bash
-# Required: RESEND_API_KEY, AUTH_EMAIL
-# Optional: AUTH_GOOGLE_ID, AUTH_GOOGLE_SECRET, RESEND_WEBHOOK_SECRET
+# Required: BREVO_API_KEY, BREVO_SENDER_NAME, BREVO_SENDER_EMAIL
+# Optional: AUTH_GOOGLE_ID, AUTH_GOOGLE_SECRET, BREVO_WEBHOOK_SECRET
 # For testing: AUTH_E2E_TEST_SECRET
 bunx convex env set KEY value
 # See .env.convex.example for complete list
@@ -267,9 +270,11 @@ bunx convex env set KEY value
 **Convex Backend** (set via `bunx convex env set`):
 
 - `BETTER_AUTH_SECRET` - Session signing secret (required)
-- `RESEND_API_KEY` - Email sending (required)
-- `AUTH_EMAIL` - Sender email address (required)
-- `RESEND_WEBHOOK_SECRET` - Webhook verification (optional)
+- `BREVO_API_KEY` - Email sending (required)
+- `BREVO_SENDER_NAME` - Sender display name (required)
+- `BREVO_SENDER_EMAIL` - Verified sender address (required)
+- `EMAIL_ASSET_URL` - URL for email image assets (required)
+- `BREVO_WEBHOOK_SECRET` - Webhook verification (optional)
 - `AUTH_GOOGLE_ID` - Google OAuth client ID (optional)
 - `AUTH_GOOGLE_SECRET` - Google OAuth secret (optional)
 - `AUTH_E2E_TEST_SECRET` - E2E test authentication (required for CI/CD)
@@ -307,16 +312,14 @@ bunx convex env set KEY value
 ```markdown
 ### Email System
 
-This project uses the **@convex-dev/resend** component for production-ready email delivery.
+This project uses **Brevo** for transactional email delivery via a direct HTTP client.
 
 #### Features
 
-- **Automatic Queuing & Batching** - Efficiently handles bulk email sending
-- **Durable Execution** - Guarantees delivery even if servers restart
-- **Built-in Idempotency** - Prevents duplicate email sends
-- **Rate Limit Compliance** - Automatic handling of API rate limits
-- **Event Tracking** - Webhooks for delivery, bounces, complaints, opens, clicks
-- **Test Mode** - Safe development with delivery restrictions
+- **3-attempt exponential backoff** — automatic retry on 5xx errors
+- **Template rendering** — Svelte components compiled to inline HTML at build time
+- **Template sync** — `bun run sync:brevo-templates` pushes templates to Brevo dashboard
+- **Event tracking** — optional webhook support (disabled by default, enable in `http.ts`)
 ```
 
 ```markdown

@@ -23,17 +23,11 @@ export const load: PageServerLoad = async () => {
 async function buildActions() {
 	if (!import.meta.env.DEV) return {};
 	const { renderer } = await import('$lib/emails/renderer');
-	const { createEmail, sendEmail } = await import('better-svelte-email/preview');
-	const { env } = await import('$env/dynamic/private');
+	const { createEmail } = await import('better-svelte-email/preview');
 	return {
-		...createEmail({ renderer }),
-		...(env.RESEND_API_KEY
-			? sendEmail({
-					renderer,
-					resendApiKey: env.RESEND_API_KEY,
-					from: 'Email Preview <noreply@daniel.sticker.name>'
-				})
-			: {})
+		...createEmail({ renderer })
+		// Note: sendEmail (test send via Brevo) not yet wired in preview tool.
+		// Use Brevo dashboard's transactional email test feature instead.
 	};
 }
 

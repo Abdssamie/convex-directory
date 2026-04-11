@@ -215,7 +215,7 @@ export const sendPendingAdminNotification = internalAction({
 		let sentCount = 0;
 		for (const email of targetEmails) {
 			try {
-				await ctx.runMutation(internal.emails.send.sendNewTicketAdminNotification, {
+				await ctx.runAction(internal.emails.send.sendNewTicketAdminNotification, {
 					email,
 					isReopen: notification.isReopen,
 					userName: supportThread.userName || 'Anonymous',

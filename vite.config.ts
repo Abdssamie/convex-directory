@@ -221,7 +221,7 @@ export default defineConfig(async ({ mode }) => {
 			config: mergedConfig
 		});
 
-		const missingEmailEnv = ['RESEND_API_KEY', 'AUTH_EMAIL'].filter(
+		const missingEmailEnv = ['BREVO_API_KEY', 'BREVO_SENDER_EMAIL'].filter(
 			(key) => !convexLocalEnv[key]?.trim()
 		);
 

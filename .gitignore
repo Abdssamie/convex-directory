@@ -56,3 +56,4 @@ references/
 
 # local convex dev deployment
 .convex
+.agents

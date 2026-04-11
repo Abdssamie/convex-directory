@@ -1,7 +1,7 @@
-import { internalMutation } from '../_generated/server';
+import { internalAction, internalQuery, internalMutation } from '../_generated/server';
 import { v } from 'convex/values';
 import { components, internal } from '../_generated/api';
-import { resend } from './resend';
+import { sendBrevoEmail } from './brevo';
 import {
 	renderVerificationEmail,
 	renderPasswordResetEmail,
@@ -12,7 +12,7 @@ import {
 import { requireEnv } from '../env';
 import type { NotificationMessage } from '../../emails/templates/types';
 import { t, getValidLocale, type SupportedLocale } from '../i18n/translations';
-import type { GenericMutationCtx } from 'convex/server';
+import type { GenericActionCtx } from 'convex/server';
 import type { DataModel } from '../_generated/dataModel';
 import { shouldSkipTestEmail } from './helpers';
 
@@ -24,7 +24,7 @@ type UserWithLocale = { locale?: string | null } | null;
  * Falls back to default locale if user not found or locale not set.
  */
 async function getLocaleForEmail(
-	ctx: GenericMutationCtx<DataModel>,
+	ctx: GenericActionCtx<DataModel>,
 	email: string
 ): Promise<SupportedLocale> {
 	const result = await ctx.runQuery(components.betterAuth.adapter.findOne, {
@@ -40,32 +40,36 @@ async function getLocaleForEmail(
  * Uses pre-rendered HTML templates with template placeholders for dynamic content.
  * Looks up user's locale preference for translated subject.
  */
-export const sendVerificationEmail = internalMutation({
+export const sendVerificationEmail = internalAction({
 	args: {
 		email: v.string(),
 		verificationUrl: v.string(),
 		expiryMinutes: v.optional(v.number())
 	},
+	returns: v.null(),
 	handler: async (ctx, args) => {
 		const { email, verificationUrl, expiryMinutes = 20 } = args;
 
-		if (shouldSkipTestEmail('sendVerificationEmail', email)) return;
+		if (shouldSkipTestEmail('sendVerificationEmail', email)) return null;
 
 		const locale = await getLocaleForEmail(ctx, email);
 		const { html, text } = renderVerificationEmail(verificationUrl, expiryMinutes);
 
-		await resend.sendEmail(ctx, {
-			from: requireEnv('AUTH_EMAIL'),
+		const result = await sendBrevoEmail({
 			to: email,
 			subject: t(locale, 'email.subject.verify'),
-			html,
-			text,
-			// Analytics tracking via custom headers
-			headers: [
-				{ name: 'X-Email-Category', value: 'authentication' },
-				{ name: 'X-Email-Template', value: 'verification' }
-			]
+			htmlContent: html,
+			textContent: text,
+			headers: {
+				'X-Email-Category': 'authentication',
+				'X-Email-Template': 'verification'
+			}
 		});
+
+		if (!result.ok) {
+			console.error(`[sendVerificationEmail] Failed to send to ${email}:`, result.error);
+		}
+		return null;
 	}
 });
 
@@ -75,32 +79,36 @@ export const sendVerificationEmail = internalMutation({
  * Uses pre-rendered HTML templates with template placeholders for dynamic content.
  * Looks up user's locale preference for translated subject.
  */
-export const sendResetPasswordEmail = internalMutation({
+export const sendResetPasswordEmail = internalAction({
 	args: {
 		email: v.string(),
 		resetUrl: v.string(),
 		userName: v.optional(v.string())
 	},
+	returns: v.null(),
 	handler: async (ctx, args) => {
 		const { email, resetUrl, userName } = args;
 
-		if (shouldSkipTestEmail('sendResetPasswordEmail', email)) return;
+		if (shouldSkipTestEmail('sendResetPasswordEmail', email)) return null;
 
 		const locale = await getLocaleForEmail(ctx, email);
 		const { html, text } = renderPasswordResetEmail(resetUrl, userName);
 
-		await resend.sendEmail(ctx, {
-			from: requireEnv('AUTH_EMAIL'),
+		const result = await sendBrevoEmail({
 			to: email,
 			subject: t(locale, 'email.subject.reset_password'),
-			html,
-			text,
-			// Analytics tracking via custom headers
-			headers: [
-				{ name: 'X-Email-Category', value: 'authentication' },
-				{ name: 'X-Email-Template', value: 'password-reset' }
-			]
+			htmlContent: html,
+			textContent: text,
+			headers: {
+				'X-Email-Category': 'authentication',
+				'X-Email-Template': 'password-reset'
+			}
 		});
+
+		if (!result.ok) {
+			console.error(`[sendResetPasswordEmail] Failed to send to ${email}:`, result.error);
+		}
+		return null;
 	}
 });
 
@@ -111,7 +119,7 @@ export const sendResetPasswordEmail = internalMutation({
  * Uses pre-rendered HTML templates with template placeholders for dynamic content.
  * Looks up user's locale preference for translated subject.
  */
-export const sendAdminReplyNotification = internalMutation({
+export const sendAdminReplyNotification = internalAction({
 	args: {
 		email: v.string(),
 		adminName: v.string(),
@@ -119,10 +127,11 @@ export const sendAdminReplyNotification = internalMutation({
 		threadId: v.string(),
 		pageUrl: v.optional(v.string())
 	},
+	returns: v.null(),
 	handler: async (ctx, args) => {
 		const { email, adminName, messagePreview, threadId, pageUrl } = args;
 
-		if (shouldSkipTestEmail('sendAdminReplyNotification', email)) return;
+		if (shouldSkipTestEmail('sendAdminReplyNotification', email)) return null;
 
 		const locale = await getLocaleForEmail(ctx, email);
 		const siteUrl = requireEnv('SITE_URL');
@@ -138,19 +147,22 @@ export const sendAdminReplyNotification = internalMutation({
 
 		const { html, text } = renderAdminReplyNotificationEmail(adminName, messagePreview, deepLink);
 
-		await resend.sendEmail(ctx, {
-			from: requireEnv('AUTH_EMAIL'),
+		const result = await sendBrevoEmail({
 			to: email,
 			subject: t(locale, 'email.subject.support_reply'),
-			html,
-			text,
-			// Analytics tracking via custom headers
-			headers: [
-				{ name: 'X-Email-Category', value: 'support' },
-				{ name: 'X-Email-Template', value: 'admin-reply' },
-				{ name: 'X-Thread-ID', value: threadId }
-			]
+			htmlContent: html,
+			textContent: text,
+			headers: {
+				'X-Email-Category': 'support',
+				'X-Email-Template': 'admin-reply',
+				'X-Thread-ID': threadId
+			}
 		});
+
+		if (!result.ok) {
+			console.error(`[sendAdminReplyNotification] Failed to send to ${email}:`, result.error);
+		}
+		return null;
 	}
 });
 
@@ -163,7 +175,7 @@ export const sendAdminReplyNotification = internalMutation({
  * Uses pre-rendered HTML templates with template placeholders for dynamic content.
  * Looks up admin's locale preference for translated subject.
  */
-export const sendNewTicketAdminNotification = internalMutation({
+export const sendNewTicketAdminNotification = internalAction({
 	args: {
 		email: v.string(),
 		isReopen: v.boolean(),
@@ -176,6 +188,7 @@ export const sendNewTicketAdminNotification = internalMutation({
 		),
 		threadId: v.string()
 	},
+	returns: v.null(),
 	handler: async (ctx, args) => {
 		const { email, isReopen, userName, messages, threadId } = args;
 		const siteUrl = requireEnv('SITE_URL');
@@ -198,19 +211,25 @@ export const sendNewTicketAdminNotification = internalMutation({
 			? t(locale, 'email.subject.ticket_reopened', { userName })
 			: t(locale, 'email.subject.ticket_new', { userName });
 
-		await resend.sendEmail(ctx, {
-			from: requireEnv('AUTH_EMAIL'),
+		const result = await sendBrevoEmail({
 			to: email,
 			subject,
-			html,
-			text,
-			// Analytics tracking via custom headers
-			headers: [
-				{ name: 'X-Email-Category', value: 'support-admin' },
-				{ name: 'X-Email-Template', value: isReopen ? 'ticket-reopened' : 'new-ticket' },
-				{ name: 'X-Thread-ID', value: threadId }
-			]
+			htmlContent: html,
+			textContent: text,
+			headers: {
+				'X-Email-Category': 'support-admin',
+				'X-Email-Template': isReopen ? 'ticket-reopened' : 'new-ticket',
+				'X-Thread-ID': threadId
+			}
 		});
+
+		if (!result.ok) {
+			// Re-throw so the caller (sendPendingAdminNotification action) can handle retry logic
+			throw new Error(
+				`[sendNewTicketAdminNotification] Failed to send to ${email}: ${result.error}`
+			);
+		}
+		return null;
 	}
 });
 
@@ -222,17 +241,18 @@ export const sendNewTicketAdminNotification = internalMutation({
  *
  * Uses pre-rendered HTML templates with template placeholders for dynamic content.
  */
-export const sendNewUserSignupNotification = internalMutation({
+export const sendNewUserSignupNotification = internalAction({
 	args: {
 		userName: v.optional(v.string()),
 		userEmail: v.string(),
 		signupMethod: v.union(v.literal('Email'), v.literal('Google'), v.literal('GitHub')),
 		signupTime: v.string()
 	},
+	returns: v.null(),
 	handler: async (ctx, args) => {
 		const { userName, userEmail, signupMethod, signupTime } = args;
 
-		if (shouldSkipTestEmail('sendNewUserSignupNotification', userEmail)) return;
+		if (shouldSkipTestEmail('sendNewUserSignupNotification', userEmail)) return null;
 
 		const siteUrl = requireEnv('SITE_URL');
 
@@ -244,7 +264,7 @@ export const sendNewUserSignupNotification = internalMutation({
 
 		if (recipients.length === 0) {
 			console.log('[sendNewUserSignupNotification] No recipients configured, skipping');
-			return;
+			return null;
 		}
 
 		// Build admin dashboard link with search for this user
@@ -258,29 +278,32 @@ export const sendNewUserSignupNotification = internalMutation({
 			adminDashboardLink
 		});
 
-		// Send to each recipient
-		// Note: The Resend component handles retries internally via workpool (5 retries, 30s backoff)
-		// and uses idempotency keys for exactly-once delivery
+		// Send to each recipient individually
 		let sentCount = 0;
 		for (const email of recipients) {
 			try {
-				await resend.sendEmail(ctx, {
-					from: requireEnv('AUTH_EMAIL'),
+				const result = await sendBrevoEmail({
 					to: email,
 					subject: `New user signup: ${userEmail}`,
-					html,
-					text,
-					headers: [
-						{ name: 'X-Email-Category', value: 'stats' },
-						{ name: 'X-Email-Template', value: 'new-user-signup' }
-					]
+					htmlContent: html,
+					textContent: text,
+					headers: {
+						'X-Email-Category': 'stats',
+						'X-Email-Template': 'new-user-signup'
+					}
 				});
-				sentCount++;
+
+				if (result.ok) {
+					sentCount++;
+				} else {
+					console.error(
+						`[sendNewUserSignupNotification] Failed to send to ${email}:`,
+						result.error
+					);
+				}
 			} catch (error) {
-				// Log permanent errors (invalid config, API key issues)
-				// The Resend component handles transient errors internally
 				console.error(
-					`[sendNewUserSignupNotification] Failed to enqueue email to ${email}:`,
+					`[sendNewUserSignupNotification] Exception sending to ${email}:`,
 					error instanceof Error ? error.message : error
 				);
 			}
@@ -288,14 +311,14 @@ export const sendNewUserSignupNotification = internalMutation({
 
 		if (sentCount > 0) {
 			console.log(
-				`[sendNewUserSignupNotification] Enqueued notification for ${userEmail} to ${sentCount}/${recipients.length} recipient(s)`
+				`[sendNewUserSignupNotification] Sent notification for ${userEmail} to ${sentCount}/${recipients.length} recipient(s)`
 			);
 		} else if (recipients.length > 0) {
-			// All sends failed - log aggregated error for observability
 			console.error(
 				`[sendNewUserSignupNotification] All ${recipients.length} email sends failed for new user ${userEmail}`
 			);
 		}
+		return null;
 	}
 });
 
@@ -305,11 +328,12 @@ export const sendNewUserSignupNotification = internalMutation({
  * Reads config from adminSettings at send time (not at schedule time)
  * to ensure the latest config is used. Sends plain text only.
  */
-export const sendFounderWelcomeEmail = internalMutation({
+export const sendFounderWelcomeEmail = internalAction({
 	args: { founderWelcomeId: v.id('founderWelcomeEmails') },
 	returns: v.null(),
 	handler: async (ctx, { founderWelcomeId }) => {
-		const row = await ctx.db.get(founderWelcomeId);
+		// Fetch the row (action cannot directly access ctx.db)
+		const row = await ctx.runQuery(internal.emails.send.getFounderWelcomeRow, { founderWelcomeId });
 		if (!row || row.status !== 'scheduled') return null;
 
 		// Read config at send time
@@ -318,7 +342,8 @@ export const sendFounderWelcomeEmail = internalMutation({
 			{}
 		);
 		if (!config.enabled) {
-			await ctx.db.patch(founderWelcomeId, {
+			await ctx.runMutation(internal.emails.send.patchFounderWelcomeStatus, {
+				founderWelcomeId,
 				status: 'skipped',
 				skippedReason: 'feature_disabled'
 			});
@@ -331,7 +356,8 @@ export const sendFounderWelcomeEmail = internalMutation({
 			where: [{ field: '_id', operator: 'eq', value: row.userId }]
 		});
 		if (!user) {
-			await ctx.db.patch(founderWelcomeId, {
+			await ctx.runMutation(internal.emails.send.patchFounderWelcomeStatus, {
+				founderWelcomeId,
 				status: 'skipped',
 				skippedReason: 'user_deleted'
 			});
@@ -346,21 +372,24 @@ export const sendFounderWelcomeEmail = internalMutation({
 
 		// Guards
 		if (!emailVerified) {
-			await ctx.db.patch(founderWelcomeId, {
+			await ctx.runMutation(internal.emails.send.patchFounderWelcomeStatus, {
+				founderWelcomeId,
 				status: 'skipped',
 				skippedReason: 'not_verified'
 			});
 			return null;
 		}
 		if (email !== row.signupEmail) {
-			await ctx.db.patch(founderWelcomeId, {
+			await ctx.runMutation(internal.emails.send.patchFounderWelcomeStatus, {
+				founderWelcomeId,
 				status: 'skipped',
 				skippedReason: 'email_changed'
 			});
 			return null;
 		}
 		if (shouldSkipTestEmail('sendFounderWelcomeEmail', email)) {
-			await ctx.db.patch(founderWelcomeId, {
+			await ctx.runMutation(internal.emails.send.patchFounderWelcomeStatus, {
+				founderWelcomeId,
 				status: 'skipped',
 				skippedReason: 'test_email'
 			});
@@ -369,7 +398,8 @@ export const sendFounderWelcomeEmail = internalMutation({
 
 		// Guard against empty config (subject/body required for a valid email)
 		if (!config.subject.trim() || !config.body.trim()) {
-			await ctx.db.patch(founderWelcomeId, {
+			await ctx.runMutation(internal.emails.send.patchFounderWelcomeStatus, {
+				founderWelcomeId,
 				status: 'skipped',
 				skippedReason: 'empty_template'
 			});
@@ -388,22 +418,85 @@ export const sendFounderWelcomeEmail = internalMutation({
 		const renderTemplate = (template: string) =>
 			template.replace(/\{\{(\w+)\}\}/g, (_, key) => templateVars[key] ?? '');
 
-		const text = renderTemplate(config.body);
+		const textContent = renderTemplate(config.body);
 		const subject = renderTemplate(config.subject);
 
-		await resend.sendEmail(ctx, {
-			from: `${config.name} <${requireEnv('AUTH_EMAIL')}>`,
-			replyTo: config.replyTo ? [config.replyTo] : undefined,
+		const result = await sendBrevoEmail({
 			to: email,
 			subject,
-			text,
-			headers: [
-				{ name: 'X-Email-Category', value: 'onboarding' },
-				{ name: 'X-Email-Template', value: 'founder-welcome' }
-			]
+			// Founder welcome is plain text only — Brevo requires htmlContent so we wrap
+			htmlContent: `<pre style="font-family:inherit;white-space:pre-wrap">${textContent}</pre>`,
+			textContent,
+			replyTo: config.replyTo || undefined,
+			headers: {
+				'X-Email-Category': 'onboarding',
+				'X-Email-Template': 'founder-welcome'
+			}
 		});
 
-		await ctx.db.patch(founderWelcomeId, { status: 'sent', sentAt: Date.now() });
+		if (!result.ok) {
+			console.error(`[sendFounderWelcomeEmail] Failed to send to ${email}:`, result.error);
+			// Status stays 'scheduled' — admin can see it didn't go out
+			return null;
+		}
+
+		await ctx.runMutation(internal.emails.send.patchFounderWelcomeStatus, {
+			founderWelcomeId,
+			status: 'sent',
+			sentAt: Date.now()
+		});
+		return null;
+	}
+});
+
+// ---------------------------------------------------------------------------
+// Internal helpers for sendFounderWelcomeEmail (action cannot access ctx.db)
+// ---------------------------------------------------------------------------
+
+/** Fetches a founderWelcomeEmails row by ID for use in the action above. */
+export const getFounderWelcomeRow = internalQuery({
+	args: { founderWelcomeId: v.id('founderWelcomeEmails') },
+	returns: v.union(
+		v.object({
+			userId: v.string(),
+			signupEmail: v.string(),
+			status: v.union(
+				v.literal('pending_verification'),
+				v.literal('scheduled'),
+				v.literal('sent'),
+				v.literal('skipped')
+			)
+		}),
+		v.null()
+	),
+	handler: async (ctx, { founderWelcomeId }) => {
+		const row = await ctx.db.get(founderWelcomeId);
+		if (!row) return null;
+		return { userId: row.userId, signupEmail: row.signupEmail, status: row.status };
+	}
+});
+
+/** Patches status (and optional sentAt) on a founderWelcomeEmails row. */
+export const patchFounderWelcomeStatus = internalMutation({
+	args: {
+		founderWelcomeId: v.id('founderWelcomeEmails'),
+		status: v.union(
+			v.literal('pending_verification'),
+			v.literal('scheduled'),
+			v.literal('sent'),
+			v.literal('skipped')
+		),
+		skippedReason: v.optional(v.string()),
+		sentAt: v.optional(v.number())
+	},
+	returns: v.null(),
+	handler: async (ctx, args) => {
+		const { founderWelcomeId, status, skippedReason, sentAt } = args;
+		await ctx.db.patch(founderWelcomeId, {
+			status,
+			...(skippedReason !== undefined ? { skippedReason } : {}),
+			...(sentAt !== undefined ? { sentAt } : {})
+		});
 		return null;
 	}
 });

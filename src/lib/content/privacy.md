@@ -20,7 +20,7 @@ We process your data on the following legal bases under the GDPR: contract perfo
 
 ## IV. Third-Party Processors.
 
-We use the following GDPR-compliant third-party services to operate the Service: Convex (EU, Ireland) for database and backend infrastructure, Vercel (Edge, Frankfurt, Germany) for hosting and deployment, Resend for transactional email delivery, and PostHog for product analytics. Each of these processors maintains appropriate technical and organizational measures to protect your personal data.
+We use the following GDPR-compliant third-party services to operate the Service: Convex (EU, Ireland) for database and backend infrastructure, Vercel (Edge, Frankfurt, Germany) for hosting and deployment, Brevo for transactional email delivery, and PostHog for product analytics. Each of these processors maintains appropriate technical and organizational measures to protect your personal data.
 
 ## V. Cookies.
 

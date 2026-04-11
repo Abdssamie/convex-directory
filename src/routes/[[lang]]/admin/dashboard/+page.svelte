@@ -86,14 +86,9 @@
 		<div class="grid grid-cols-1 gap-4 md:grid-cols-3">
 			<Item.Root variant="outline">
 				{#snippet child({ props })}
-					<a
-						href="https://resend.com/overview"
-						target="_blank"
-						rel="noopener noreferrer"
-						{...props}
-					>
+					<a href="https://app.brevo.com" target="_blank" rel="noopener noreferrer" {...props}>
 						<Item.Content>
-							<Item.Title>Resend</Item.Title>
+							<Item.Title>Brevo</Item.Title>
 							<Item.Description><T keyName="admin.dashboard.email_service" /></Item.Description>
 						</Item.Content>
 						<Item.Actions>

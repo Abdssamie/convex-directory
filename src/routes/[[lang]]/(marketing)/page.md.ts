@@ -55,8 +55,8 @@ export const marketingMarkdown: MarketingMarkdownDocument = {
 					description: 'Product analytics and conversion tracking'
 				},
 				{
-					label: 'Resend',
-					href: 'https://resend.com',
+					label: 'Brevo',
+					href: 'https://brevo.com',
 					description: 'Transactional email delivery'
 				}
 			]

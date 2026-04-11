@@ -325,19 +325,19 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>): BetterAuthOptions
 			sendResetPassword: async ({ user, url }: SendResetPasswordArgs) => {
 				const mutationCtx = requireRunMutationCtx(ctx);
 				const email = requireAuthUserEmail(user, 'reset password email');
-				await mutationCtx.runMutation(internal.emails.send.sendResetPasswordEmail, {
+				await mutationCtx.scheduler.runAfter(0, internal.emails.send.sendResetPasswordEmail, {
 					email,
 					resetUrl: url,
 					userName: user.name ?? undefined
 				});
 			}
-		},
+		}, // Schedule action (mutations cannot runAction directly)
 		emailVerification: {
 			// Email verification (moved from emailAndPassword in Better Auth 1.4.x)
 			sendVerificationEmail: async ({ user, url }: SendVerificationEmailArgs) => {
 				const mutationCtx = requireRunMutationCtx(ctx);
 				const email = requireAuthUserEmail(user, 'verification email');
-				await mutationCtx.runMutation(internal.emails.send.sendVerificationEmail, {
+				await mutationCtx.scheduler.runAfter(0, internal.emails.send.sendVerificationEmail, {
 					email,
 					verificationUrl: url,
 					expiryMinutes: 20

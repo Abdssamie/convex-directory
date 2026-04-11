@@ -42,8 +42,6 @@ export default {
 		'@tailwindcss/forms',
 		'@tailwindcss/typography',
 		'tw-animate-css',
-		// Used via @convex-dev/resend component internally
-		'resend',
 		// ESLint legacy compat — referenced in eslint.config.js as string
 		'@typescript-eslint/eslint-plugin',
 		'@typescript-eslint/parser',
