@@ -350,11 +350,6 @@ async function main(): Promise<void> {
 			console.log('No Convex files to check');
 		}
 		console.log('\n');
-
-		// Autumn billing config validation (no auth needed, runs locally)
-		printHeader(step++, 'Autumn config');
-		runCommand('bun', ['atmn', 'preview']);
-		console.log('\n');
 	}
 
 	// Re-stage files if they were modified during --staged checks
