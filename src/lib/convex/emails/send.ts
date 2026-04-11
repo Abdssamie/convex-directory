@@ -333,7 +333,13 @@ export const sendFounderWelcomeEmail = internalAction({
 	returns: v.null(),
 	handler: async (ctx, { founderWelcomeId }) => {
 		// Fetch the row (action cannot directly access ctx.db)
-		const row = await ctx.runQuery(internal.emails.send.getFounderWelcomeRow, { founderWelcomeId });
+		const row = (await ctx.runQuery(internal.emails.send.getFounderWelcomeRow, {
+			founderWelcomeId
+		})) as {
+			userId: string;
+			signupEmail: string;
+			status: 'pending_verification' | 'scheduled' | 'sent' | 'skipped';
+		} | null;
 		if (!row || row.status !== 'scheduled') return null;
 
 		// Read config at send time
@@ -415,6 +421,14 @@ export const sendFounderWelcomeEmail = internalAction({
 			founderTitle: config.title
 		};
 
+		const escapeHtml = (str: string) =>
+			str
+				.replace(/&/g, '&amp;')
+				.replace(/</g, '&lt;')
+				.replace(/>/g, '&gt;')
+				.replace(/"/g, '&quot;')
+				.replace(/'/g, '&#039;');
+
 		const renderTemplate = (template: string) =>
 			template.replace(/\{\{(\w+)\}\}/g, (_, key) => templateVars[key] ?? '');
 
@@ -425,7 +439,7 @@ export const sendFounderWelcomeEmail = internalAction({
 			to: email,
 			subject,
 			// Founder welcome is plain text only — Brevo requires htmlContent so we wrap
-			htmlContent: `<pre style="font-family:inherit;white-space:pre-wrap">${textContent}</pre>`,
+			htmlContent: `<pre style="font-family:inherit;white-space:pre-wrap">${escapeHtml(textContent)}</pre>`,
 			textContent,
 			replyTo: config.replyTo || undefined,
 			headers: {

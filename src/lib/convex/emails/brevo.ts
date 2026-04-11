@@ -90,11 +90,11 @@ const parseResponseBody = (value: unknown): { messageId?: string; message?: stri
 async function fetchBrevo(
 	apiKey: string,
 	payload: BrevoSendPayload,
-	maxRetries = 3
+	maxAttempts = 3
 ): Promise<Response> {
 	let lastError: unknown;
 
-	for (let attempt = 0; attempt <= maxRetries; attempt++) {
+	for (let attempt = 0; attempt < maxAttempts; attempt++) {
 		try {
 			const response = await fetch('https://api.brevo.com/v3/smtp/email', {
 				method: 'POST',
@@ -115,8 +115,8 @@ async function fetchBrevo(
 			throw new Error(`Brevo server error: ${response.status}`);
 		} catch (error) {
 			lastError = error;
-			if (attempt === maxRetries) break;
-			// Exponential backoff: 1s, 2s, 4s
+			if (attempt === maxAttempts - 1) break;
+			// Exponential backoff: 1s, 2s
 			await new Promise((resolve) => setTimeout(resolve, Math.pow(2, attempt) * 1000));
 		}
 	}
@@ -232,9 +232,7 @@ export async function verifyBrevoWebhookSignature(
 		return false;
 	}
 
-	const sigBytes = new Uint8Array(
-		matchResult.map((byte) => parseInt(byte, 16))
-	);
+	const sigBytes = new Uint8Array(matchResult.map((byte) => parseInt(byte, 16)));
 
 	return await crypto.subtle.verify('HMAC', key, sigBytes, encoder.encode(body));
 }
@@ -257,7 +255,7 @@ export function parseBrevoWebhookPayload(raw: unknown): BrevoWebhookEvent | null
 				: '';
 	const date = typeof payload.date === 'string' ? payload.date : new Date().toISOString();
 
-	if (typeof event !== 'string' || typeof email !== 'string') {
+	if (typeof event !== 'string' || typeof email !== 'string' || !messageId) {
 		return null;
 	}
 

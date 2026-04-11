@@ -74,6 +74,11 @@ export const storeEmailEvent = internalMutation({
 					? payload.messageId
 					: '';
 
+		if (!messageId) {
+			console.warn('[storeEmailEvent] Missing messageId, ignoring event');
+			return null;
+		}
+
 		console.log('[storeEmailEvent] Brevo event received:', {
 			event: eventType,
 			email: payload.email,
@@ -144,7 +149,9 @@ export const purgeOldEmailEvents = internalAction({
 		const cutoff = Date.now() - days * 24 * 60 * 60 * 1000;
 
 		// Use mutation for actual delete so it's transactional
-		await ctx.runMutation(internal.emails.events.deleteOldEventsBefore, { cutoff });
+		const _deletedCount = (await ctx.runMutation(internal.emails.events.deleteOldEventsBefore, {
+			cutoff
+		})) as number;
 		return null;
 	}
 });
