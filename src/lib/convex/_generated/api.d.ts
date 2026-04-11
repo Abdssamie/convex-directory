@@ -29,7 +29,6 @@ import type * as aiChat_rateLimit from "../aiChat/rateLimit.js";
 import type * as aiChat_threads from "../aiChat/threads.js";
 import type * as aiChat_tools_weather from "../aiChat/tools/weather.js";
 import type * as auth from "../auth.js";
-import type * as autumn from "../autumn.js";
 import type * as constants from "../constants.js";
 import type * as crons from "../crons.js";
 import type * as emails__generated_adminReplyNotification from "../emails/_generated/adminReplyNotification.js";
@@ -42,7 +41,6 @@ import type * as emails__generated_verificationCode from "../emails/_generated/v
 import type * as emails_brevo from "../emails/brevo.js";
 import type * as emails_events from "../emails/events.js";
 import type * as emails_helpers from "../emails/helpers.js";
-import type * as emails_resend from "../emails/resend.js";
 import type * as emails_send from "../emails/send.js";
 import type * as emails_templates from "../emails/templates.js";
 import type * as env from "../env.js";
@@ -53,6 +51,7 @@ import type * as http from "../http.js";
 import type * as i18n_translations from "../i18n/translations.js";
 import type * as localDev from "../localDev.js";
 import type * as messages from "../messages.js";
+import type * as polar from "../polar.js";
 import type * as previewDev from "../previewDev.js";
 import type * as storage from "../storage.js";
 import type * as support_agent from "../support/agent.js";
@@ -97,7 +96,6 @@ declare const fullApi: ApiFromModules<{
   "aiChat/threads": typeof aiChat_threads;
   "aiChat/tools/weather": typeof aiChat_tools_weather;
   auth: typeof auth;
-  autumn: typeof autumn;
   constants: typeof constants;
   crons: typeof crons;
   "emails/_generated/adminReplyNotification": typeof emails__generated_adminReplyNotification;
@@ -110,7 +108,6 @@ declare const fullApi: ApiFromModules<{
   "emails/brevo": typeof emails_brevo;
   "emails/events": typeof emails_events;
   "emails/helpers": typeof emails_helpers;
-  "emails/resend": typeof emails_resend;
   "emails/send": typeof emails_send;
   "emails/templates": typeof emails_templates;
   env: typeof env;
@@ -121,6 +118,7 @@ declare const fullApi: ApiFromModules<{
   "i18n/translations": typeof i18n_translations;
   localDev: typeof localDev;
   messages: typeof messages;
+  polar: typeof polar;
   previewDev: typeof previewDev;
   storage: typeof storage;
   "support/agent": typeof support_agent;
@@ -166,8 +164,7 @@ export declare const internal: FilterApi<
 
 export declare const components: {
   betterAuth: import("../betterAuth/_generated/component.js").ComponentApi<"betterAuth">;
-  resend: import("@convex-dev/resend/_generated/component.js").ComponentApi<"resend">;
-  autumn: import("@useautumn/convex/_generated/component.js").ComponentApi<"autumn">;
+  polar: import("@convex-dev/polar/_generated/component.js").ComponentApi<"polar">;
   agent: import("@convex-dev/agent/_generated/component.js").ComponentApi<"agent">;
   rateLimiter: import("@convex-dev/rate-limiter/_generated/component.js").ComponentApi<"rateLimiter">;
   convexFilesControl: import("@gilhrpenner/convex-files-control/_generated/component.js").ComponentApi<"convexFilesControl">;

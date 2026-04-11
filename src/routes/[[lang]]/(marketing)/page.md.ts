@@ -40,9 +40,9 @@ export const marketingMarkdown: MarketingMarkdownDocument = {
 					description: 'Authentication, sessions, OAuth, and passkeys'
 				},
 				{
-					label: 'Autumn',
-					href: 'https://useautumn.com/',
-					description: 'Billing, feature gates, and subscription workflows'
+					label: 'Polar',
+					href: 'https://polar.sh',
+					description: 'Merchant-of-record billing, subscriptions, and tax compliance (payments coming soon)'
 				},
 				{
 					label: 'Tolgee',

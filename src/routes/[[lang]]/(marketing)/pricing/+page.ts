@@ -1,3 +1,3 @@
-// Pricing page uses useCustomer() for billing-dependent UI (plan badges, manage/upgrade buttons).
-// Autumn state doesn't recover on prerendered pages (page.data.autumnState frozen at build time).
-export const prerender = false;
+// Pricing page uses static content only — no billing-dependent UI for MVP.
+// TODO: Set prerender = false when re-enabling paid plans with Polar.
+export const prerender = true;

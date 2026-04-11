@@ -5,9 +5,7 @@
 	import { resolve } from '$app/paths';
 	import { useQuery, useConvexClient } from 'convex-svelte';
 	import { api } from '$lib/convex/_generated/api';
-	import { useCustomer, useAutumnOperation } from '@stickerdaniel/convex-autumn-svelte/sveltekit';
 	import { getTranslate } from '@tolgee/svelte';
-	import { haptic } from '$lib/hooks/use-haptic.svelte';
 	import ThreadChat from './thread-chat.svelte';
 
 	const { t } = getTranslate();
@@ -18,21 +16,6 @@
 
 	// Auth
 	const viewer = useQuery(api.users.viewer, {}, () => ({ initialData: data.viewer }));
-
-	// Pro check
-	const autumn = useCustomer();
-	const upgradeOperation = useAutumnOperation(autumn.checkout);
-	const isPro = $derived(autumn.customer?.products?.some((p) => p.id === 'pro') ?? false);
-	const aiChatFeature = $derived(autumn.customer?.features?.ai_chat_messages);
-	const remainingMessages = $derived(aiChatFeature?.balance ?? 0);
-	const hasMessagesAvailable = $derived(remainingMessages > 0);
-	const totalMessages = $derived(
-		aiChatFeature?.included_usage === 'inf'
-			? Infinity
-			: typeof aiChatFeature?.included_usage === 'number'
-				? aiChatFeature.included_usage
-				: 0
-	);
 
 	// Thread from URL param
 	const threadId = $derived(page.url.searchParams.get('thread') ?? '');
@@ -59,20 +42,6 @@
 				});
 		}
 	});
-
-	async function handleUpgrade() {
-		haptic.trigger('light');
-		const successUrl = new URL(page.url.href);
-		successUrl.searchParams.delete('thread');
-		successUrl.searchParams.set('upgraded', 'true');
-		const result = await upgradeOperation.execute({
-			productId: 'pro',
-			successUrl: successUrl.href
-		});
-		if (result?.url) {
-			window.location.href = result.url;
-		}
-	}
 </script>
 
 <SEOHead title={$t('meta.app.ai_chat.title')} description={$t('meta.app.ai_chat.description')} />
@@ -81,13 +50,13 @@
 	<div class="flex h-full flex-col">
 		<ThreadChat
 			{threadId}
-			{isPro}
-			{hasMessagesAvailable}
-			{remainingMessages}
-			{totalMessages}
-			onUpgrade={handleUpgrade}
-			isUpgrading={upgradeOperation.isLoading}
-			onMessageSent={() => autumn.refetch()}
+			isPro={true}
+			hasMessagesAvailable={true}
+			remainingMessages={Infinity}
+			totalMessages={Infinity}
+			onUpgrade={() => {}}
+			isUpgrading={false}
+			onMessageSent={() => {}}
 		/>
 	</div>
 {/if}

@@ -2,7 +2,6 @@
 	import { api } from '$lib/convex/_generated/api';
 	import SEOHead from '$lib/components/SEOHead.svelte';
 	import { useQuery, useConvexClient } from 'convex-svelte';
-	import { useCustomer, useAutumnOperation } from '@stickerdaniel/convex-autumn-svelte/sveltekit';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import {
 		PromptInput,
@@ -20,7 +19,6 @@
 	import ProgressiveBlur from '$blocks/magic/ProgressiveBlur.svelte';
 	import { FadeOnLoad } from '$lib/utils/fade-on-load.svelte.js';
 	import ArrowUpIcon from '@lucide/svelte/icons/arrow-up';
-	import LockIcon from '@lucide/svelte/icons/lock';
 	import { haptic } from '$lib/hooks/use-haptic.svelte';
 	import { toast } from 'svelte-sonner';
 	import { mode } from 'mode-watcher';
@@ -43,20 +41,7 @@
 	const viewer = $derived({ data: viewerQuery.data ?? data.viewer });
 	const messages = $derived({ data: messagesQuery.data ?? data.messages });
 
-	// Billing
-	const autumn = useCustomer();
-	const upgradeOperation = useAutumnOperation(autumn.checkout);
-	const isPro = $derived(autumn.customer?.products?.some((p) => p.id === 'pro') ?? false);
-	const messagesFeature = $derived(autumn.customer?.features?.messages);
-	const hasMessagesAvailable = $derived(isPro || (messagesFeature?.balance ?? 0) > 0);
-	const remainingMessages = $derived(messagesFeature?.balance ?? 0);
-	const totalMessages = $derived(
-		messagesFeature?.included_usage === 'inf'
-			? Infinity
-			: typeof messagesFeature?.included_usage === 'number'
-				? messagesFeature.included_usage
-				: 0
-	);
+	// MVP: No billing gates — all users get unlimited messages
 
 	// Input state
 	let inputValue = $state('');
@@ -124,7 +109,7 @@
 
 	async function handleSend() {
 		const text = inputValue.trim();
-		if (!text || isSending || !hasMessagesAvailable) return;
+		if (!text || isSending) return;
 
 		isSending = true;
 		const bodyToSend = text;
@@ -154,7 +139,6 @@
 					}
 				}
 			);
-			await autumn.refetch();
 		} catch (error) {
 			console.error('Failed to send message:', error);
 			haptic.trigger('error');
@@ -164,18 +148,6 @@
 		}
 	}
 
-	async function handleUpgrade() {
-		haptic.trigger('light');
-		const successUrl = new URL(page.url.href);
-		successUrl.searchParams.set('upgraded', 'true');
-		const result = await upgradeOperation.execute({
-			productId: 'pro',
-			successUrl: successUrl.href
-		});
-		if (result?.url) {
-			window.location.href = result.url;
-		}
-	}
 </script>
 
 <SEOHead
@@ -275,51 +247,7 @@
 
 		<!-- Input area -->
 		<div class="relative z-20 mx-auto w-full max-w-3xl -translate-y-4">
-			{#if !isPro && !hasMessagesAvailable}
-				<div
-					class="mx-4 mb-2 flex items-center justify-between rounded-lg border border-border/50 bg-muted/50 px-4 py-3 backdrop-blur-sm"
-				>
-					<div class="flex items-center gap-2 text-sm text-muted-foreground">
-						<LockIcon class="size-4 shrink-0" />
-						<span><T keyName="chat.alerts.limit_reached.title" /></span>
-					</div>
-					<Button
-						size="sm"
-						variant="default"
-						onclick={handleUpgrade}
-						disabled={upgradeOperation.isLoading}
-					>
-						{upgradeOperation.isLoading
-							? $t('chat.buttons.processing')
-							: $t('chat.buttons.upgrade')}
-					</Button>
-				</div>
-			{:else if !isPro && remainingMessages <= 3 && remainingMessages > 0}
-				<div
-					class="mx-4 mb-2 flex items-center justify-between rounded-lg border border-border/50 bg-muted/50 px-4 py-3 backdrop-blur-sm"
-				>
-					<div class="flex items-center gap-2 text-sm text-muted-foreground">
-						<span>
-							<T
-								keyName={remainingMessages !== 1
-									? 'chat.alerts.low_messages.description_plural'
-									: 'chat.alerts.low_messages.description'}
-								params={{ remaining: remainingMessages, total: totalMessages }}
-							/>
-						</span>
-					</div>
-					<Button
-						size="sm"
-						variant="outline"
-						onclick={handleUpgrade}
-						disabled={upgradeOperation.isLoading}
-					>
-						{upgradeOperation.isLoading
-							? $t('chat.buttons.processing')
-							: $t('chat.buttons.upgrade')}
-					</Button>
-				</div>
-			{/if}
+
 
 			<PromptInput
 				class="mx-4 bg-popover p-0"
@@ -331,18 +259,15 @@
 			>
 				<div class="flex flex-col">
 					<PromptInputTextarea
-						placeholder={hasMessagesAvailable
-							? $t('chat.input.placeholder')
-							: $t('chat.input.placeholder_disabled')}
+						placeholder={$t('chat.input.placeholder')}
 						class="min-h-[44px] pt-3 pl-4 text-base leading-[1.3]"
 						maxlength={2000}
-						disabled={!hasMessagesAvailable}
 					/>
 
 					<PromptInputActions class="mt-5 flex w-full items-center justify-end gap-2 px-3 pb-3">
 						<Button
 							size="icon"
-							disabled={!inputValue.trim() || isSending || !hasMessagesAvailable}
+							disabled={!inputValue.trim() || isSending}
 							onclick={handleSend}
 							class="size-9 shrink-0 rounded-full"
 							aria-label={$t('chat.input.send_tooltip')}

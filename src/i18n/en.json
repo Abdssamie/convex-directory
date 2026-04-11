@@ -1383,12 +1383,12 @@
 	},
 	"integrations": {
 		"cards": {
-			"autumn_stripe": {
-				"button": "Visit Autumn",
-				"description": "Autumn handles billing, feature gates, and usage tracking—no webhook complexity. Stripe for payment processing.",
+			"polar_stripe": {
+				"button": "Visit Polar",
+				"description": "Polar is the merchant of record for your SaaS. Handles billing, subscriptions, and tax compliance via Stripe. Payments coming soon.",
 				"secondary_button": "Visit Stripe",
 				"secondary_title": "Stripe",
-				"title": "Autumn + Stripe"
+				"title": "Polar + Stripe"
 			},
 			"better_auth": {
 				"button": "Visit Better Auth",

@@ -53,11 +53,9 @@ export default {
 		'marked',
 		'konva',
 		'svelte-konva',
-		// Used by autumn integration in Convex
-		'autumn-js',
-		'atmn',
-		// Sub-package of autumn-js, imported directly in Convex files
-		'@useautumn/convex',
+		// Used by polar integration in Convex (background SDK)
+		'@polar-sh/sdk',
+		'@convex-dev/polar',
 		// Used by Better Auth internally
 		'@oslojs/crypto',
 		// Re-exported by @tolgee/svelte

@@ -6,7 +6,7 @@
 		Tolgee,
 		PostHog,
 		SVBlocks,
-		Autumn,
+		Polar,
 		BetterAuth,
 		Resend,
 		Sentry
@@ -58,16 +58,16 @@
 				</IntegrationCard>
 
 				<IntegrationCard
-					title={$t('integrations.cards.autumn_stripe.title')}
-					description={$t('integrations.cards.autumn_stripe.description')}
-					link="https://useautumn.com/"
+					title={$t('integrations.cards.polar_stripe.title')}
+					description={$t('integrations.cards.polar_stripe.description')}
+					link="https://polar.sh"
 					secondaryLink="https://stripe.com"
-					secondaryTitle={$t('integrations.cards.autumn_stripe.secondary_title')}
-					buttonText={$t('integrations.cards.autumn_stripe.button')}
-					secondaryButtonText={$t('integrations.cards.autumn_stripe.secondary_button')}
+					secondaryTitle={$t('integrations.cards.polar_stripe.secondary_title')}
+					buttonText={$t('integrations.cards.polar_stripe.button')}
+					secondaryButtonText={$t('integrations.cards.polar_stripe.secondary_button')}
 				>
 					<div class="flex items-center gap-2">
-						<Autumn class="size-10" />
+						<Polar class="size-10" />
 						<Stripe class="size-10" />
 					</div>
 				</IntegrationCard>

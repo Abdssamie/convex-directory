@@ -205,8 +205,14 @@ export async function verifyBrevoWebhookSignature(
 		return true;
 	}
 
-	if (!signatureHeader) {
-		console.warn('[verifyBrevoWebhookSignature] Missing X-Brevo-Signature header');
+	const header = signatureHeader?.trim();
+	if (!header) {
+		console.warn('[verifyBrevoWebhookSignature] Missing or empty X-Brevo-Signature header');
+		return false;
+	}
+
+	if (!/^[0-9a-fA-F]+$/.test(header) || header.length % 2 !== 0) {
+		console.warn(`[verifyBrevoWebhookSignature] Invalid signature format: ${header}`);
 		return false;
 	}
 
@@ -220,8 +226,14 @@ export async function verifyBrevoWebhookSignature(
 	);
 
 	// Brevo sends signature as hex string
+	const matchResult = header.match(/.{1,2}/g);
+	if (!matchResult) {
+		console.warn(`[verifyBrevoWebhookSignature] Failed to parse hex signature: ${header}`);
+		return false;
+	}
+
 	const sigBytes = new Uint8Array(
-		signatureHeader.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16))
+		matchResult.map((byte) => parseInt(byte, 16))
 	);
 
 	return await crypto.subtle.verify('HMAC', key, sigBytes, encoder.encode(body));

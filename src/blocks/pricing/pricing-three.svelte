@@ -8,31 +8,8 @@
 		CardTitle
 	} from '$lib/components/ui/card';
 	import Check from '@lucide/svelte/icons/check';
-	import { useCustomer, useAutumnOperation } from '@stickerdaniel/convex-autumn-svelte/sveltekit';
-	import { useAuth } from '@mmailaender/convex-better-auth-svelte/svelte';
-	import { localizedHref } from '$lib/utils/i18n';
-	import { useSearchParams } from 'runed/kit';
-	import { pricingParamsSchema } from '$lib/schemas/pricing-params';
 	import { T, getTranslate } from '@tolgee/svelte';
-	import { goto } from '$app/navigation';
-	import { resolve } from '$app/paths';
-	import { page } from '$app/state';
 
-	const { customer, checkout, openBillingPortal } = useCustomer();
-	const upgradeOperation = useAutumnOperation(checkout);
-	const portalOperation = useAutumnOperation(openBillingPortal);
-	const { isAuthenticated } = useAuth();
-
-	// Get URL params for checkout flow
-	const params = useSearchParams(pricingParamsSchema, {
-		pushHistory: false // Don't create history entries for param changes
-	});
-
-	// Check current subscription status
-	const isPro = $derived(customer?.products?.some((p) => p.id === 'pro') ?? false);
-	const isFree = $derived(!isPro);
-
-	// Get translation function
 	const { t } = getTranslate();
 
 	// Helper function to get non-empty feature keys for a tier.
@@ -55,37 +32,6 @@
 	const freeFeatureKeys = $derived(getFeatureKeys('pricing.features.free'));
 	const proFeatureKeys = $derived(getFeatureKeys('pricing.features.pro'));
 	const enterpriseFeatureKeys = $derived(getFeatureKeys('pricing.features.enterprise'));
-
-	async function handleCheckout(productId: string) {
-		// Check authentication first
-		if (!isAuthenticated) {
-			const redirectUrl = localizedHref('/signin');
-			const currentUrl = page.url.pathname;
-			// Include checkout param in redirectTo so it's preserved after signin
-			const redirectWithCheckout = `${currentUrl}?checkout=${productId}`;
-			goto(resolve(`${redirectUrl}?redirectTo=${encodeURIComponent(redirectWithCheckout)}`));
-			return;
-		}
-
-		// Proceed with checkout for authenticated users
-		const result = await upgradeOperation.execute({
-			productId,
-			successUrl: page.url.origin + '/app/community-chat?upgraded=true'
-		});
-
-		if (result?.url) {
-			window.location.href = result.url;
-		}
-	}
-
-	// Auto-trigger checkout after signin if checkout param is present
-	$effect(() => {
-		if (params.checkout && isAuthenticated) {
-			handleCheckout(params.checkout);
-			// Clean up URL param after triggering checkout
-			params.checkout = '';
-		}
-	});
 </script>
 
 <section class="py-16 md:py-24">
@@ -108,11 +54,9 @@
 				<CardHeader>
 					<CardTitle class="font-medium">
 						<T keyName="pricing.tiers.free.name" />
-						{#if isFree}
-							<span class="ml-2 text-xs font-normal text-muted-foreground">
-								<T keyName="pricing.current_plan_badge" />
-							</span>
-						{/if}
+						<span class="ml-2 text-xs font-normal text-muted-foreground">
+							<T keyName="pricing.current_plan_badge" />
+						</span>
 					</CardTitle>
 
 					<span class="my-3 block text-2xl font-semibold">
@@ -151,11 +95,6 @@
 				<CardHeader>
 					<CardTitle class="font-medium">
 						<T keyName="pricing.tiers.pro.name" />
-						{#if isPro}
-							<span class="ml-2 text-xs font-normal text-muted-foreground">
-								<T keyName="pricing.current_plan_badge" />
-							</span>
-						{/if}
 					</CardTitle>
 
 					<span class="my-3 block text-2xl font-semibold">
@@ -166,32 +105,10 @@
 						<T keyName="pricing.tiers.pro.description" />
 					</CardDescription>
 
-					{#if isPro}
-						<Button
-							variant="outline"
-							class="mt-4 w-full"
-							onclick={() => portalOperation.execute({})}
-							disabled={portalOperation.isLoading}
-						>
-							{#if portalOperation.isLoading}
-								<T keyName="pricing.buttons.loading" />
-							{:else}
-								<T keyName="pricing.tiers.pro.button_manage" />
-							{/if}
-						</Button>
-					{:else}
-						<Button
-							class="mt-4 w-full"
-							onclick={() => handleCheckout('pro')}
-							disabled={upgradeOperation.isLoading}
-						>
-							{#if upgradeOperation.isLoading}
-								<T keyName="pricing.tiers.pro.button_loading" />
-							{:else}
-								<T keyName="pricing.tiers.pro.button" />
-							{/if}
-						</Button>
-					{/if}
+					<!-- TODO: Enable when Polar billing is configured -->
+					<Button class="mt-4 w-full" disabled>
+						Coming soon
+					</Button>
 				</CardHeader>
 
 				<CardContent class="space-y-4 pb-6">
