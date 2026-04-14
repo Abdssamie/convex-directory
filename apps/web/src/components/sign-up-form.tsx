@@ -1,17 +1,21 @@
 import { Button } from "@convex-zen/ui/components/button";
 import { Input } from "@convex-zen/ui/components/input";
 import { Label } from "@convex-zen/ui/components/label";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useForm } from "@tanstack/react-form";
-import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import z from "zod";
 
 import { authClient } from "@/lib/auth-client";
 
-export default function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () => void }) {
-  const navigate = useNavigate({
-    from: "/",
-  });
+export default function SignUpForm({
+  onSwitchToSignIn,
+  redirectTo = "/dashboard",
+}: {
+  onSwitchToSignIn?: () => void;
+  redirectTo?: string;
+}) {
+  const navigate = useNavigate();
 
   const form = useForm({
     defaultValues: {
@@ -29,9 +33,13 @@ export default function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () 
         {
           onSuccess: () => {
             navigate({
-              to: "/dashboard",
+              to: "/verify-email",
+              search: {
+                email: value.email,
+                redirectTo,
+              },
             });
-            toast.success("Sign up successful");
+            toast.success("Sign up successful. Check your email to verify your account.");
           },
           onError: (error) => {
             toast.error(error.error.message || error.error.statusText);
@@ -139,14 +147,16 @@ export default function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () 
         </form.Subscribe>
       </form>
 
-      <div className="mt-4 text-center">
-        <Button
-          variant="link"
-          onClick={onSwitchToSignIn}
-          className="text-indigo-600 hover:text-indigo-800"
-        >
-          Already have an account? Sign In
-        </Button>
+      <div className="mt-4 text-center text-sm">
+        {onSwitchToSignIn ? (
+          <Button variant="link" onClick={onSwitchToSignIn} className="text-primary">
+            Already have an account? Sign In
+          </Button>
+        ) : (
+          <Link to="/sign-in" className="text-primary underline-offset-4 hover:underline">
+            Already have an account? Sign In
+          </Link>
+        )}
       </div>
     </div>
   );

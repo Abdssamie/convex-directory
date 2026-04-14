@@ -1,0 +1,119 @@
+import { api } from "@convex-zen/backend/convex/_generated/api";
+import { Button } from "@convex-zen/ui/components/button";
+import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useQuery } from "convex/react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+
+import AuthLayout from "@/components/auth-layout";
+import { authClient } from "@/lib/auth-client";
+
+export const Route = createFileRoute("/verify-email")({
+  validateSearch: (
+    search: Record<string, unknown>,
+  ): { token?: string; email?: string; redirectTo?: string } => ({
+    token: typeof search.token === "string" ? search.token : undefined,
+    email: typeof search.email === "string" ? search.email : undefined,
+    redirectTo: typeof search.redirectTo === "string" ? search.redirectTo : undefined,
+  }),
+  component: RouteComponent,
+});
+
+function RouteComponent() {
+  const navigate = useNavigate();
+  const user = useQuery(api.auth.getCurrentUser);
+  const { token, email, redirectTo } = Route.useSearch();
+  const safeRedirectTo = redirectTo ?? "/dashboard";
+  const [status, setStatus] = useState<"idle" | "verifying" | "verified" | "failed">(
+    token ? "verifying" : "idle",
+  );
+
+  useEffect(() => {
+    if (!token) {
+      return;
+    }
+
+    let cancelled = false;
+
+    void authClient.verifyEmail(
+      {
+        query: {
+          token,
+          callbackURL: safeRedirectTo,
+        },
+      },
+      {
+        onSuccess: () => {
+          if (cancelled) {
+            return;
+          }
+          setStatus("verified");
+          toast.success("Email verified");
+          navigate({ to: safeRedirectTo });
+        },
+        onError: (error) => {
+          if (cancelled) {
+            return;
+          }
+          setStatus("failed");
+          toast.error(error.error.message || error.error.statusText);
+        },
+      },
+    );
+
+    return () => {
+      cancelled = true;
+    };
+  }, [navigate, safeRedirectTo, token]);
+
+  const resendEmail = user?.email ?? email;
+
+  return (
+    <AuthLayout
+      title="Verify email"
+      description="Finish setup by confirming the email address on your account."
+    >
+      <div className="space-y-4 text-sm text-muted-foreground">
+        {status === "verifying" ? <p>Verifying your email...</p> : null}
+        {status === "failed" ? (
+          <p>This verification link failed. You can request another email below.</p>
+        ) : null}
+        {status === "idle" ? (
+          <p>
+            We sent a verification link to{" "}
+            <span className="text-foreground">{resendEmail ?? "your email"}</span>.
+          </p>
+        ) : null}
+        {status === "verified" ? <p>Email verified. Redirecting...</p> : null}
+
+        {resendEmail ? (
+          <Button
+            variant="outline"
+            onClick={() => {
+              authClient.sendVerificationEmail(
+                {
+                  email: resendEmail,
+                  callbackURL: safeRedirectTo,
+                },
+                {
+                  onSuccess: () => {
+                    toast.success("Verification email sent");
+                  },
+                  onError: (error) => {
+                    toast.error(error.error.message || error.error.statusText);
+                  },
+                },
+              );
+            }}
+          >
+            Resend verification email
+          </Button>
+        ) : (
+          <Link to="/sign-in" className="text-primary underline-offset-4 hover:underline">
+            Sign in to resend verification
+          </Link>
+        )}
+      </div>
+    </AuthLayout>
+  );
+}

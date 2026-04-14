@@ -1,17 +1,21 @@
 import { Button } from "@convex-zen/ui/components/button";
 import { Input } from "@convex-zen/ui/components/input";
 import { Label } from "@convex-zen/ui/components/label";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useForm } from "@tanstack/react-form";
-import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import z from "zod";
 
 import { authClient } from "@/lib/auth-client";
 
-export default function SignInForm({ onSwitchToSignUp }: { onSwitchToSignUp: () => void }) {
-  const navigate = useNavigate({
-    from: "/",
-  });
+export default function SignInForm({
+  onSwitchToSignUp,
+  redirectTo = "/dashboard",
+}: {
+  onSwitchToSignUp?: () => void;
+  redirectTo?: string;
+}) {
+  const navigate = useNavigate();
 
   const form = useForm({
     defaultValues: {
@@ -27,7 +31,7 @@ export default function SignInForm({ onSwitchToSignUp }: { onSwitchToSignUp: () 
         {
           onSuccess: () => {
             navigate({
-              to: "/dashboard",
+              to: redirectTo,
             });
             toast.success("Sign in successful");
           },
@@ -114,14 +118,24 @@ export default function SignInForm({ onSwitchToSignUp }: { onSwitchToSignUp: () 
         </form.Subscribe>
       </form>
 
-      <div className="mt-4 text-center">
-        <Button
-          variant="link"
-          onClick={onSwitchToSignUp}
-          className="text-indigo-600 hover:text-indigo-800"
-        >
-          Need an account? Sign Up
-        </Button>
+      <div className="mt-4 space-y-2 text-center text-sm">
+        <div className="flex items-center justify-center gap-4">
+          <Link to="/forgot-password" className="text-primary underline-offset-4 hover:underline">
+            Forgot password?
+          </Link>
+          <Link to="/magic-link" className="text-primary underline-offset-4 hover:underline">
+            Use magic link
+          </Link>
+        </div>
+        {onSwitchToSignUp ? (
+          <Button variant="link" onClick={onSwitchToSignUp} className="text-primary">
+            Need an account? Sign Up
+          </Button>
+        ) : (
+          <Link to="/sign-up" className="text-primary underline-offset-4 hover:underline">
+            Need an account? Sign Up
+          </Link>
+        )}
       </div>
     </div>
   );

@@ -12,27 +12,29 @@ vi.mock("./config", () => ({
   getBrevoConfig: () => mockConfig,
 }));
 
-describe("brevo sender", () => {
-  let originalFetch: typeof global.fetch;
+const mockSendTransacEmail = vi.fn();
 
+vi.mock("./brevo/client", () => ({
+  getBrevoClient: () => ({
+    transactionalEmails: {
+      sendTransacEmail: mockSendTransacEmail,
+    },
+  }),
+  getBrevoError: (_error: unknown, fallback: string) => ({ reason: fallback, status: undefined }),
+}));
+
+describe("brevo sender", () => {
   beforeEach(() => {
-    originalFetch = global.fetch;
-    global.fetch = vi.fn();
+    mockSendTransacEmail.mockReset();
   });
 
   afterEach(() => {
-    global.fetch = originalFetch;
     vi.resetAllMocks();
   });
 
   describe("sendBrevoTemplate", () => {
     it("sends email with correct payload", async () => {
-      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce(
-        new Response(JSON.stringify({ messageIds: ["msg-123"] }), {
-          status: 201,
-          headers: { "Content-Type": "application/json" },
-        }),
-      );
+      mockSendTransacEmail.mockResolvedValueOnce({ messageId: "msg-123" });
 
       const result = await sendBrevoTemplate({
         flow: "email_verification",
@@ -43,9 +45,7 @@ describe("brevo sender", () => {
       expect(result.ok).toBe(true);
       expect(result.value).toEqual({ messageIds: ["msg-123"] });
 
-      const fetchCall = (global.fetch as ReturnType<typeof vi.fn>).mock.calls[0];
-      const [, init] = fetchCall as [string, RequestInit];
-      const body = JSON.parse(init.body as string);
+      const [body] = mockSendTransacEmail.mock.calls[0] as [Record<string, unknown>];
 
       expect(body.sender).toEqual({ name: "Test Sender", email: "sender@example.com" });
       expect(body.replyTo).toEqual({ name: "Reply", email: "reply@example.com" });
@@ -56,12 +56,7 @@ describe("brevo sender", () => {
     });
 
     it("includes tags when provided", async () => {
-      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce(
-        new Response(JSON.stringify({ messageIds: ["msg-456"] }), {
-          status: 201,
-          headers: { "Content-Type": "application/json" },
-        }),
-      );
+      mockSendTransacEmail.mockResolvedValueOnce({ messageId: "msg-456" });
 
       const result = await sendBrevoTemplate({
         flow: "magic_link",
@@ -72,20 +67,13 @@ describe("brevo sender", () => {
 
       expect(result.ok).toBe(true);
 
-      const fetchCall = (global.fetch as ReturnType<typeof vi.fn>).mock.calls[0];
-      const [, init] = fetchCall as [string, RequestInit];
-      const body = JSON.parse(init.body as string);
+      const [body] = mockSendTransacEmail.mock.calls[0] as [Record<string, unknown>];
 
       expect(body.tags).toEqual(["auth", "magic-link"]);
     });
 
     it("sets X-Sib-Sandbox header when sandbox is true", async () => {
-      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce(
-        new Response(JSON.stringify({ messageIds: [] }), {
-          status: 201,
-          headers: { "Content-Type": "application/json" },
-        }),
-      );
+      mockSendTransacEmail.mockResolvedValueOnce({});
 
       await sendBrevoTemplate({
         flow: "welcome",
@@ -94,10 +82,12 @@ describe("brevo sender", () => {
         sandbox: true,
       });
 
-      const fetchCall = (global.fetch as ReturnType<typeof vi.fn>).mock.calls[0];
-      const [, init] = fetchCall as [string, RequestInit];
+      const [, requestOptions] = mockSendTransacEmail.mock.calls[0] as [
+        unknown,
+        Record<string, unknown>,
+      ];
 
-      expect(init.headers).toEqual(
+      expect(requestOptions.headers).toEqual(
         expect.objectContaining({
           "X-Sib-Sandbox": "drop",
         }),
@@ -105,12 +95,7 @@ describe("brevo sender", () => {
     });
 
     it("does not set X-Sib-Sandbox header when sandbox is false", async () => {
-      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce(
-        new Response(JSON.stringify({ messageIds: [] }), {
-          status: 201,
-          headers: { "Content-Type": "application/json" },
-        }),
-      );
+      mockSendTransacEmail.mockResolvedValueOnce({});
 
       await sendBrevoTemplate({
         flow: "welcome",
@@ -119,19 +104,16 @@ describe("brevo sender", () => {
         sandbox: false,
       });
 
-      const fetchCall = (global.fetch as ReturnType<typeof vi.fn>).mock.calls[0];
-      const [, init] = fetchCall as [string, RequestInit];
+      const [, requestOptions] = mockSendTransacEmail.mock.calls[0] as [
+        unknown,
+        Record<string, unknown>,
+      ];
 
-      expect(init.headers).not.toHaveProperty("X-Sib-Sandbox");
+      expect(requestOptions.headers).toBeUndefined();
     });
 
     it("returns error when API returns non-OK status", async () => {
-      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce(
-        new Response(JSON.stringify({ message: "Invalid API key" }), {
-          status: 401,
-          headers: { "Content-Type": "application/json" },
-        }),
-      );
+      mockSendTransacEmail.mockRejectedValueOnce(new Error("Invalid API key"));
 
       const result = await sendBrevoTemplate({
         flow: "email_verification",
@@ -143,13 +125,12 @@ describe("brevo sender", () => {
       if (!result.ok) {
         const error = result.error as { code: string; status?: number; flow: string };
         expect(error.code).toBe("email_send_failed");
-        expect(error.status).toBe(401);
         expect(error.flow).toBe("email_verification");
       }
     });
 
     it("returns error when network fails", async () => {
-      (global.fetch as ReturnType<typeof vi.fn>).mockRejectedValueOnce(new Error("Network error"));
+      mockSendTransacEmail.mockRejectedValueOnce(new Error("Network error"));
 
       const result = await sendBrevoTemplate({
         flow: "email_verification",
@@ -166,14 +147,6 @@ describe("brevo sender", () => {
     });
 
     it("sends all email flows correctly", async () => {
-      const createResponse = () =>
-        new Response(JSON.stringify({ messageIds: ["msg-1"] }), {
-          status: 201,
-          headers: { "Content-Type": "application/json" },
-        });
-
-      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue(createResponse());
-
       const flows = [
         { flow: "email_verification", params: { verificationUrl: "https://example.com/verify" } },
         { flow: "password_reset", params: { resetUrl: "https://example.com/reset" } },
@@ -186,7 +159,7 @@ describe("brevo sender", () => {
       ] as const;
 
       for (const { flow, params } of flows) {
-        (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue(createResponse());
+        mockSendTransacEmail.mockResolvedValue({ messageId: "msg-1" });
         const result = await sendBrevoTemplate({
           flow,
           to: { email: "test@example.com" },
