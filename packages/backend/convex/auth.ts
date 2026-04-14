@@ -45,17 +45,11 @@ function createAuth(ctx: GenericCtx<DataModel>) {
           url,
         });
       },
-    },
-    databaseHooks: {
-      user: {
-        create: {
-          after: async (user: User) => {
-            await sendWelcomeEmail({
-              email: user.email,
-              name: user.name,
-            });
-          },
-        },
+      afterEmailVerification: async (user: User) => {
+        await sendWelcomeEmail({
+          email: user.email,
+          name: user.name,
+        });
       },
     },
     plugins: [

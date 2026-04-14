@@ -59,7 +59,8 @@ export const sendInvitationEmail = async (params: {
 };
 
 export const sendWelcomeEmail = async (params: { email: string; name?: string | null }) => {
-  const appUrl = process.env.APP_URL || "";
+  const siteUrl = process.env.SITE_URL ?? process.env.APP_URL ?? "";
+  const appUrl = siteUrl ? new URL("/dashboard", siteUrl).toString() : "";
   await sendBetterAuthEmail(
     "welcome",
     { email: params.email, appUrl, userName: params.name ?? "" },
