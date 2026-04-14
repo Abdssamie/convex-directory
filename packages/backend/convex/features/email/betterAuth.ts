@@ -32,12 +32,12 @@ export const sendVerificationEmail = async (params: {
   name?: string | null;
   url: string;
 }) => {
+  const { appName } = getBrevoConfig();
   await sendBetterAuthEmail("email_verification", {
     to: { email: params.email, name: params.name ?? undefined },
     params: {
       verificationUrl: params.url,
-      email: params.email,
-      name: params.name ?? "",
+      appName,
     },
     tags: ["better-auth", "email-verification"],
   });
@@ -48,23 +48,24 @@ export const sendPasswordResetEmail = async (params: {
   name?: string | null;
   url: string;
 }) => {
+  const { appName } = getBrevoConfig();
   await sendBetterAuthEmail("password_reset", {
     to: { email: params.email, name: params.name ?? undefined },
     params: {
       resetUrl: params.url,
-      email: params.email,
-      name: params.name ?? "",
+      appName,
     },
     tags: ["better-auth", "password-reset"],
   });
 };
 
 export const sendMagicLinkEmail = async (params: { email: string; url: string }) => {
+  const { appName } = getBrevoConfig();
   await sendBetterAuthEmail("magic_link", {
     to: { email: params.email },
     params: {
       magicLink: params.url,
-      email: params.email,
+      appName,
     },
     tags: ["better-auth", "magic-link"],
   });
@@ -91,10 +92,12 @@ export const sendInvitationEmail = async (params: {
 
 export const sendWelcomeEmail = async (params: { email: string; name?: string | null }) => {
   const { appName } = getBrevoConfig();
+  const appUrl = process.env.APP_URL || "https://app.example.com";
   await sendBetterAuthEmail("welcome", {
     to: { email: params.email, name: params.name ?? undefined },
     params: {
       appName,
+      appUrl,
       userName: params.name ?? "",
     },
     tags: ["better-auth", "welcome"],

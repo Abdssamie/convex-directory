@@ -17,7 +17,10 @@
     "destroy": "pnpm --filter @convex-zen/infra destroy",
     "check": "oxlint && oxfmt --write",
     "prepare": "husky",
-    "convex-env-sync": "cd packages/backend && npx convex env set --from-file .env.convex"
+    "convex-env-sync": "cd packages/backend && npx convex env set --from-file .env.convex",
+    "brevo": "pnpm --filter @convex-zen/backend brevo",
+    "brevo:list": "pnpm brevo list",
+    "brevo:sync": "pnpm brevo sync"
   },
   "dependencies": {
     "@convex-zen/env": "workspace:*",

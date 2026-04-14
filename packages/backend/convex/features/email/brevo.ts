@@ -1,54 +1,19 @@
 import { type BrevoConfig, type EmailFlow, type EmailSendError, getBrevoConfig } from "./config";
-import { getTemplateIdByFlow } from "./brevo/templates";
+import { renderEmailHtml } from "./templates";
 import { type Result, ok, err } from "../../shared/result";
-
-type BrevoEmailPayload = {
-  sender: { name: string; email: string };
-  replyTo?: { name?: string; email: string };
-  templateId: number;
-  params?: Record<string, string>;
-  tags?: string[];
-  messageVersions: {
-    to: { email: string; name?: string }[];
-    params?: Record<string, string>;
-  }[];
-};
 
 type BrevoResponseSuccess = {
   messageIds: string[];
 };
 
-type BrevoResponseBody = { message?: string; messageIds?: string[] };
-
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === "object" && value !== null;
-
-const parseBrevoResponseBody = (value: unknown): BrevoResponseBody | null => {
-  if (!isRecord(value)) return null;
-  const message = typeof value.message === "string" ? value.message : undefined;
-  const messageIds = Array.isArray(value.messageIds)
-    ? value.messageIds.filter((item): item is string => typeof item === "string")
-    : undefined;
-  return { message, messageIds };
-};
-
-const parseBrevoJson = async (response: Response): Promise<BrevoResponseBody | null> => {
-  try {
-    return parseBrevoResponseBody(await response.json());
-  } catch {
-    return null;
-  }
-};
-
 const createBrevoRequest = async (
   config: BrevoConfig,
-  payload: BrevoEmailPayload,
+  payload: object,
   sandbox?: boolean,
-  maxRetries = 3,
-): Promise<Response> => {
+): Promise<Response | undefined> => {
   let lastError: unknown;
 
-  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+  for (let attempt = 0; attempt < 3; attempt++) {
     try {
       const headers: Record<string, string> = {
         "api-key": config.apiKey,
@@ -66,91 +31,59 @@ const createBrevoRequest = async (
         body: JSON.stringify(payload),
       });
 
-      if (response.ok || (response.status >= 400 && response.status < 500)) {
-        return response;
-      }
-
-      throw new Error(`Server error: ${response.status}`);
+      return response;
     } catch (error) {
       lastError = error;
-      if (attempt === maxRetries) break;
-
-      const delay = Math.pow(2, attempt) * 1000;
-      await new Promise((resolve) => setTimeout(resolve, delay));
+      await new Promise((r) => setTimeout(r, Math.pow(2, attempt) * 1000));
     }
   }
 
-  throw lastError;
+  console.error("Brevo email send error:", lastError);
+  return undefined;
 };
 
 export const sendBrevoTemplate = async (params: {
   flow: EmailFlow;
   to: { email: string; name?: string };
-  templateId?: number;
   params?: Record<string, string>;
   tags?: string[];
   sandbox?: boolean;
 }): Promise<Result<BrevoResponseSuccess, EmailSendError>> => {
   const config = getBrevoConfig();
+  const { flow, to, params: emailParams, tags, sandbox } = params;
 
-  let templateId = params.templateId;
+  const { subject, htmlContent } = renderEmailHtml(flow, emailParams ?? {}, config.appName);
 
-  if (!templateId) {
-    const templateResult = await getTemplateIdByFlow(params.flow);
-    if (!templateResult.ok) {
-      return err({
-        code: "template_not_found",
-        flow: params.flow,
-        templateName: params.flow,
-      });
-    }
-    templateId = templateResult.value;
-  }
-
-  const payload: BrevoEmailPayload = {
+  const payload = {
     sender: config.sender,
     replyTo: config.replyTo,
-    templateId,
-    params: params.params,
-    tags: params.tags,
-    messageVersions: [
-      {
-        to: [params.to],
-        params: params.params,
-      },
-    ],
+    to: [to],
+    subject,
+    htmlContent,
+    tags,
   };
 
-  const errorBody = (status?: number, reason?: string): EmailSendError => ({
-    code: "email_send_failed",
-    flow: params.flow,
-    status,
-    reason,
-    templateId,
-  });
-
   try {
-    const response = await createBrevoRequest(config, payload, params.sandbox);
+    const response = await createBrevoRequest(config, payload, sandbox);
 
-    const body = await parseBrevoJson(response);
-
-    if (response.ok) {
-      const messageIds =
-        body && typeof body === "object" && "messageIds" in body ? (body.messageIds ?? []) : [];
-      return ok({ messageIds });
+    if (!response) {
+      return err({ code: "email_send_failed", flow, reason: "network_error" });
     }
 
-    const reason =
-      body && typeof body === "object" && "message" in body
-        ? String(body.message)
-        : response.statusText;
+    if (!response.ok) {
+      const errorData = (await response.json().catch(() => ({}))) as { message?: string };
+      return err({
+        code: "email_send_failed",
+        flow,
+        status: response.status,
+        reason: errorData.message ?? response.statusText,
+      });
+    }
 
-    return err(errorBody(response.status, reason));
+    const data = (await response.json()) as { messageIds: string[] };
+    return ok({ messageIds: data.messageIds ?? [] });
   } catch (error) {
-    if (error && typeof error === "object" && "code" in error) {
-      return err(error as EmailSendError);
-    }
     console.error("Brevo email send error:", error);
-    return err(errorBody(undefined, "network_error"));
+    return err({ code: "email_send_failed", flow, reason: "network_error" });
   }
 };
