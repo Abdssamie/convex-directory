@@ -13,6 +13,18 @@ const escapeHtml = (str: string): string =>
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
 
+const safeUrl = (url: string): string => {
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+      return "";
+    }
+    return url;
+  } catch {
+    return "";
+  }
+};
+
 const wrapHtml = (appName: string, subject: string, body: string): string => `<!DOCTYPE html>
 <html>
 <head>
@@ -68,7 +80,7 @@ const templates: Record<EmailFlow, EmailTemplateConfig> = {
         Click the button below to verify your email address.
       </p>
       <p style="margin: 0 0 32px 0;">
-        <a href="${escapeHtml(p.verificationUrl)}" style="${BUTTON_STYLE}">Verify Email</a>
+        <a href="${safeUrl(p.verificationUrl)}" style="${BUTTON_STYLE}">Verify Email</a>
       </p>
       <p style="margin: 0; font-size: 14px; color: #888888;">
         If you didn't request this, you can safely ignore this email.
@@ -89,7 +101,7 @@ const templates: Record<EmailFlow, EmailTemplateConfig> = {
         Click the button below to reset your password. This link will expire in 1 hour.
       </p>
       <p style="margin: 0 0 32px 0;">
-        <a href="${escapeHtml(p.resetUrl)}" style="${BUTTON_STYLE}">Reset Password</a>
+        <a href="${safeUrl(p.resetUrl)}" style="${BUTTON_STYLE}">Reset Password</a>
       </p>
       <p style="margin: 0; font-size: 14px; color: #888888;">
         If you didn't request this, you can safely ignore this email.
@@ -110,7 +122,7 @@ const templates: Record<EmailFlow, EmailTemplateConfig> = {
         Click the button below to sign in to your account.
       </p>
       <p style="margin: 0 0 32px 0;">
-        <a href="${escapeHtml(p.magicLink)}" style="${BUTTON_STYLE}">Sign In</a>
+        <a href="${safeUrl(p.magicLink)}" style="${BUTTON_STYLE}">Sign In</a>
       </p>
       <p style="margin: 0; font-size: 14px; color: #888888;">
         This link will expire in 10 minutes.
@@ -131,7 +143,7 @@ const templates: Record<EmailFlow, EmailTemplateConfig> = {
         ${escapeHtml(p.inviterName || "Someone")} has invited you to join their workspace.
       </p>
       <p style="margin: 0 0 32px 0;">
-        <a href="${escapeHtml(p.inviteUrl)}" style="${BUTTON_STYLE}">Accept Invitation</a>
+        <a href="${safeUrl(p.inviteUrl)}" style="${BUTTON_STYLE}">Accept Invitation</a>
       </p>
       <p style="margin: 0; font-size: 14px; color: #888888;">
         If you don't have an account, you'll be asked to create one.
@@ -152,7 +164,7 @@ const templates: Record<EmailFlow, EmailTemplateConfig> = {
         Thanks for signing up. You're now ready to get started.
       </p>
       <p style="margin: 0 0 32px 0;">
-        <a href="${escapeHtml(p.appUrl || "")}" style="${BUTTON_STYLE}">Get Started</a>
+        <a href="${safeUrl(p.appUrl || "")}" style="${BUTTON_STYLE}">Get Started</a>
       </p>
       <p style="margin: 0; font-size: 14px; color: #888888;">
         If you have any questions, just reply to this email.

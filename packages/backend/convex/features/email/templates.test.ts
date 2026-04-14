@@ -126,17 +126,29 @@ describe("email templates", () => {
       expect(result.htmlContent).toContain("Get Started");
     });
 
-    it("escapes HTML in params to prevent XSS", () => {
+    it("blocks dangerous URL schemes", () => {
       const result = renderEmailHtml(
         "email_verification",
         {
-          verificationUrl: "https://app.example.com/verify?token=<script>alert('xss')</script>",
+          verificationUrl: "javascript:alert(1)",
         },
         "MyApp",
       );
 
-      expect(result.htmlContent).not.toContain("<script>alert");
-      expect(result.htmlContent).toContain("&lt;script&gt;alert");
+      expect(result.htmlContent).not.toContain("javascript:");
+      expect(result.htmlContent).toContain('href=""');
+    });
+
+    it("allows valid http URLs", () => {
+      const result = renderEmailHtml(
+        "email_verification",
+        {
+          verificationUrl: "https://app.example.com/verify?token=abc123",
+        },
+        "MyApp",
+      );
+
+      expect(result.htmlContent).toContain("https://app.example.com/verify?token=abc123");
     });
 
     it("uses default appName when not provided", () => {

@@ -1,30 +1,12 @@
 import type { EmailFlow } from "./config";
 import { sendEmail } from "./index";
-import { logger } from "../../lib/logger";
-import { getBrevoConfig } from "./config";
 
-type BetterAuthEmailPayload = {
-  to: { email: string; name?: string };
-  params: Record<string, string>;
-  tags?: string[];
-};
-
-const sendBetterAuthEmail = async (flow: EmailFlow, payload: BetterAuthEmailPayload) => {
-  try {
-    await sendEmail({
-      flow,
-      to: payload.to,
-      params: payload.params,
-      tags: payload.tags,
-    });
-  } catch (error) {
-    if (error && typeof error === "object") {
-      logger.warn("brevo_email_failed", error as Record<string, unknown>);
-      return;
-    }
-
-    logger.warn("brevo_email_failed", undefined);
-  }
+const sendBetterAuthEmail = async (
+  flow: EmailFlow,
+  params: Record<string, string>,
+  tags: string[],
+) => {
+  await sendEmail({ flow, to: { email: params.email }, params, tags });
 };
 
 export const sendVerificationEmail = async (params: {
@@ -32,15 +14,11 @@ export const sendVerificationEmail = async (params: {
   name?: string | null;
   url: string;
 }) => {
-  const { appName } = getBrevoConfig();
-  await sendBetterAuthEmail("email_verification", {
-    to: { email: params.email, name: params.name ?? undefined },
-    params: {
-      verificationUrl: params.url,
-      appName,
-    },
-    tags: ["better-auth", "email-verification"],
-  });
+  await sendBetterAuthEmail(
+    "email_verification",
+    { email: params.email, verificationUrl: params.url, name: params.name ?? "" },
+    ["better-auth", "email-verification"],
+  );
 };
 
 export const sendPasswordResetEmail = async (params: {
@@ -48,58 +26,43 @@ export const sendPasswordResetEmail = async (params: {
   name?: string | null;
   url: string;
 }) => {
-  const { appName } = getBrevoConfig();
-  await sendBetterAuthEmail("password_reset", {
-    to: { email: params.email, name: params.name ?? undefined },
-    params: {
-      resetUrl: params.url,
-      appName,
-    },
-    tags: ["better-auth", "password-reset"],
-  });
+  await sendBetterAuthEmail(
+    "password_reset",
+    { email: params.email, resetUrl: params.url, name: params.name ?? "" },
+    ["better-auth", "password-reset"],
+  );
 };
 
 export const sendMagicLinkEmail = async (params: { email: string; url: string }) => {
-  const { appName } = getBrevoConfig();
-  await sendBetterAuthEmail("magic_link", {
-    to: { email: params.email },
-    params: {
-      magicLink: params.url,
-      appName,
-    },
-    tags: ["better-auth", "magic-link"],
-  });
+  await sendBetterAuthEmail("magic_link", { email: params.email, magicLink: params.url }, [
+    "better-auth",
+    "magic-link",
+  ]);
 };
 
 export const sendInvitationEmail = async (params: {
   email: string;
-  invitedByEmail?: string | null;
   invitedByName?: string | null;
   organizationName?: string | null;
   inviteLink: string;
 }) => {
-  const { appName } = getBrevoConfig();
-  await sendBetterAuthEmail("invitation", {
-    to: { email: params.email },
-    params: {
+  await sendBetterAuthEmail(
+    "invitation",
+    {
+      email: params.email,
       inviteUrl: params.inviteLink,
       inviterName: params.invitedByName ?? "",
-      appName: params.organizationName ?? appName,
+      appName: params.organizationName ?? "",
     },
-    tags: ["better-auth", "invitation"],
-  });
+    ["better-auth", "invitation"],
+  );
 };
 
 export const sendWelcomeEmail = async (params: { email: string; name?: string | null }) => {
-  const { appName } = getBrevoConfig();
-  const appUrl = process.env.APP_URL || "https://app.example.com";
-  await sendBetterAuthEmail("welcome", {
-    to: { email: params.email, name: params.name ?? undefined },
-    params: {
-      appName,
-      appUrl,
-      userName: params.name ?? "",
-    },
-    tags: ["better-auth", "welcome"],
-  });
+  const appUrl = process.env.APP_URL || "";
+  await sendBetterAuthEmail(
+    "welcome",
+    { email: params.email, appUrl, userName: params.name ?? "" },
+    ["better-auth", "welcome"],
+  );
 };

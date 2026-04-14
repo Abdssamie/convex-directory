@@ -5,19 +5,12 @@ export type EmailFlow =
   | "invitation"
   | "welcome";
 
-export type EmailConfigError =
-  | { code: "missing_env"; field: string; value: string }
-  | { code: "template_not_found"; flow: EmailFlow; templateName: string };
-
-export type EmailSendError =
-  | (EmailConfigError & { flow: EmailFlow })
-  | {
-      code: "email_send_failed";
-      flow: EmailFlow;
-      reason?: string;
-      status?: number;
-      templateId?: number;
-    };
+export type EmailSendError = {
+  code: "email_send_failed";
+  flow: EmailFlow;
+  reason?: string;
+  status?: number;
+};
 
 export type BrevoConfig = {
   apiKey: string;
@@ -26,44 +19,24 @@ export type BrevoConfig = {
   appName: string;
 };
 
-const requiredEnv = (field: string): string => {
-  const value = process.env[field];
-  if (!value) {
-    throw { code: "missing_env", field, value: "" } as EmailConfigError;
-  }
-  return value;
-};
-
 export const getBrevoConfig = (): BrevoConfig => {
-  const apiKey = requiredEnv("BREVO_API_KEY");
-  const senderName = requiredEnv("BREVO_SENDER_NAME");
-  const senderEmail = requiredEnv("BREVO_SENDER_EMAIL");
-  const appName = requiredEnv("BREVO_APP_NAME");
+  const apiKey = process.env.BREVO_API_KEY;
+  const senderName = process.env.BREVO_SENDER_NAME;
+  const senderEmail = process.env.BREVO_SENDER_EMAIL;
+  const appName = process.env.BREVO_APP_NAME;
 
-  const replyToEmail = process.env.BREVO_REPLY_TO_EMAIL;
-  const replyToName = process.env.BREVO_REPLY_TO_NAME;
-  const replyTo = replyToEmail
-    ? {
-        email: replyToEmail,
-        name: replyToName,
-      }
-    : undefined;
+  if (!apiKey || !senderName || !senderEmail || !appName) {
+    throw new Error(
+      "Missing required Brevo env vars: BREVO_API_KEY, BREVO_SENDER_NAME, BREVO_SENDER_EMAIL, BREVO_APP_NAME",
+    );
+  }
 
   return {
     apiKey,
-    sender: {
-      name: senderName,
-      email: senderEmail,
-    },
-    replyTo,
+    sender: { name: senderName, email: senderEmail },
+    replyTo: process.env.BREVO_REPLY_TO_EMAIL
+      ? { email: process.env.BREVO_REPLY_TO_EMAIL, name: process.env.BREVO_REPLY_TO_NAME }
+      : undefined,
     appName,
   };
-};
-
-export const getEmailProvider = (): "brevo" => {
-  return "brevo";
-};
-
-export const getTemplateName = (flow: EmailFlow): string => {
-  return flow;
 };
