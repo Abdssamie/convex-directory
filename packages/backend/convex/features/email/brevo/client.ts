@@ -1,8 +1,13 @@
 import { BrevoClient, BrevoError } from "@getbrevo/brevo";
+import { z } from "zod";
 
 import { type BrevoConfig, getBrevoConfig } from "../config";
 
 let cachedClient: { apiKey: string; client: BrevoClient } | null = null;
+
+const brevoErrorBodySchema = z.object({
+  message: z.string(),
+});
 
 export const getBrevoClient = (config: BrevoConfig = getBrevoConfig()) => {
   if (cachedClient?.apiKey === config.apiKey) {
@@ -24,11 +29,7 @@ export const getBrevoError = (error: unknown, fallback: string) => {
     return { reason: fallback, status: undefined };
   }
 
-  const body = error.body;
-  const message =
-    body && typeof body === "object" && "message" in body && typeof body.message === "string"
-      ? body.message
-      : error.message;
+  const message = brevoErrorBodySchema.safeParse(error.body).data?.message ?? error.message;
 
   return {
     reason: message || fallback,

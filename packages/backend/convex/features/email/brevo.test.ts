@@ -26,6 +26,7 @@ vi.mock("./brevo/client", () => ({
 describe("brevo sender", () => {
   beforeEach(() => {
     mockSendTransacEmail.mockReset();
+    vi.spyOn(console, "error").mockImplementation(() => undefined);
   });
 
   afterEach(() => {
