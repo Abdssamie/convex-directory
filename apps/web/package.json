@@ -9,10 +9,12 @@
   },
   "dependencies": {
     "@convex-dev/better-auth": "catalog:",
+    "@convex-dev/polar": "^0.9.0",
     "@convex-dev/react-query": "^0.1.0",
     "@convex-zen/backend": "workspace:*",
     "@convex-zen/env": "workspace:*",
     "@convex-zen/ui": "workspace:*",
+    "@polar-sh/checkout": "^0.2.0",
     "@tailwindcss/vite": "^4.1.18",
     "@tanstack/react-form": "^1.28.0",
     "@tanstack/react-query": "^5.80.6",

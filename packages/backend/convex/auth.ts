@@ -76,7 +76,6 @@ function createAuth(ctx: GenericCtx<DataModel>) {
 
           await sendInvitationEmail({
             email: data.email,
-            invitedByEmail: data.inviter?.user?.email ?? null,
             invitedByName: data.inviter?.user?.name ?? null,
             organizationName: data.organization?.name ?? null,
             inviteLink,

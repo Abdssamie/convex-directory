@@ -5,6 +5,7 @@ import { useState } from "react";
 
 import SignInForm from "@/components/sign-in-form";
 import SignUpForm from "@/components/sign-up-form";
+import Billing from "@/components/billing";
 import UserMenu from "@/components/user-menu";
 
 export const Route = createFileRoute("/dashboard")({
@@ -18,10 +19,11 @@ function RouteComponent() {
   return (
     <>
       <Authenticated>
-        <div>
+        <div className="container mx-auto grid max-w-4xl gap-6 px-4 py-6">
           <h1>Dashboard</h1>
           <p>privateData: {privateData?.message}</p>
           <UserMenu />
+          <Billing />
         </div>
       </Authenticated>
       <Unauthenticated>
