@@ -12,8 +12,9 @@ This project was created with [Better-T-Stack](https://github.com/AmanVarshney01
 - **Authentication** - Better-Auth
 - **Husky** - Git hooks for code quality
 - **Oxlint** - Oxlint + Oxfmt (linting & formatting)
+- **Unhead** - SEO meta tags, Open Graph, and Schema.org structured data
 
-## Getting Started
+## SEO Setup
 
 First, install the dependencies:
 
@@ -79,7 +80,7 @@ For more details, see the guide on [Deploying to Cloudflare with Alchemy](https:
 ## Git Hooks and Formatting
 
 - Initialize hooks: `pnpm run prepare`
-- Format and lint fix: `pnpm run check`
+- Format and lint fix: `pnpm run lint`
 
 ## Project Structure
 
@@ -98,5 +99,5 @@ convex-zen/
 - `pnpm run build`: Build all applications
 - `pnpm run dev:web`: Start only the web application
 - `pnpm run dev:setup`: Setup and configure your Convex project
-- `pnpm run check-types`: Check TypeScript types across all apps
-- `pnpm run check`: Run Oxlint and Oxfmt
+- `pnpm run typecheck`: Check TypeScript types across all apps
+- `pnpm run lint`: Run Oxlint and Oxfmt

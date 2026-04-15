@@ -15,6 +15,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { authClient } from "@/lib/auth-client";
 import { getToken } from "@/lib/auth-server";
 import { ThemeProvider } from "@/components/theme-provider";
+import { HeadProvider } from "@/lib/head-provider";
 
 import appCss from "../index.css?url";
 
@@ -72,17 +73,19 @@ function RootDocument() {
       initialToken={context.token}
     >
       <ThemeProvider>
-        <html lang="en" suppressHydrationWarning>
-          <head>
-            <HeadContent />
-          </head>
-          <body>
-            <Outlet />
-            <Toaster richColors />
-            <TanStackRouterDevtools position="bottom-left" />
-            <Scripts />
-          </body>
-        </html>
+        <HeadProvider>
+          <html lang="en" suppressHydrationWarning>
+            <head>
+              <HeadContent />
+            </head>
+            <body>
+              <Outlet />
+              <Toaster richColors />
+              <TanStackRouterDevtools position="bottom-left" />
+              <Scripts />
+            </body>
+          </html>
+        </HeadProvider>
       </ThemeProvider>
     </ConvexBetterAuthProvider>
   );

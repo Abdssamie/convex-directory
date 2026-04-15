@@ -2,6 +2,9 @@ packages:
   - apps/*
   - packages/*
 catalog:
+  unhead: ^3.0.3
+  "@unhead/react": ^3.0.3
+  "@unhead/schema-org": ^3.0.3
   dotenv: ^17.2.2
   zod: ^4.1.13
   lucide-react: ^0.546.0
