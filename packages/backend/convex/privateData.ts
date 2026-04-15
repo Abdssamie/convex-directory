@@ -1,17 +1,13 @@
 import { query } from "./_generated/server";
-import { authComponent } from "./auth";
+import { requireActiveOrg } from "./lib/org";
 
 export const get = query({
   args: {},
   handler: async (ctx) => {
-    const authUser = await authComponent.safeGetAuthUser(ctx);
-    if (!authUser) {
-      return {
-        message: "Not authenticated",
-      };
-    }
+    const { orgId, userId } = await requireActiveOrg(ctx);
+
     return {
-      message: "This is private",
+      message: `This is private data for user ${userId} in organization ${orgId}`,
     };
   },
 });
