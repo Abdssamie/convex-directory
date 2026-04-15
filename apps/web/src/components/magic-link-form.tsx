@@ -9,6 +9,14 @@ import z from "zod";
 
 import { authClient } from "@/lib/auth-client";
 
+function getDashboardCallbackUrl() {
+  if (typeof window === "undefined") {
+    return "/dashboard";
+  }
+
+  return new URL("/dashboard", window.location.origin).toString();
+}
+
 export default function MagicLinkForm() {
   const [submittedEmail, setSubmittedEmail] = useState<string | null>(null);
 
@@ -20,7 +28,7 @@ export default function MagicLinkForm() {
       await authClient.signIn.magicLink(
         {
           email: value.email,
-          callbackURL: "/dashboard",
+          callbackURL: getDashboardCallbackUrl(),
         },
         {
           onSuccess: () => {

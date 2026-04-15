@@ -8,6 +8,14 @@ import z from "zod";
 
 import { authClient } from "@/lib/auth-client";
 
+function getCallbackUrl(redirectTo: string) {
+  if (typeof window === "undefined") {
+    return redirectTo;
+  }
+
+  return new URL(redirectTo, window.location.origin).toString();
+}
+
 export default function SignUpForm({
   onSwitchToSignIn,
   redirectTo = "/dashboard",
@@ -29,6 +37,7 @@ export default function SignUpForm({
           email: value.email,
           password: value.password,
           name: value.name,
+          callbackURL: getCallbackUrl(redirectTo),
         },
         {
           onSuccess: () => {

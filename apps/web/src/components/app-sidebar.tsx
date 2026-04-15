@@ -1,7 +1,15 @@
 "use client";
 
 import * as React from "react";
-import { LayoutDashboard, House, LogIn, UserPlus, KeyRound } from "lucide-react";
+import {
+  LayoutDashboard,
+  House,
+  LogIn,
+  UserPlus,
+  KeyRound,
+  Settings,
+  CreditCard,
+} from "lucide-react";
 import { api } from "@convex-zen/backend/convex/_generated/api";
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
@@ -54,6 +62,21 @@ const data = {
           title: "Forgot Password",
           url: "/forgot-password",
           icon: KeyRound,
+        },
+      ],
+    },
+    {
+      label: "Settings",
+      items: [
+        {
+          title: "Account",
+          url: "/settings/account",
+          icon: Settings,
+        },
+        {
+          title: "Billing",
+          url: "/settings/billing",
+          icon: CreditCard,
         },
       ],
     },

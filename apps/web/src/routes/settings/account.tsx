@@ -1,0 +1,94 @@
+import { api } from "@convex-zen/backend/convex/_generated/api";
+import { Badge } from "@convex-zen/ui/components/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@convex-zen/ui/components/card";
+import { Button } from "@convex-zen/ui/components/button";
+import { Link, createFileRoute, redirect } from "@tanstack/react-router";
+import { useQuery } from "convex/react";
+
+import { BaseLayout } from "@/components/layouts/base-layout";
+
+export const Route = createFileRoute("/settings/account")({
+  beforeLoad: ({ context, location }) => {
+    if (!context.isAuthenticated) {
+      throw redirect({
+        to: "/sign-in",
+        search: {
+          redirectTo: location.href,
+        },
+      });
+    }
+  },
+  component: RouteComponent,
+});
+
+function RouteComponent() {
+  const user = useQuery(api.auth.getCurrentUser);
+
+  return (
+    <BaseLayout title="Account" description="Review your Better Auth profile and security status.">
+      <div className="grid gap-6 px-4 lg:px-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Profile</CardTitle>
+            <CardDescription>Your current account details from Better Auth.</CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-1">
+              <p className="text-sm text-muted-foreground">Name</p>
+              <p className="font-medium">{user?.name ?? "Unknown user"}</p>
+            </div>
+            <div className="space-y-1">
+              <p className="text-sm text-muted-foreground">Email</p>
+              <p className="font-medium">{user?.email ?? "No email"}</p>
+            </div>
+            <div className="space-y-1">
+              <p className="text-sm text-muted-foreground">Verification</p>
+              <div>
+                <Badge variant={user?.emailVerified ? "default" : "secondary"}>
+                  {user?.emailVerified ? "Verified" : "Pending verification"}
+                </Badge>
+              </div>
+            </div>
+            <div className="space-y-1">
+              <p className="text-sm text-muted-foreground">User ID</p>
+              <p className="font-mono text-sm">{user?._id ?? "Loading..."}</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Security</CardTitle>
+            <CardDescription>
+              Common account actions for verification and password management.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-wrap gap-3">
+            {!user?.emailVerified ? (
+              <Button asChild>
+                <Link
+                  to="/verify-email"
+                  search={{ email: user?.email ?? undefined, redirectTo: "/dashboard" }}
+                >
+                  Verify email
+                </Link>
+              </Button>
+            ) : null}
+            <Button variant="outline" asChild>
+              <Link to="/forgot-password">Reset password</Link>
+            </Button>
+            <Button variant="outline" asChild>
+              <Link to="/settings/billing">Open billing</Link>
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    </BaseLayout>
+  );
+}

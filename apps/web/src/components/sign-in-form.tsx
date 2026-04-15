@@ -8,6 +8,10 @@ import z from "zod";
 
 import { authClient } from "@/lib/auth-client";
 
+function getAuthErrorMessage(error: { error: { message?: string; statusText?: string } }) {
+  return error.error.message || error.error.statusText || "Authentication failed";
+}
+
 export default function SignInForm({
   onSwitchToSignUp,
   redirectTo = "/dashboard",
@@ -36,7 +40,18 @@ export default function SignInForm({
             toast.success("Sign in successful");
           },
           onError: (error) => {
-            toast.error(error.error.message || error.error.statusText);
+            toast.error(getAuthErrorMessage(error));
+
+            const message = getAuthErrorMessage(error).toLowerCase();
+            if (message.includes("verify") || message.includes("verification")) {
+              navigate({
+                to: "/verify-email",
+                search: {
+                  email: value.email,
+                  redirectTo,
+                },
+              });
+            }
           },
         },
       );

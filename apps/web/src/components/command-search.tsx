@@ -10,6 +10,8 @@ import {
   LogIn,
   UserPlus,
   KeyRound,
+  Settings,
+  CreditCard,
   type LucideIcon,
 } from "lucide-react";
 
@@ -122,6 +124,8 @@ export function CommandSearch({ open, onOpenChange }: CommandSearchProps) {
     { title: "Sign In", url: "/sign-in", group: "Auth", icon: LogIn },
     { title: "Sign Up", url: "/sign-up", group: "Auth", icon: UserPlus },
     { title: "Forgot Password", url: "/forgot-password", group: "Auth", icon: KeyRound },
+    { title: "Account", url: "/settings/account", group: "Settings", icon: Settings },
+    { title: "Billing", url: "/settings/billing", group: "Settings", icon: CreditCard },
   ];
 
   const groupedItems = searchItems.reduce(
