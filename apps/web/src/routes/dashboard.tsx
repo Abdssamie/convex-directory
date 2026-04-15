@@ -1,12 +1,10 @@
-import { api } from "@convex-zen/backend/convex/_generated/api";
 import { createFileRoute } from "@tanstack/react-router";
-import { Authenticated, AuthLoading, Unauthenticated, useQuery } from "convex/react";
+import { Authenticated, AuthLoading, Unauthenticated } from "convex/react";
 import { useState } from "react";
 
+import DashboardPage from "@/app/dashboard/page";
 import SignInForm from "@/components/sign-in-form";
 import SignUpForm from "@/components/sign-up-form";
-import Billing from "@/components/billing";
-import UserMenu from "@/components/user-menu";
 
 export const Route = createFileRoute("/dashboard")({
   component: RouteComponent,
@@ -14,17 +12,11 @@ export const Route = createFileRoute("/dashboard")({
 
 function RouteComponent() {
   const [showSignIn, setShowSignIn] = useState(false);
-  const privateData = useQuery(api.privateData.get);
 
   return (
     <>
       <Authenticated>
-        <div className="container mx-auto grid max-w-4xl gap-6 px-4 py-6">
-          <h1>Dashboard</h1>
-          <p>privateData: {privateData?.message}</p>
-          <UserMenu />
-          <Billing />
-        </div>
+        <DashboardPage />
       </Authenticated>
       <Unauthenticated>
         {showSignIn ? (
@@ -34,7 +26,7 @@ function RouteComponent() {
         )}
       </Unauthenticated>
       <AuthLoading>
-        <div>Loading...</div>
+        <div className="flex min-h-svh items-center justify-center">Loading...</div>
       </AuthLoading>
     </>
   );

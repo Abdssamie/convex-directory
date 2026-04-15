@@ -8,7 +8,6 @@ import {
   Scripts,
   createRootRouteWithContext,
   useRouteContext,
-  useLocation,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { createServerFn } from "@tanstack/react-start";
@@ -16,8 +15,6 @@ import { createServerFn } from "@tanstack/react-start";
 import { authClient } from "@/lib/auth-client";
 import { getToken } from "@/lib/auth-server";
 import { ThemeProvider } from "@/components/theme-provider";
-
-import Header from "../components/header";
 
 import appCss from "../index.css?url";
 
@@ -67,8 +64,6 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
 
 function RootDocument() {
   const context = useRouteContext({ from: Route.id });
-  const location = useLocation();
-  const isHomePage = location.pathname === "/";
 
   return (
     <ConvexBetterAuthProvider
@@ -82,10 +77,7 @@ function RootDocument() {
             <HeadContent />
           </head>
           <body>
-            <div className="grid h-svh grid-rows-[auto_1fr]">
-              {!isHomePage && <Header />}
-              <Outlet />
-            </div>
+            <Outlet />
             <Toaster richColors />
             <TanStackRouterDevtools position="bottom-left" />
             <Scripts />
