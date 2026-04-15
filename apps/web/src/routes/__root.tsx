@@ -76,8 +76,8 @@ function RootDocument() {
       authClient={authClient}
       initialToken={context.token}
     >
-      <ThemeProvider defaultTheme="system">
-        <html lang="en">
+      <ThemeProvider>
+        <html lang="en" suppressHydrationWarning>
           <head>
             <HeadContent />
           </head>

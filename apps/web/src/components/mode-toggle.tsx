@@ -13,35 +13,19 @@ interface ModeToggleProps {
 }
 
 export function ModeToggle({ variant = "outline" }: ModeToggleProps) {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const { toggleTheme } = useCircularTransition();
-
-  // Simple, reliable dark mode detection with re-sync
-  const [isDarkMode, setIsDarkMode] = React.useState(false);
+  const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => {
-    const updateMode = () => {
-      if (theme === "dark") {
-        setIsDarkMode(true);
-      } else if (theme === "light") {
-        setIsDarkMode(false);
-      } else {
-        setIsDarkMode(window.matchMedia("(prefers-color-scheme: dark)").matches);
-      }
-    };
-
-    updateMode();
-
-    // Listen for system theme changes
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    mediaQuery.addEventListener("change", updateMode);
-
-    return () => mediaQuery.removeEventListener("change", updateMode);
-  }, [theme]);
+    setMounted(true);
+  }, []);
 
   const handleToggle = (event: React.MouseEvent<HTMLButtonElement>) => {
     toggleTheme(event);
   };
+
+  const isDarkMode = mounted ? resolvedTheme === "dark" : false;
 
   return (
     <Button

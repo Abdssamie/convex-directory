@@ -75,7 +75,7 @@ const smoothScrollTo = (targetId: string) => {
 export function LandingNavbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [solutionsOpen, setSolutionsOpen] = useState(false);
-  const { setTheme, theme } = useTheme();
+  const { setTheme, resolvedTheme } = useTheme();
   const session = authClient.useSession();
   const isAuthenticated = !!session.data;
 
@@ -171,7 +171,7 @@ export function LandingNavbar() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+                      onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
                       className="cursor-pointer h-8 w-8"
                     >
                       <Moon className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />

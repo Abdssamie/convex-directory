@@ -1,4 +1,3 @@
-import React from "react";
 import { LandingNavbar } from "@/components/landing/navbar";
 import { HeroSection } from "@/components/landing/hero-section";
 import { LogoCarousel } from "@/components/landing/logo-carousel";
@@ -12,10 +11,6 @@ import { CTASection } from "@/components/landing/cta-section";
 import { ContactSection } from "@/components/landing/contact-section";
 import { FaqSection } from "@/components/landing/faq-section";
 import { LandingFooter } from "@/components/landing/footer";
-import {
-  LandingThemeCustomizer,
-  LandingThemeCustomizerTrigger,
-} from "@/components/landing/landing-theme-customizer";
 import { AboutSection } from "@/components/landing/about-section";
 import { createFileRoute } from "@tanstack/react-router";
 
@@ -24,8 +19,6 @@ export const Route = createFileRoute("/")({
 });
 
 function LandingPage() {
-  const [themeCustomizerOpen, setThemeCustomizerOpen] = React.useState(false);
-
   return (
     <div className="min-h-screen bg-background font-sans">
       {/* Navigation */}
@@ -49,10 +42,6 @@ function LandingPage() {
 
       {/* Footer */}
       <LandingFooter />
-
-      {/* Theme Customizer */}
-      <LandingThemeCustomizerTrigger onClick={() => setThemeCustomizerOpen(true)} />
-      <LandingThemeCustomizer open={themeCustomizerOpen} onOpenChange={setThemeCustomizerOpen} />
     </div>
   );
 }
