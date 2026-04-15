@@ -50,7 +50,35 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
     ],
   }),
 
-  component: RootDocument,
+  component: () => {
+    const context = useRouteContext({ from: Route.id });
+
+    return (
+      <QueryClientProvider client={context.queryClient}>
+        <ConvexBetterAuthProvider
+          client={context.convexQueryClient.convexClient}
+          authClient={authClient}
+          initialToken={context.token}
+        >
+          <ThemeProvider>
+            <HeadProvider>
+              <html lang="en" suppressHydrationWarning>
+                <head>
+                  <HeadContent />
+                </head>
+                <body>
+                  <Outlet />
+                  <Toaster richColors />
+                  <TanStackRouterDevtools position="bottom-left" />
+                  <Scripts />
+                </body>
+              </html>
+            </HeadProvider>
+          </ThemeProvider>
+        </ConvexBetterAuthProvider>
+      </QueryClientProvider>
+    );
+  },
   beforeLoad: async (ctx) => {
     const token = await getAuth();
     if (token) {
@@ -62,33 +90,3 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
     };
   },
 });
-
-function RootDocument() {
-  const context = useRouteContext({ from: Route.id });
-
-  return (
-    <QueryClientProvider client={context.queryClient}>
-      <ConvexBetterAuthProvider
-        client={context.convexQueryClient.convexClient}
-        authClient={authClient}
-        initialToken={context.token}
-      >
-        <ThemeProvider>
-          <HeadProvider>
-            <html lang="en" suppressHydrationWarning>
-              <head>
-                <HeadContent />
-              </head>
-              <body>
-                <Outlet />
-                <Toaster richColors />
-                <TanStackRouterDevtools position="bottom-left" />
-                <Scripts />
-              </body>
-            </html>
-          </HeadProvider>
-        </ThemeProvider>
-      </ConvexBetterAuthProvider>
-    </QueryClientProvider>
-  );
-}

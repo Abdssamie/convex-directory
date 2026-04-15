@@ -9,7 +9,7 @@ export const Route = createFileRoute("/sign-up")({
   }),
   beforeLoad: ({ context, search }) => {
     if (context.isAuthenticated) {
-      throw redirect({ to: search.redirectTo ?? "/dashboard" });
+      throw redirect({ to: search.redirectTo ?? "/onboarding/organization" });
     }
   },
   component: RouteComponent,
@@ -20,7 +20,7 @@ function RouteComponent() {
 
   return (
     <AuthLayout title="Create account" description="Start with email and password.">
-      <SignUpForm redirectTo={redirectTo ?? "/dashboard"} />
+      <SignUpForm redirectTo={redirectTo ?? "/onboarding/organization"} />
     </AuthLayout>
   );
 }

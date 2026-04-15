@@ -1,6 +1,6 @@
 "use client";
 
-import { CreditCard, EllipsisVertical, LogOut, CircleUser } from "lucide-react";
+import { CreditCard, EllipsisVertical, LogOut, CircleUser, Building2 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 
 import { authClient } from "@/lib/auth-client";
@@ -80,6 +80,12 @@ export function NavUser({
                 <Link to="/settings/billing">
                   <CreditCard />
                   Billing
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild className="cursor-pointer">
+                <Link to="/settings/organization">
+                  <Building2 />
+                  Organization
                 </Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>

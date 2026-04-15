@@ -89,7 +89,8 @@ export const tables = {
     .index("email", ["email"])
     .index("role", ["role"])
     .index("status", ["status"])
-    .index("inviterId", ["inviterId"]),
+    .index("inviterId", ["inviterId"])
+    .index("organizationId_status", ["organizationId", "status"]),
 };
 
 export default defineSchema(tables);

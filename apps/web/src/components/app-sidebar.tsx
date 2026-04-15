@@ -9,24 +9,15 @@ import {
   KeyRound,
   Settings,
   CreditCard,
+  Building2,
 } from "lucide-react";
 import { api } from "@convex-zen/backend/convex/_generated/api";
-import { Link } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
-
-import { Logo } from "@/components/logo";
+import { OrganizationSwitcher } from "@/components/organization-switcher";
 
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from "@/components/ui/sidebar";
+import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader } from "@/components/ui/sidebar";
 
 const data = {
   navGroups: [
@@ -74,6 +65,11 @@ const data = {
           icon: Settings,
         },
         {
+          title: "Organization",
+          url: "/settings/organization",
+          icon: Building2,
+        },
+        {
           title: "Billing",
           url: "/settings/billing",
           icon: CreditCard,
@@ -89,21 +85,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar {...props}>
       <SidebarHeader>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild>
-              <Link to="/dashboard">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                  <Logo size={24} className="text-current" />
-                </div>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">ShadcnStore</span>
-                  <span className="truncate text-xs">Admin Dashboard</span>
-                </div>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
+        <OrganizationSwitcher />
       </SidebarHeader>
       <SidebarContent>
         {data.navGroups.map((group) => (

@@ -11,7 +11,8 @@
     "./postcss.config": "./postcss.config.mjs"
   },
   "scripts": {
-    "check-types": "tsc --noEmit"
+    "build": "tsc --noEmit && tailwindcss -i ./src/styles/globals.css -o ./dist/globals.css --minify",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@base-ui/react": "^1.0.0",
