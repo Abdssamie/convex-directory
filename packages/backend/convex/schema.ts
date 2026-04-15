@@ -91,6 +91,15 @@ export const tables = {
     .index("status", ["status"])
     .index("inviterId", ["inviterId"])
     .index("organizationId_status", ["organizationId", "status"]),
+  emailEvents: defineTable({
+    event: v.string(),
+    email: v.string(),
+    messageId: v.string(),
+    ts: v.number(),
+    payload: v.any(),
+  })
+    .index("by_email", ["email"])
+    .index("by_messageId", ["messageId"]),
 };
 
 export default defineSchema(tables);

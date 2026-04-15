@@ -8,6 +8,7 @@
     "dev": "convex dev",
     "dev:setup": "convex dev --configure --until-success",
     "brevo": "tsx scripts/brevo.ts",
+    "polar": "tsx scripts/polar.ts",
     "test": "vitest run",
     "test:watch": "vitest"
   },
@@ -26,6 +27,7 @@
   "devDependencies": {
     "@convex-zen/config": "workspace:*",
     "@types/node": "^24.3.0",
+    "tsx": "^4.21.0",
     "typescript": "^5",
     "vitest": "^2.1.0"
   }
