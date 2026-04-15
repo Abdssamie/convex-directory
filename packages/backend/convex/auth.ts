@@ -5,7 +5,7 @@ import { magicLink, organization } from "better-auth/plugins";
 
 import { components } from "./_generated/api";
 import type { DataModel } from "./_generated/dataModel";
-import { query } from "./_generated/server";
+import { query, type ActionCtx } from "./_generated/server";
 import authConfig from "./auth.config";
 import {
   sendVerificationEmail,
@@ -31,8 +31,8 @@ function normalizeOrganizationInput<T extends { name?: string; slug?: string; lo
   };
 }
 
-function createAuth(ctx: GenericCtx<DataModel>) {
-  return betterAuth({
+function getBetterAuthConfig(ctx: GenericCtx<DataModel>) {
+  return {
     baseURL: siteUrl,
     trustedOrigins: [siteUrl],
     database: authComponent.adapter(ctx),
@@ -40,7 +40,7 @@ function createAuth(ctx: GenericCtx<DataModel>) {
       enabled: true,
       requireEmailVerification: true,
       sendResetPassword: async ({ user, url }: { user: User; url: string }) => {
-        const { ok, retryAfter } = await rateLimiter.limit(ctx, "passwordReset", {
+        const { ok, retryAfter } = await rateLimiter.limit(ctx as ActionCtx, "passwordReset", {
           key: user.email,
         });
 
@@ -117,10 +117,14 @@ function createAuth(ctx: GenericCtx<DataModel>) {
         },
       }),
     ],
-  });
+  };
 }
 
-export { createAuth };
+function createAuth(ctx: GenericCtx<DataModel>) {
+  return betterAuth(getBetterAuthConfig(ctx));
+}
+
+export { createAuth, getBetterAuthConfig };
 
 export const getCurrentUser = query({
   args: {},
