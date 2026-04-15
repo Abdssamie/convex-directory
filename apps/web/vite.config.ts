@@ -10,6 +10,13 @@ export default defineConfig({
   resolve: {
     dedupe: ["react", "react-dom"],
   },
+  environments: {
+    ssr: {
+      optimizeDeps: {
+        include: ["react", "react-dom", "react-dom/server"],
+      },
+    },
+  },
   server: {
     port: 3001,
   },

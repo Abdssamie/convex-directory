@@ -69,6 +69,9 @@ importers:
       '@convex-zen/config':
         specifier: workspace:*
         version: link:packages/config
+      '@playwright/test':
+        specifier: ^1.59.1
+        version: 1.59.1
       husky:
         specifier: ^9.1.7
         version: 9.1.7
@@ -92,7 +95,7 @@ importers:
         version: 0.11.4(@standard-schema/spec@1.1.0)(better-auth@1.5.3(@cloudflare/workers-types@4.20260413.1)(@tanstack/react-start@1.167.36(react-dom@19.2.5(react@19.2.5))(react@19.2.5)(vite@7.3.2(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(tsx@4.21.0)(yaml@2.8.3)))(drizzle-orm@0.45.2(@cloudflare/workers-types@4.20260413.1)(kysely@0.28.16))(react-dom@19.2.5(react@19.2.5))(react@19.2.5)(vitest@2.1.9(@types/node@24.12.2)(jsdom@26.1.0)(lightningcss@1.32.0)(msw@2.13.2(@types/node@24.12.2)(typescript@5.9.3))))(convex@1.35.1(react@19.2.5))(hono@4.12.12)(react@19.2.5)(typescript@5.9.3)
       '@convex-dev/polar':
         specifier: ^0.9.0
-        version: 0.9.0(@polar-sh/checkout@0.2.0(@stripe/react-stripe-js@4.0.2(@stripe/stripe-js@7.9.0)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(@stripe/stripe-js@7.9.0)(react-dom@19.2.5(react@19.2.5))(react-is@17.0.2)(react@19.2.5))(@polar-sh/sdk@0.47.0)(@standard-schema/spec@1.1.0)(convex@1.35.1(react@19.2.5))(hono@4.12.12)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)(typescript@5.9.3)(zod@4.3.6)
+        version: 0.9.0(@polar-sh/checkout@0.2.0(@stripe/react-stripe-js@4.0.2(@stripe/stripe-js@7.9.0)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(@stripe/stripe-js@7.9.0)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react-is@17.0.2)(react@19.2.5)(redux@5.0.1))(@polar-sh/sdk@0.47.0)(@standard-schema/spec@1.1.0)(convex@1.35.1(react@19.2.5))(hono@4.12.12)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)(typescript@5.9.3)(zod@4.3.6)
       '@convex-dev/react-query':
         specifier: ^0.1.0
         version: 0.1.0(@tanstack/react-query@5.99.0(react@19.2.5))(convex@1.35.1(react@19.2.5))
@@ -327,7 +330,7 @@ importers:
         version: 0.11.4(@standard-schema/spec@1.1.0)(better-auth@1.5.3(@cloudflare/workers-types@4.20260413.1)(@tanstack/react-start@1.167.36(react-dom@19.2.5(react@19.2.5))(react@19.2.5)(vite@5.4.21(@types/node@24.12.2)(lightningcss@1.32.0)))(drizzle-orm@0.45.2(@cloudflare/workers-types@4.20260413.1)(kysely@0.28.16))(react-dom@19.2.5(react@19.2.5))(react@19.2.5)(vitest@2.1.9(@types/node@24.12.2)(jsdom@26.1.0)(lightningcss@1.32.0)(msw@2.13.2(@types/node@24.12.2)(typescript@5.9.3))))(convex@1.35.1(react@19.2.5))(hono@4.12.12)(react@19.2.5)(typescript@5.9.3)
       '@convex-dev/polar':
         specifier: ^0.9.0
-        version: 0.9.0(@polar-sh/checkout@0.2.0(@stripe/react-stripe-js@4.0.2(@stripe/stripe-js@7.9.0)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(@stripe/stripe-js@7.9.0)(react-dom@19.2.5(react@19.2.5))(react-is@17.0.2)(react@19.2.5))(@polar-sh/sdk@0.47.0)(@standard-schema/spec@1.1.0)(convex@1.35.1(react@19.2.5))(hono@4.12.12)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)(typescript@5.9.3)(zod@4.3.6)
+        version: 0.9.0(@polar-sh/checkout@0.2.0(@stripe/react-stripe-js@4.0.2(@stripe/stripe-js@7.9.0)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(@stripe/stripe-js@7.9.0)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react-is@17.0.2)(react@19.2.5)(redux@5.0.1))(@polar-sh/sdk@0.47.0)(@standard-schema/spec@1.1.0)(convex@1.35.1(react@19.2.5))(hono@4.12.12)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)(typescript@5.9.3)(zod@4.3.6)
       '@convex-dev/r2':
         specifier: ^0.9.2
         version: 0.9.2(@standard-schema/spec@1.1.0)(convex@1.35.1(react@19.2.5))(hono@4.12.12)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)(typescript@5.9.3)(zod@4.3.6)
@@ -2368,6 +2371,11 @@ packages:
   '@pkgjs/parseargs@0.11.0':
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
     engines: {node: '>=14'}
+
+  '@playwright/test@1.59.1':
+    resolution: {integrity: sha512-PG6q63nQg5c9rIi4/Z5lR5IVF7yU5MqmKaPOe0HSc0O2cX1fPi96sUQu5j7eo4gKCkB2AnNGoWt7y4/Xx3Kcqg==}
+    engines: {node: '>=18'}
+    hasBin: true
 
   '@polar-sh/checkout@0.2.0':
     resolution: {integrity: sha512-lkHa7JJtQpbHblsfpEX91bJRV6s7gyBIlehVCy2KRL89vP4t6t2vYKNwIxIHI+EG7RxXKu/4fCMchQYrVSMYuQ==}
@@ -4614,6 +4622,11 @@ packages:
     resolution: {integrity: sha512-gIXjKqtFuWEgzFRJA9WCQeSJLZDjgJUOMCMzxtvFq/37KojM1BFGufqsCy0r4qSQmYLsZYMeyRqzIWOMup03sw==}
     engines: {node: '>=14'}
 
+  fsevents@2.3.2:
+    resolution: {integrity: sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==}
+    engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
+    os: [darwin]
+
   fsevents@2.3.3:
     resolution: {integrity: sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==}
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
@@ -5167,6 +5180,16 @@ packages:
   picomatch@4.0.4:
     resolution: {integrity: sha512-QP88BAKvMam/3NxH6vj2o21R6MjxZUAd6nlwAS/pnGvN9IVLocLHxGYIzFhg6fUQ+5th6P4dv4eW9jX3DSIj7A==}
     engines: {node: '>=12'}
+
+  playwright-core@1.59.1:
+    resolution: {integrity: sha512-HBV/RJg81z5BiiZ9yPzIiClYV/QMsDCKUyogwH9p3MCP6IYjUFu/MActgYAvK0oWyV9NlwM3GLBjADyWgydVyg==}
+    engines: {node: '>=18'}
+    hasBin: true
+
+  playwright@1.59.1:
+    resolution: {integrity: sha512-C8oWjPR3F81yljW9o5OxcWzfh6avkVwDD2VYdwIGqTkl+OGFISgypqzfu7dOe4QNLL2aqcWBmI3PMtLIK233lw==}
+    engines: {node: '>=18'}
+    hasBin: true
 
   postcss@8.5.9:
     resolution: {integrity: sha512-7a70Nsot+EMX9fFU3064K/kdHWZqGVY+BADLyXc8Dfv+mTLLVl6JzJpPaCZ2kQL9gIJvKXSLMHhqdRRjwQeFtw==}
@@ -6829,7 +6852,7 @@ snapshots:
       - hono
       - typescript
 
-  '@convex-dev/polar@0.9.0(@polar-sh/checkout@0.2.0(@stripe/react-stripe-js@4.0.2(@stripe/stripe-js@7.9.0)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(@stripe/stripe-js@7.9.0)(react-dom@19.2.5(react@19.2.5))(react-is@17.0.2)(react@19.2.5))(@polar-sh/sdk@0.47.0)(@standard-schema/spec@1.1.0)(convex@1.35.1(react@19.2.5))(hono@4.12.12)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)(typescript@5.9.3)(zod@4.3.6)':
+  '@convex-dev/polar@0.9.0(@polar-sh/checkout@0.2.0(@stripe/react-stripe-js@4.0.2(@stripe/stripe-js@7.9.0)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(@stripe/stripe-js@7.9.0)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react-is@17.0.2)(react@19.2.5)(redux@5.0.1))(@polar-sh/sdk@0.47.0)(@standard-schema/spec@1.1.0)(convex@1.35.1(react@19.2.5))(hono@4.12.12)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)(typescript@5.9.3)(zod@4.3.6)':
     dependencies:
       '@polar-sh/checkout': 0.2.0(@stripe/react-stripe-js@4.0.2(@stripe/stripe-js@7.9.0)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(@stripe/stripe-js@7.9.0)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react-is@17.0.2)(react@19.2.5)(redux@5.0.1)
       '@polar-sh/sdk': 0.47.0
@@ -7698,6 +7721,10 @@ snapshots:
   '@pkgjs/parseargs@0.11.0':
     optional: true
 
+  '@playwright/test@1.59.1':
+    dependencies:
+      playwright: 1.59.1
+
   '@polar-sh/checkout@0.2.0(@stripe/react-stripe-js@4.0.2(@stripe/stripe-js@7.9.0)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(@stripe/stripe-js@7.9.0)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react-is@17.0.2)(react@19.2.5)(redux@5.0.1)':
     dependencies:
       '@polar-sh/sdk': 0.42.5
@@ -8413,7 +8440,7 @@ snapshots:
 
   '@radix-ui/rect@1.1.1': {}
 
-  '@reduxjs/toolkit@2.11.2(react-redux@9.2.0(react@19.2.5))(react@19.2.5)':
+  '@reduxjs/toolkit@2.11.2(react-redux@9.2.0(@types/react@19.2.14)(react@19.2.5)(redux@5.0.1))(react@19.2.5)':
     dependencies:
       '@standard-schema/spec': 1.1.0
       '@standard-schema/utils': 0.3.0
@@ -10204,6 +10231,9 @@ snapshots:
       cross-spawn: 7.0.6
       signal-exit: 4.1.0
 
+  fsevents@2.3.2:
+    optional: true
+
   fsevents@2.3.3:
     optional: true
 
@@ -10730,6 +10760,14 @@ snapshots:
 
   picomatch@4.0.4: {}
 
+  playwright-core@1.59.1: {}
+
+  playwright@1.59.1:
+    dependencies:
+      playwright-core: 1.59.1
+    optionalDependencies:
+      fsevents: 2.3.2
+
   postcss@8.5.9:
     dependencies:
       nanoid: 3.3.11
@@ -10859,7 +10897,7 @@ snapshots:
 
   recharts@3.8.1(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react-is@17.0.2)(react@19.2.5)(redux@5.0.1):
     dependencies:
-      '@reduxjs/toolkit': 2.11.2(react-redux@9.2.0(react@19.2.5))(react@19.2.5)
+      '@reduxjs/toolkit': 2.11.2(react-redux@9.2.0(@types/react@19.2.14)(react@19.2.5)(redux@5.0.1))(react@19.2.5)
       clsx: 2.1.1
       decimal.js-light: 2.5.1
       es-toolkit: 1.45.1
