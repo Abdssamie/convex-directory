@@ -1,7 +1,7 @@
 import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react";
 import type { ConvexQueryClient } from "@convex-dev/react-query";
 import { Toaster } from "@convex-zen/ui/components/sonner";
-import type { QueryClient } from "@tanstack/react-query";
+import { QueryClientProvider, type QueryClient } from "@tanstack/react-query";
 import {
   HeadContent,
   Outlet,
@@ -67,26 +67,28 @@ function RootDocument() {
   const context = useRouteContext({ from: Route.id });
 
   return (
-    <ConvexBetterAuthProvider
-      client={context.convexQueryClient.convexClient}
-      authClient={authClient}
-      initialToken={context.token}
-    >
-      <ThemeProvider>
-        <HeadProvider>
-          <html lang="en" suppressHydrationWarning>
-            <head>
-              <HeadContent />
-            </head>
-            <body>
-              <Outlet />
-              <Toaster richColors />
-              <TanStackRouterDevtools position="bottom-left" />
-              <Scripts />
-            </body>
-          </html>
-        </HeadProvider>
-      </ThemeProvider>
-    </ConvexBetterAuthProvider>
+    <QueryClientProvider client={context.queryClient}>
+      <ConvexBetterAuthProvider
+        client={context.convexQueryClient.convexClient}
+        authClient={authClient}
+        initialToken={context.token}
+      >
+        <ThemeProvider>
+          <HeadProvider>
+            <html lang="en" suppressHydrationWarning>
+              <head>
+                <HeadContent />
+              </head>
+              <body>
+                <Outlet />
+                <Toaster richColors />
+                <TanStackRouterDevtools position="bottom-left" />
+                <Scripts />
+              </body>
+            </html>
+          </HeadProvider>
+        </ThemeProvider>
+      </ConvexBetterAuthProvider>
+    </QueryClientProvider>
   );
 }
