@@ -22,6 +22,11 @@ export default defineConfig({
     port: 3001,
   },
   ssr: {
-    noExternal: ["@convex-dev/better-auth"],
+    noExternal: [
+      "@convex-dev/better-auth",
+      "@tanstack/react-query",
+      "@tanstack/react-router",
+      "@tanstack/react-router-ssr-query",
+    ],
   },
 });
