@@ -1,51 +1,58 @@
-import { convexQuery } from "@convex-dev/react-query";
-import { api } from "@convex-zen/backend/convex/_generated/api";
-import { useQuery } from "@tanstack/react-query";
+import React from "react";
+import { LandingNavbar } from "@/components/landing/navbar";
+import { HeroSection } from "@/components/landing/hero-section";
+import { LogoCarousel } from "@/components/landing/logo-carousel";
+import { StatsSection } from "@/components/landing/stats-section";
+import { FeaturesSection } from "@/components/landing/features-section";
+import { TeamSection } from "@/components/landing/team-section";
+import { TestimonialsSection } from "@/components/landing/testimonials-section";
+import { BlogSection } from "@/components/landing/blog-section";
+import { PricingSection } from "@/components/landing/pricing-section";
+import { CTASection } from "@/components/landing/cta-section";
+import { ContactSection } from "@/components/landing/contact-section";
+import { FaqSection } from "@/components/landing/faq-section";
+import { LandingFooter } from "@/components/landing/footer";
+import {
+  LandingThemeCustomizer,
+  LandingThemeCustomizerTrigger,
+} from "@/components/landing/landing-theme-customizer";
+import { AboutSection } from "@/components/landing/about-section";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
-  component: HomeComponent,
+  component: LandingPage,
 });
 
-const TITLE_TEXT = `
- ██████╗ ███████╗████████╗████████╗███████╗██████╗
- ██╔══██╗██╔════╝╚══██╔══╝╚══██╔══╝██╔════╝██╔══██╗
- ██████╔╝█████╗     ██║      ██║   █████╗  ██████╔╝
- ██╔══██╗██╔══╝     ██║      ██║   ██╔══╝  ██╔══██╗
- ██████╔╝███████╗   ██║      ██║   ███████╗██║  ██║
- ╚═════╝ ╚══════╝   ╚═╝      ╚═╝   ╚══════╝╚═╝  ╚═╝
-
- ████████╗    ███████╗████████╗ █████╗  ██████╗██╗  ██╗
- ╚══██╔══╝    ██╔════╝╚══██╔══╝██╔══██╗██╔════╝██║ ██╔╝
-    ██║       ███████╗   ██║   ███████║██║     █████╔╝
-    ██║       ╚════██║   ██║   ██╔══██║██║     ██╔═██╗
-    ██║       ███████║   ██║   ██║  ██║╚██████╗██║  ██╗
-    ╚═╝       ╚══════╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝
- `;
-
-function HomeComponent() {
-  const healthCheck = useQuery(convexQuery(api.healthCheck.get, {}));
+function LandingPage() {
+  const [themeCustomizerOpen, setThemeCustomizerOpen] = React.useState(false);
 
   return (
-    <div className="container mx-auto max-w-3xl px-4 py-2">
-      <pre className="overflow-x-auto font-mono text-sm">{TITLE_TEXT}</pre>
-      <div className="grid gap-6">
-        <section className="rounded-lg border p-4">
-          <h2 className="mb-2 font-medium">API Status</h2>
-          <div className="flex items-center gap-2">
-            <div
-              className={`h-2 w-2 rounded-full ${healthCheck.data === "OK" ? "bg-green-500" : healthCheck.isLoading ? "bg-orange-400" : "bg-red-500"}`}
-            />
-            <span className="text-muted-foreground text-sm">
-              {healthCheck.isLoading
-                ? "Checking..."
-                : healthCheck.data === "OK"
-                  ? "Connected"
-                  : "Error"}
-            </span>
-          </div>
-        </section>
-      </div>
+    <div className="min-h-screen bg-background font-sans">
+      {/* Navigation */}
+      <LandingNavbar />
+
+      {/* Main Content */}
+      <main>
+        <HeroSection />
+        <LogoCarousel />
+        <StatsSection />
+        <AboutSection />
+        <FeaturesSection />
+        <TeamSection />
+        <PricingSection />
+        <TestimonialsSection />
+        <BlogSection />
+        <FaqSection />
+        <CTASection />
+        <ContactSection />
+      </main>
+
+      {/* Footer */}
+      <LandingFooter />
+
+      {/* Theme Customizer */}
+      <LandingThemeCustomizerTrigger onClick={() => setThemeCustomizerOpen(true)} />
+      <LandingThemeCustomizer open={themeCustomizerOpen} onOpenChange={setThemeCustomizerOpen} />
     </div>
   );
 }

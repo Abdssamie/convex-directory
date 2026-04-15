@@ -8,12 +8,14 @@ import {
   Scripts,
   createRootRouteWithContext,
   useRouteContext,
+  useLocation,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { createServerFn } from "@tanstack/react-start";
 
 import { authClient } from "@/lib/auth-client";
 import { getToken } from "@/lib/auth-server";
+import { ThemeProvider } from "@/components/theme-provider";
 
 import Header from "../components/header";
 
@@ -39,7 +41,7 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
         content: "width=device-width, initial-scale=1",
       },
       {
-        title: "My App",
+        title: "ConvexZen",
       },
     ],
     links: [
@@ -65,26 +67,31 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
 
 function RootDocument() {
   const context = useRouteContext({ from: Route.id });
+  const location = useLocation();
+  const isHomePage = location.pathname === "/";
+
   return (
     <ConvexBetterAuthProvider
       client={context.convexQueryClient.convexClient}
       authClient={authClient}
       initialToken={context.token}
     >
-      <html lang="en" className="dark">
-        <head>
-          <HeadContent />
-        </head>
-        <body>
-          <div className="grid h-svh grid-rows-[auto_1fr]">
-            <Header />
-            <Outlet />
-          </div>
-          <Toaster richColors />
-          <TanStackRouterDevtools position="bottom-left" />
-          <Scripts />
-        </body>
-      </html>
+      <ThemeProvider defaultTheme="system">
+        <html lang="en">
+          <head>
+            <HeadContent />
+          </head>
+          <body>
+            <div className="grid h-svh grid-rows-[auto_1fr]">
+              {!isHomePage && <Header />}
+              <Outlet />
+            </div>
+            <Toaster richColors />
+            <TanStackRouterDevtools position="bottom-left" />
+            <Scripts />
+          </body>
+        </html>
+      </ThemeProvider>
     </ConvexBetterAuthProvider>
   );
 }
