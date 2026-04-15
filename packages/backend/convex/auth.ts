@@ -1,6 +1,6 @@
 import { createClient, type GenericCtx } from "@convex-dev/better-auth";
 import { convex } from "@convex-dev/better-auth/plugins";
-import { betterAuth, type User } from "better-auth";
+import { betterAuth, type User, APIError } from "better-auth";
 import { magicLink, organization } from "better-auth/plugins";
 
 import { components } from "./_generated/api";
@@ -14,10 +14,22 @@ import {
   sendInvitationEmail,
   sendWelcomeEmail,
 } from "./features/email/betterAuth";
+import { rateLimiter } from "./lib/rateLimiter";
 
 const siteUrl = process.env.SITE_URL!;
 
 export const authComponent = createClient<DataModel>(components.betterAuth);
+
+function normalizeOrganizationInput<T extends { name?: string; slug?: string; logo?: string }>(
+  organization: T,
+) {
+  return {
+    ...organization,
+    name: organization.name?.trim(),
+    slug: organization.slug?.trim().toLowerCase(),
+    logo: organization.logo?.trim() || undefined,
+  };
+}
 
 function createAuth(ctx: GenericCtx<DataModel>) {
   return betterAuth({
@@ -28,6 +40,16 @@ function createAuth(ctx: GenericCtx<DataModel>) {
       enabled: true,
       requireEmailVerification: true,
       sendResetPassword: async ({ user, url }: { user: User; url: string }) => {
+        const { ok, retryAfter } = await rateLimiter.limit(ctx, "passwordReset", {
+          key: user.email,
+        });
+
+        if (!ok) {
+          throw new APIError("TOO_MANY_REQUESTS", {
+            message: `Rate limit exceeded. Try again in ${Math.ceil(retryAfter / 1000)} seconds.`,
+          });
+        }
+
         await sendPasswordResetEmail({
           email: user.email,
           name: user.name,
@@ -63,7 +85,25 @@ function createAuth(ctx: GenericCtx<DataModel>) {
         },
       }),
       organization({
+        allowUserToCreateOrganization: true,
+        cancelPendingInvitationsOnReInvite: true,
         requireEmailVerificationOnInvitation: true,
+        organizationHooks: {
+          beforeCreateOrganization: async ({ organization }) => {
+            return { data: normalizeOrganizationInput(organization) };
+          },
+          beforeUpdateOrganization: async ({ organization }) => {
+            return { data: normalizeOrganizationInput(organization) };
+          },
+          beforeCreateInvitation: async ({ invitation }) => {
+            return {
+              data: {
+                ...invitation,
+                email: invitation.email.trim().toLowerCase(),
+              },
+            };
+          },
+        },
         async sendInvitationEmail(data) {
           const siteUrl = process.env.SITE_URL ?? "http://localhost:3001";
           const inviteLink = `${siteUrl}/invite/${data.id}`;
