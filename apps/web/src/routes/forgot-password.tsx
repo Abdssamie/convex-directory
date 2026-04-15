@@ -1,14 +1,9 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 
 import AuthLayout from "@/components/auth-layout";
 import ForgotPasswordForm from "@/components/forgot-password-form";
 
 export const Route = createFileRoute("/forgot-password")({
-  beforeLoad: ({ context }) => {
-    if (context.isAuthenticated) {
-      throw redirect({ to: "/dashboard" });
-    }
-  },
   component: RouteComponent,
 });
 

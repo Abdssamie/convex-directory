@@ -13,8 +13,8 @@ import {
 import { api } from "@convex-zen/backend/convex/_generated/api";
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
+
 import { Logo } from "@/components/logo";
-import { SidebarNotification } from "@/components/sidebar-notification";
 
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
@@ -111,7 +111,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         ))}
       </SidebarContent>
       <SidebarFooter>
-        <SidebarNotification />
         <NavUser
           user={{
             name: user?.name ?? "ConvexZen",
