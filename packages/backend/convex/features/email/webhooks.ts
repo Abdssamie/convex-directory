@@ -81,12 +81,6 @@ export const brevo = httpAction(async (ctx, request) => {
   const secret = process.env.BREVO_WEBHOOK_TOKEN;
   const authFailure = getAuthorizationFailure(request, secret);
   if (authFailure) {
-    console.warn("Brevo webhook unauthorized", {
-      reason: authFailure,
-      hasXBrevoToken: request.headers.has("X-Brevo-Token"),
-      authorizationScheme: request.headers.get("Authorization")?.split(" ")[0] ?? null,
-      userAgent: request.headers.get("User-Agent"),
-    });
     return unauthorized();
   }
 
@@ -95,21 +89,14 @@ export const brevo = httpAction(async (ctx, request) => {
   try {
     payload = await request.json();
   } catch {
-    console.warn("Brevo webhook invalid JSON", {
-      contentType: request.headers.get("Content-Type"),
-    });
     return new Response("Invalid JSON", { status: 400 });
   }
 
   // Brevo sends a single event object or an array of objects
   const events = Array.isArray(payload) ? payload : [payload];
-  console.info("Brevo webhook received", {
-    eventCount: events.length,
-  });
 
   for (const event of events) {
     if (!event || typeof event !== "object") {
-      console.warn("Brevo webhook skipped non-object event");
       continue;
     }
 
@@ -125,13 +112,6 @@ export const brevo = httpAction(async (ctx, request) => {
     const link = event.link;
     const ip = event.ip || event.sending_ip;
     const userAgent = event["user-agent"] || event.user_agent;
-
-    console.info("Brevo webhook event", {
-      event: eventName,
-      email,
-      messageId,
-      ts,
-    });
 
     await ctx.runMutation(internal.features.email.eventLog.logEvent, {
       event: typeof eventName === "string" ? eventName : "unknown",
