@@ -1,103 +1,66 @@
-# convex-zen
+# ConvexZen
 
-This project was created with [Better-T-Stack](https://github.com/AmanVarshney01/create-better-t-stack), a modern TypeScript stack that combines React, TanStack Start, Convex, and more.
+A production-grade SaaS starter with Convex, TanStack Start, and Cloudflare deployment.
 
-## Features
+## Stack
 
-- **TypeScript** - For type safety and improved developer experience
-- **TanStack Start** - SSR framework with TanStack Router
-- **TailwindCSS** - Utility-first CSS for rapid UI development
-- **Shared UI package** - shadcn/ui primitives live in `packages/ui`
-- **Convex** - Reactive backend-as-a-service platform
-- **Authentication** - Better-Auth
-- **Husky** - Git hooks for code quality
-- **Oxlint** - Oxlint + Oxfmt (linting & formatting)
-- **Unhead** - SEO meta tags, Open Graph, and Schema.org structured data
-
-## SEO Setup
-
-First, install the dependencies:
-
-```bash
-pnpm install
-```
-
-## Convex Setup
-
-This project uses Convex as a backend. You'll need to set up Convex before running the app:
-
-```bash
-pnpm run dev:setup
-```
-
-Follow the prompts to create a new Convex project and connect it to your application.
-
-Copy environment variables from `packages/backend/.env.local` to `apps/*/.env`.
-
-Then, run the development server:
-
-```bash
-pnpm run dev
-```
-
-Open [http://localhost:3001](http://localhost:3001) in your browser to see the web application.
-Your app will connect to the Convex cloud backend automatically.
-
-## UI Customization
-
-React web apps in this stack share shadcn/ui primitives through `packages/ui`.
-
-- Change design tokens and global styles in `packages/ui/src/styles/globals.css`
-- Update shared primitives in `packages/ui/src/components/*`
-- Adjust shadcn aliases or style config in `packages/ui/components.json` and `apps/web/components.json`
-
-### Add more shared components
-
-Run this from the project root to add more primitives to the shared UI package:
-
-```bash
-npx shadcn@latest add accordion dialog popover sheet table -c packages/ui
-```
-
-Import shared components like this:
-
-```tsx
-import { Button } from "@convex-zen/ui/components/button";
-```
-
-### Add app-specific blocks
-
-If you want to add app-specific blocks instead of shared primitives, run the shadcn CLI from `apps/web`.
-
-## Deployment (Cloudflare via Alchemy)
-
-- Dev: cd apps/web && pnpm run alchemy dev
-- Deploy: cd apps/web && pnpm run deploy
-- Destroy: cd apps/web && pnpm run destroy
-
-For more details, see the guide on [Deploying to Cloudflare with Alchemy](https://www.better-t-stack.dev/docs/guides/cloudflare-alchemy).
-
-## Git Hooks and Formatting
-
-- Initialize hooks: `pnpm run prepare`
-- Format and lint fix: `pnpm run lint`
+- **Convex** – Realtime backend (database, auth, functions, scheduled jobs)
+- **TanStack Start** – Full-stack React with SSR
+- **Cloudflare** – Edge deployment via Alchemy
+- **Better Auth** – Authentication
+- **Polar** – Billing & subscriptions
+- **TailwindCSS** – Styling
+- **shadcn/ui** – Component primitives
+- **Brevo** – Email marketing
 
 ## Project Structure
 
 ```
 convex-zen/
-├── apps/
-│   ├── web/         # Frontend application (React + TanStack Start)
+├── apps/web/           # Frontend (TanStack Start)
 ├── packages/
-│   ├── ui/          # Shared shadcn/ui components and styles
-│   ├── backend/     # Convex backend functions and schema
+│   ├── backend/       # Convex functions & schema
+│   ├── ui/            # Shared shadcn components
+│   ├── env/           # Environment types
+│   └── config/        # Shared config
 ```
 
-## Available Scripts
+## Quick Start
 
-- `pnpm run dev`: Start all applications in development mode
-- `pnpm run build`: Build all applications
-- `pnpm run dev:web`: Start only the web application
-- `pnpm run dev:setup`: Setup and configure your Convex project
-- `pnpm run typecheck`: Check TypeScript types across all apps
-- `pnpm run lint`: Run Oxlint and Oxfmt
+```bash
+# Install
+pnpm install
+
+# Setup Convex
+pnpm run dev:setup
+
+# Copy env vars
+cp packages/backend/.env.local.example apps/web/.env.local
+cp packages/backend/.env.convex.example packages/backend/.env.convex
+cp apps/web/.env.example apps/web/.env.local
+
+# Dev
+pnpm run dev
+```
+
+Open [http://localhost:3001](http://localhost:3001)
+
+## Deployment
+
+```bash
+# Dev server
+cd apps/web && pnpm run alchemy dev
+
+# Deploy to Cloudflare
+pnpm run deploy
+```
+
+## Scripts
+
+| Command              | Description      |
+| -------------------- | ---------------- |
+| `pnpm run dev`       | Start all apps   |
+| `pnpm run build`     | Build all        |
+| `pnpm run typecheck` | Type check       |
+| `pnpm run lint`      | Lint & format    |
+| `pnpm run dev:setup` | Configure Convex |
