@@ -65,6 +65,10 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
               <html lang="en" suppressHydrationWarning>
                 <head>
                   <HeadContent />
+                  <script
+                    defer
+                    src="https://basic-goshawk-557.convex.site/script.js?key=acfef8f1-2886-4f03-9b8b-98e261f0992b"
+                  />
                 </head>
                 <body>
                   <Outlet />
