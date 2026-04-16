@@ -6,15 +6,13 @@ A production-grade SaaS starter built for minimal budget. Zero vendor lock-in, f
 
 Most SaaS starters cost $50+/month before you make a single dollar. This one is designed to run $0 until you're ready to charge:
 
-| Service   | This Stack  | Alternatives          |
-| --------- | ----------- | --------------------- |
-| Hosting   | Cloudflare  | Vercel, Netlify       |
-| Database  | Convex      | Supabase, Firebase    |
-| Email     | Brevo       | Resend, SendGrid      |
-| Analytics | Convalytics | PostHog, Mixpanel     |
-| Payments  | Polar       | Stripe, Lemon Squeezy |
-
-Total cost to launch: **$0** (all free tiers are generous enough for an MVP)
+| Service       | This Stack  | Alternatives       | Why It Wins                                       |
+| :------------ | :---------- | :----------------- | :------------------------------------------------ | ---------------------------------------------------------------------------- |
+| **Hosting**   | Cloudflare  | Vercel, Netlify    | Unlimited bandwidth and global edge performance.  |
+| **Database**  | Convex      | Supabase, Firebase | End-to-end TypeScript safety with real-time sync. |
+| **Email**     | Brevo       | Resend, SendGrid   | Highest free daily sending limit (300/day).       |
+| **Analytics** | Convalytics | PostHog, Mixpanel  | Simple, privacy-focused, and stays free.          |
+| **Payments**  | Polar       | Stripe             | Acts as Merchant of Record; handles global taxes. | Total cost to launch: **$0** (all free tiers are generous enough for an MVP) |
 
 ## Stack
 
