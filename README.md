@@ -6,13 +6,13 @@ A production-grade SaaS starter built for minimal budget. Zero vendor lock-in, f
 
 Most SaaS starters cost $50+/month before you make a single dollar. This one is designed to run $0 until you're ready to charge:
 
-| Service       | This Stack              | Alternatives                  |
-| ------------- | ----------------------- | ----------------------------- |
-| Hosting       | Cloudflare (free)       | Vercel $20+, AWS $50+         |
-| Database+Auth | Convex (free tier)      | Supabase $25+, Firebase $25+  |
-| Email         | Brevo (free 300/day)    | SendGrid $15+, Mailgun $35+   |
-| Analytics     | Convalytics (free)      | Mixpanel $75+, Amplitude $70+ |
-| Payments      | Polar (0% on first $1k) | Stripe 2.9%+                  |
+| Service   | This Stack  | Alternatives          |
+| --------- | ----------- | --------------------- |
+| Hosting   | Cloudflare  | Vercel, Netlify       |
+| Database  | Convex      | Supabase, Firebase    |
+| Email     | Brevo       | Resend, SendGrid      |
+| Analytics | Convalytics | PostHog, Mixpanel     |
+| Payments  | Polar       | Stripe, Lemon Squeezy |
 
 Total cost to launch: **$0** (all free tiers are generous enough for an MVP)
 
@@ -22,9 +22,9 @@ Total cost to launch: **$0** (all free tiers are generous enough for an MVP)
 - **TanStack Start** – Full-stack React with SSR and streaming
 - **Cloudflare** – Edge deployment via Alchemy. Free: 100k requests/day on Workers
 - **Better Auth** – Open-source auth that works with Convex. No vendor lock-in
-- **Polar** – Developer-friendly payments, 0% platform fee until $1k (then 5%). Stripe alternative
-- **Brevo** – Email marketing. Free: 300 emails/day, unlimited contacts
-- **Convalytics** – Privacy-first analytics. No cookie banner needed. Free tier included
+- **Polar** – Developer-friendly payments. 0% until $1k, then 5%
+- **Brevo** – Email marketing. Free: 300 emails/day
+- **Convalytics** – Privacy-first web + product analytics
 - **TailwindCSS** – Styling
 - **shadcn/ui** – Component primitives in shared package
 
