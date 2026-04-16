@@ -9,7 +9,7 @@ import { components } from "./_generated/api";
 import { action, query, type ActionCtx, type QueryCtx } from "./_generated/server";
 import { authComponent } from "./auth";
 
-const PLAN_IDS = ["free", "pro", "team"] as const;
+const PLAN_IDS = ["free", "pro", "business"] as const;
 const PLAN_INTERVALS = ["month", "year"] as const;
 const PRORATION_BEHAVIORS = ["invoice", "prorate", "next_period"] as const;
 
@@ -44,10 +44,10 @@ const PLAN_CONTENT: Record<
     description: "For power users shipping faster with higher limits.",
     features: ["Everything in Free", "Higher limits", "Priority support"],
   },
-  team: {
-    name: "Team",
-    description: "For teams that need collaboration, seats, and admin control.",
-    features: ["Everything in Pro", "Team collaboration", "Admin controls"],
+  business: {
+    name: "Business",
+    description: "For advanced usage, higher limits, and priority support.",
+    features: ["Everything in Pro", "Advanced workflows", "Priority support"],
   },
 };
 
@@ -126,7 +126,7 @@ export const syncPolarProducts = action({
 
 export const switchCurrentSubscription = action({
   args: {
-    plan: v.union(v.literal("free"), v.literal("pro"), v.literal("team")),
+    plan: v.union(v.literal("free"), v.literal("pro"), v.literal("business")),
     interval: v.union(v.literal("month"), v.literal("year")),
     prorationBehavior: v.optional(
       v.union(v.literal("invoice"), v.literal("prorate"), v.literal("next_period")),

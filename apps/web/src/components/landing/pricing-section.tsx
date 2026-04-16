@@ -43,7 +43,8 @@ export function PricingSection() {
           </Badge>
           <h2 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl">Choose your plan</h2>
           <p className="mb-8 text-lg text-muted-foreground">
-            Plans load from Polar. Marketing pricing and app billing stay in sync.
+            Simple pricing for solo builders and growing products. Upgrade when you need more limits
+            and support.
           </p>
 
           <div className="mb-2 flex items-center justify-center">
@@ -71,10 +72,6 @@ export function PricingSection() {
               </ToggleGroupItem>
             </ToggleGroup>
           </div>
-
-          <p className="text-sm text-muted-foreground">
-            Use product metadata: `plan` and `interval`.
-          </p>
         </div>
 
         <div className="mx-auto max-w-6xl rounded-xl border">
@@ -104,7 +101,7 @@ export function PricingSection() {
           <p className="text-muted-foreground">
             Need custom billing setup?{" "}
             <Button variant="link" className="h-auto cursor-pointer p-0" asChild>
-              <a href="#contact">Contact team</a>
+              <a href="#contact">Contact us</a>
             </Button>
           </p>
         </div>
@@ -209,9 +206,7 @@ function renderPlanAction({
   if (!isAuthenticated) {
     return (
       <Button className={className} variant={variant} asChild>
-        <Link to={plan.id === "free" ? "/sign-up" : "/sign-up"}>
-          {plan.id === "free" ? "Start free" : "Create account"}
-        </Link>
+        <Link to="/sign-in">Sign in</Link>
       </Button>
     );
   }
@@ -235,7 +230,13 @@ function renderPlanAction({
 
     return (
       <CheckoutLink className={className} polarApi={api.polar} productIds={[product.id]} lazy>
-        {interval === "year" ? `Choose ${plan.name} annual` : `Choose ${plan.name} monthly`}
+        {plan.id === "pro"
+          ? interval === "year"
+            ? "Upgrade to Pro annual"
+            : "Upgrade to Pro monthly"
+          : interval === "year"
+            ? "Upgrade to Business annual"
+            : "Upgrade to Business monthly"}
       </CheckoutLink>
     );
   }
@@ -265,7 +266,9 @@ function renderPlanAction({
     >
       {pending
         ? "Switching..."
-        : `Switch to ${plan.name} ${interval === "year" ? "annual" : "monthly"}`}
+        : plan.id === "pro"
+          ? `Switch to Pro ${interval === "year" ? "annual" : "monthly"}`
+          : `Switch to Business ${interval === "year" ? "annual" : "monthly"}`}
     </Button>
   );
 }

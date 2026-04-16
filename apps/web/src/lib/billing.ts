@@ -1,7 +1,7 @@
 export const PLAN_INTERVALS = ["month", "year"] as const;
 
 export type PlanInterval = (typeof PLAN_INTERVALS)[number];
-export type PlanId = "free" | "pro" | "team";
+export type PlanId = "free" | "pro" | "business";
 
 type PlanMetadata = Record<string, unknown> | null | undefined;
 
@@ -69,7 +69,7 @@ export function formatPlanPrice(product?: BillingProduct | null, interval: PlanI
 
 export function getSubscriptionPlanId(subscription: CurrentSubscription): PlanId {
   const rawPlan = getMetadataString(subscription?.product.metadata, "plan");
-  if (rawPlan === "pro" || rawPlan === "team") {
+  if (rawPlan === "pro" || rawPlan === "business") {
     return rawPlan;
   }
 

@@ -19,7 +19,7 @@ const polar = new Polar({
   server: POLAR_SERVER,
 });
 
-type PlanId = "free" | "pro" | "team";
+type PlanId = "free" | "pro" | "business";
 type PlanInterval = "month" | "year";
 
 type PlanSpec = {
@@ -64,24 +64,24 @@ const PLAN_SPECS: PlanSpec[] = [
     benefits: ["Everything in Free", "Higher usage limits", "Priority support"],
   },
   {
-    key: "team-month",
-    plan: "team",
+    key: "business-month",
+    plan: "business",
     interval: "month",
-    name: "Convex Zen Team Monthly",
-    description: "For teams that need collaboration, admin control, and support.",
+    name: "Convex Zen Business Monthly",
+    description: "For advanced usage, higher limits, and priority support.",
     amountType: "fixed",
     priceAmount: 4900,
-    benefits: ["Everything in Pro", "Team collaboration", "Admin controls"],
+    benefits: ["Everything in Pro", "Advanced workflows", "Priority support"],
   },
   {
-    key: "team-year",
-    plan: "team",
+    key: "business-year",
+    plan: "business",
     interval: "year",
-    name: "Convex Zen Team Yearly",
-    description: "Annual Team plan for teams standardizing on Convex Zen.",
+    name: "Convex Zen Business Yearly",
+    description: "Annual Business plan for advanced usage at better value.",
     amountType: "fixed",
     priceAmount: 49000,
-    benefits: ["Everything in Pro", "Team collaboration", "Admin controls"],
+    benefits: ["Everything in Pro", "Advanced workflows", "Priority support"],
   },
 ];
 
@@ -100,7 +100,10 @@ async function syncPlans() {
 
   for (const spec of PLAN_SPECS) {
     const benefitIds = await ensureBenefitIds(spec, organizationId, benefitIdsByDescription);
-    const existingProduct = existingProducts.find((product) => product.metadata?.key === spec.key);
+    const existingProduct = existingProducts.find((product) => {
+      const productKey = typeof product.metadata?.key === "string" ? product.metadata.key : null;
+      return productKey === spec.key || productKey === getLegacyPlanKey(spec.key);
+    });
 
     if (existingProduct) {
       const updated = await polar.products.update({
@@ -256,6 +259,18 @@ function buildUpdatedPrices(
   }
 
   return [...product.prices.map((price) => ({ id: price.id })), buildCreatePrice(spec)];
+}
+
+function getLegacyPlanKey(key: string) {
+  if (key === "business-month") {
+    return "team-month";
+  }
+
+  if (key === "business-year") {
+    return "team-year";
+  }
+
+  return key;
 }
 
 async function main() {
