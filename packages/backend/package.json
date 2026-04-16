@@ -27,6 +27,7 @@
   "devDependencies": {
     "@convex-zen/config": "workspace:*",
     "@types/node": "^24.3.0",
+    "convex-test": "^0.0.48",
     "tsx": "^4.21.0",
     "typescript": "^5",
     "vitest": "^2.1.0"
