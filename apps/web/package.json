@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
-    "deploy": "vite build && wrangler deploy --yes",
+    "deploy": "vite build && wrangler deploy",
     "destroy": "wrangler delete --name convex-zen-web-abdssamie",
     "serve": "vite preview",
     "dev:bare": "vite dev",
