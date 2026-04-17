@@ -26,7 +26,7 @@ export default defineConfig({
         compatibility_flags: ["nodejs_compat", "nodejs_compat_populate_process_env"],
         keep_vars: true,
         observability: {
-          enabled: false,
+          enabled: true,
         },
         vars: workerVars,
       },
