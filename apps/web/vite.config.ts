@@ -1,13 +1,26 @@
+import { cloudflare } from "@cloudflare/vite-plugin";
 import tailwindcss from "@tailwindcss/vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import { Unhead } from "@unhead/react/vite";
 import viteReact from "@vitejs/plugin-react";
-import alchemy from "alchemy/cloudflare/tanstack-start";
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
-  plugins: [tsconfigPaths(), tailwindcss(), Unhead(), tanstackStart(), viteReact(), alchemy()],
+  plugins: [
+    cloudflare({
+      config: {
+        name: "convex-zen-web-abdssamie",
+        compatibility_date: "2026-04-17",
+        compatibility_flags: ["nodejs_compat"],
+      },
+    }),
+    tsconfigPaths(),
+    tailwindcss(),
+    Unhead(),
+    tanstackStart(),
+    viteReact(),
+  ],
   resolve: {
     dedupe: ["react", "react-dom"],
   },

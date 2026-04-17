@@ -5,6 +5,8 @@
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
+    "deploy": "vite build && wrangler deploy --yes",
+    "destroy": "wrangler delete --name convex-zen-web-abdssamie",
     "serve": "vite preview",
     "dev:bare": "vite dev",
     "test:e2e": "playwright test",
@@ -88,7 +90,6 @@
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "^5.2.0",
-    "alchemy": "catalog:",
     "jsdom": "^26.0.0",
     "typescript": "^5",
     "vite": "^7.3.2",

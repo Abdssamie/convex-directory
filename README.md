@@ -61,8 +61,8 @@ Open [http://localhost:3001](http://localhost:3001)
 ## Deployment
 
 ```bash
-# Dev server (Cloudflare)
-cd apps/web && pnpm run alchemy dev
+# Dev server
+cd apps/web && pnpm run dev
 
 # Deploy
 cd apps/web && pnpm run deploy

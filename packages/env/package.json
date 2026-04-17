@@ -13,7 +13,6 @@
   },
   "devDependencies": {
     "@convex-zen/config": "workspace:*",
-    "@convex-zen/infra": "workspace:*",
     "typescript": "^5"
   }
 }
