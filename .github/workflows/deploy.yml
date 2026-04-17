@@ -16,7 +16,6 @@ jobs:
       VITE_CONVEX_URL: ${{ secrets.VITE_CONVEX_URL }}
       VITE_CONVEX_SITE_URL: ${{ secrets.VITE_CONVEX_SITE_URL }}
       SITE_URL: ${{ secrets.SITE_URL }}
-      AUTH_TRUSTED_ORIGINS: ${{ secrets.AUTH_TRUSTED_ORIGINS }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
@@ -37,13 +36,6 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-
-      - name: Sync Convex env
-        run: |
-          trusted_origins="${AUTH_TRUSTED_ORIGINS:-$SITE_URL}"
-          cd packages/backend
-          npx convex env set SITE_URL "$SITE_URL"
-          npx convex env set AUTH_TRUSTED_ORIGINS "$trusted_origins"
 
       - name: Deploy Convex backend
         run: |
