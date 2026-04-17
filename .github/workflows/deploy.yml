@@ -43,4 +43,4 @@ jobs:
           npx convex deploy
 
       - name: Deploy app
-        run: pnpm deploy
+        run: pnpm run deploy
