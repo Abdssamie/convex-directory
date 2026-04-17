@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
-    "deploy": "vite build && wrangler deploy dist/server/server.js --config dist/client/wrangler.json",
+    "deploy": "vite build && wrangler deploy dist/server/server.js --config dist/client/wrangler.json --no-bundle",
     "destroy": "wrangler delete --name convex-zen-web-abdssamie",
     "serve": "vite preview",
     "dev:bare": "vite dev",
