@@ -18,7 +18,7 @@ Most SaaS starters cost $50+/month before you make a single dollar. This one is 
 
 - **Convex** – Realtime backend with database, auth, functions, scheduled jobs. Free tier: 1M row writes/month
 - **TanStack Start** – Full-stack React with SSR and streaming
-- **Cloudflare** – Edge deployment via Alchemy. Free: 100k requests/day on Workers
+- **Cloudflare Workers** – Edge deployment via Wrangler. Free: 100k requests/day on Workers
 - **Better Auth** – Open-source auth that works with Convex. No vendor lock-in
 - **Polar** – Developer-friendly payments. 0% until $1k, then 5%
 - **Brevo** – Email marketing. Free: 300 emails/day
@@ -36,7 +36,20 @@ convex-zen/
 │   ├── ui/            # Shared UI components
 │   ├── env/           # Environment types
 │   └── config/        # Shared config
+├── project.config.json # Project-specific deploy settings
+├── scripts/            # Boilerplate maintenance and deploy helpers
 ```
+
+## Deployment Model
+
+This boilerplate uses one deploy path:
+
+- **GitHub Actions** deploys both **Convex** and **Cloudflare Workers**
+- **Wrangler** deploys the web app
+- **Convex CLI** deploys the backend
+- **Cloudflare dashboard Git builds should stay disabled**
+
+This avoids frontend/backend drift and keeps deploy behavior predictable across new projects.
 
 ## Quick Start
 
@@ -61,25 +74,98 @@ Open [http://localhost:3001](http://localhost:3001)
 ## Deployment
 
 ```bash
-# Dev server
-cd apps/web && pnpm run dev
+# Sync generated deploy config from project.config.json
+pnpm run sync:project-config
 
-# Deploy
-cd apps/web && pnpm run deploy
+# Validate deploy prerequisites
+pnpm run doctor:deploy
+
+# Deploy Convex + Cloudflare
+pnpm run deploy
 
 # Clean up
-cd apps/web && pnpm run destroy
+pnpm run destroy
 ```
+
+## New Project Checklist
+
+When turning this boilerplate into a new app, update **one file first**:
+
+- [project.config.json](/home/abdssamie/Projects/convex-zen/project.config.json:1)
+
+Change:
+
+- `projectName`
+- `workerName`
+- `productionUrl`
+- Cloudflare compatibility settings if needed
+
+Then run:
+
+```bash
+pnpm run sync:project-config
+```
+
+That regenerates:
+
+- [apps/web/wrangler.jsonc](/home/abdssamie/Projects/convex-zen/apps/web/wrangler.jsonc:1)
+
+## Required GitHub Secrets
+
+GitHub Actions expects these repository secrets:
+
+- `CONVEX_DEPLOY_KEY`
+- `CLOUDFLARE_API_TOKEN`
+- `CLOUDFLARE_ACCOUNT_ID`
+- `SITE_URL`
+- `VITE_CONVEX_URL`
+- `VITE_CONVEX_SITE_URL`
+
+## Required Convex Production Env
+
+These must be set in the **Convex dashboard** for production auth to work:
+
+- `SITE_URL`
+- `AUTH_TRUSTED_ORIGINS`
+
+For this repository, both should point at the production Workers URL.
+
+## Deploy Doctor
+
+Run:
+
+```bash
+pnpm run doctor:deploy
+```
+
+It checks:
+
+- required CI env vars exist
+- `SITE_URL` matches `project.config.json`
+- `apps/web/wrangler.jsonc` is synced with `project.config.json`
+- frontend Convex URLs are present for the build
+
+## Boilerplate Rules
+
+- Keep **GitHub Actions** as the only production deploy path
+- Keep **Cloudflare Git auto-builds disabled**
+- Keep project-specific deploy naming in `project.config.json`
+- Regenerate `apps/web/wrangler.jsonc` after changing project config
+- Manage Convex auth origins separately from Cloudflare Worker vars
 
 ## Scripts
 
-| Command              | Description              |
-| -------------------- | ------------------------ |
-| `pnpm run dev`       | Start all apps           |
-| `pnpm run build`     | Build all                |
-| `pnpm run typecheck` | Type check               |
-| `pnpm run lint`      | Lint & format            |
-| `pnpm run dev:setup` | Configure Convex project |
+| Command                   | Description                                  |
+| ------------------------- | -------------------------------------------- |
+| `pnpm run dev`            | Start frontend and Convex dev server         |
+| `pnpm run build`          | Build all packages                           |
+| `pnpm run typecheck`      | Type check the main app packages             |
+| `pnpm run lint`           | Lint and format source files                 |
+| `pnpm run dev:setup`      | Configure Convex project                     |
+| `pnpm run sync:project-config` | Regenerate Wrangler config from project config |
+| `pnpm run doctor:deploy`  | Validate deploy prerequisites                |
+| `pnpm run deploy`         | Deploy Convex backend, then Cloudflare web   |
+| `pnpm run destroy`        | Delete the Cloudflare Worker                 |
 
 ## Features Included
 

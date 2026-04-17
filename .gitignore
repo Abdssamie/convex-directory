@@ -56,6 +56,7 @@ coverage
 .cache
 tmp
 temp
+.codex
 
 
 convex-brevo
