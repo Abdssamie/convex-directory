@@ -47,7 +47,7 @@ const secondaryFeatures = [
   {
     icon: Palette,
     title: "Modern Tech Stack",
-    description: "Built with shadcn/ui, Tailwind CSS, and TypeScript.",
+    description: "Built with Convex, TanStack Start, Tailwind CSS, and TypeScript.",
   },
   {
     icon: Users,
@@ -119,13 +119,13 @@ export function FeaturesSection() {
 
             <div className="flex flex-col sm:flex-row gap-4 pe-4 pt-2">
               <Button size="lg" className="cursor-pointer">
-                <a href="https://shadcnstore.com/templates" className="flex items-center">
+                <a href="https://github.com/Abdssamie/convex-zen" className="flex items-center">
                   Browse Templates
                   <ArrowRight className="ms-2 size-4" aria-hidden="true" />
                 </a>
               </Button>
               <Button size="lg" variant="outline" className="cursor-pointer">
-                <a href="https://shadcnstore.com/blocks">View Components</a>
+                <a href="https://github.com/Abdssamie/convex-zen">View Components</a>
               </Button>
             </div>
           </div>
@@ -171,7 +171,7 @@ export function FeaturesSection() {
               </Button>
               <Button size="lg" variant="outline" className="cursor-pointer">
                 <a
-                  href="https://github.com/silicondeck/shadcn-dashboard-landing-template"
+                  href="https://github.com/Abdssamie/convex-zen"
                   target="_blank"
                   rel="noopener noreferrer"
                 >

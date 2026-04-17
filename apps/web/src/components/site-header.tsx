@@ -6,7 +6,6 @@ import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { CommandSearch, SearchTrigger } from "@/components/command-search";
 import { ModeToggle } from "@/components/mode-toggle";
-import { getAppUrl } from "@/lib/utils";
 
 export function SiteHeader() {
   const [searchOpen, setSearchOpen] = React.useState(false);
@@ -35,27 +34,7 @@ export function SiteHeader() {
           <div className="ml-auto flex items-center gap-2">
             <Button variant="ghost" asChild size="sm" className="hidden sm:flex">
               <a
-                href="https://shadcnstore.com/blocks"
-                rel="noopener noreferrer"
-                target="_blank"
-                className="dark:text-foreground"
-              >
-                Blocks
-              </a>
-            </Button>
-            <Button variant="ghost" asChild size="sm" className="hidden sm:flex">
-              <a
-                href={getAppUrl("/")}
-                rel="noopener noreferrer"
-                target="_blank"
-                className="dark:text-foreground"
-              >
-                Home
-              </a>
-            </Button>
-            <Button variant="ghost" asChild size="sm" className="hidden sm:flex">
-              <a
-                href="https://github.com/silicondeck/shadcn-dashboard-landing-template"
+                href="https://github.com/Abdssamie/convex-zen"
                 rel="noopener noreferrer"
                 target="_blank"
                 className="dark:text-foreground"

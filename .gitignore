@@ -12,6 +12,7 @@ build
 .env
 .env*.local
 .env.convex
+packages/backend/.env.convex.prod
 
 # Convex generated files
 packages/backend/convex/_generated/
@@ -59,4 +60,3 @@ temp
 
 convex-brevo
 _generated/
-

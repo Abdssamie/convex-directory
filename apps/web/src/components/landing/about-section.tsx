@@ -17,7 +17,7 @@ const values = [
     icon: Palette,
     title: "Design Excellence",
     description:
-      "We maintain the highest design standards, following shadcn/ui principles and modern UI patterns.",
+      "We maintain the highest design standards, following modern UI patterns and best practices.",
   },
   {
     icon: Layout,
@@ -40,15 +40,15 @@ export function AboutSection() {
         {/* Section Header */}
         <div className="mx-auto max-w-4xl text-center mb-16">
           <Badge variant="outline" className="mb-4">
-            About ShadcnStore
+            About Convex Zen
           </Badge>
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-6">
             Built for developers, by developers
           </h2>
           <p className="text-lg text-muted-foreground mb-8">
-            We're passionate about creating the best marketplace for shadcn/ui components and
-            templates. Our mission is to accelerate development and help developers build beautiful
-            admin interfaces faster.
+            We're passionate about creating the best boilerplate for building SaaS applications with
+            Convex and TanStack Start. Our mission is to help developers ship faster with
+            production-ready components and best practices.
           </p>
         </div>
 
@@ -79,7 +79,7 @@ export function AboutSection() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" className="cursor-pointer" asChild>
               <a
-                href="https://github.com/silicondeck/shadcn-dashboard-landing-template"
+                href="https://github.com/Abdssamie/convex-zen"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -89,11 +89,11 @@ export function AboutSection() {
             </Button>
             <Button size="lg" variant="outline" className="cursor-pointer" asChild>
               <a
-                href="https://discord.com/invite/XEQhPc9a6p"
+                href="https://github.com/Abdssamie/convex-zen"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Join Discord Community
+                Contribute on GitHub
               </a>
             </Button>
           </div>

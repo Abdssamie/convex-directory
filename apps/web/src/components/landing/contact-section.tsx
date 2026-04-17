@@ -16,7 +16,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@convex-zen/ui/components/form";
-import { Mail, MessageCircle, Github, BookOpen } from "lucide-react";
+import { Mail, Github, BookOpen } from "lucide-react";
 
 const contactFormSchema = z.object({
   firstName: z.string().min(2, {
@@ -66,37 +66,13 @@ export function ContactSection() {
             Need help or have questions?
           </h2>
           <p className="text-lg text-muted-foreground">
-            Our team is here to help you get the most out of ShadcnStore. Choose the best way to
-            reach out to us.
+            Our team is here to help you get the most out of Convex Zen.
           </p>
         </div>
 
         <div className="grid gap-8 lg:grid-cols-3">
           {/* Contact Options */}
           <div className="space-y-6 order-2 lg:order-1">
-            <Card className="hover:shadow-md transition-shadow cursor-pointer">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <MessageCircle className="h-5 w-5 text-primary" />
-                  Discord Community
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground mb-3">
-                  Join our active community for quick help and discussions with other developers.
-                </p>
-                <Button variant="outline" size="sm" className="cursor-pointer" asChild>
-                  <a
-                    href="https://discord.com/invite/XEQhPc9a6p"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Join Discord
-                  </a>
-                </Button>
-              </CardContent>
-            </Card>
-
             <Card className="hover:shadow-md transition-shadow cursor-pointer">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -110,7 +86,7 @@ export function ContactSection() {
                 </p>
                 <Button variant="outline" size="sm" className="cursor-pointer" asChild>
                   <a
-                    href="https://github.com/silicondeck/shadcn-dashboard-landing-template/issues"
+                    href="https://github.com/Abdssamie/convex-zen/issues"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -215,7 +191,7 @@ export function ContactSection() {
                           <FormLabel>Message</FormLabel>
                           <FormControl>
                             <Textarea
-                              placeholder="Tell us how we can help you with ShadcnStore components..."
+                              placeholder="Tell us how we can help you with Convex Zen..."
                               rows={10}
                               className="min-h-50"
                               {...field}

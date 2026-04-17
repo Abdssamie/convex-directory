@@ -24,7 +24,7 @@ Most SaaS starters cost $50+/month before you make a single dollar. This one is 
 - **Brevo** – Email marketing. Free: 300 emails/day
 - **Convalytics** – Privacy-first web + product analytics
 - **TailwindCSS** – Styling
-- **shadcn/ui** – Component primitives in shared package
+- **TanStack Start** + **Convex** – Full-stack React with SSR, streaming, and realtime backend
 
 ## Project Structure
 
@@ -33,7 +33,7 @@ convex-zen/
 ├── apps/web/           # Frontend (TanStack Start, React)
 ├── packages/
 │   ├── backend/       # Convex functions & schema
-│   ├── ui/            # Shared shadcn components
+│   ├── ui/            # Shared UI components
 │   ├── env/           # Environment types
 │   └── config/        # Shared config
 ```

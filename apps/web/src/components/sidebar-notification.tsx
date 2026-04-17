@@ -30,26 +30,18 @@ export function SidebarNotification() {
             <div>
               Welcome to{" "}
               <a
-                href="https://shadcnstore.com"
+                href="https://github.com/Abdssamie/convex-zen"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary hover:underline"
               >
-                ShadcnStore
+                Convex Zen
               </a>
             </div>
           </h3>
           <p className="text-sm text-muted-foreground dark:text-neutral-400 leading-relaxed">
-            Explore our premium Shadcn UI{" "}
-            <a
-              href="https://shadcnstore.com/blocks"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary underline"
-            >
-              blocks
-            </a>{" "}
-            to build your next project faster.
+            Explore our premium Convex Zen boilerplate with TanStack Start and Convex to build your
+            next project faster.
           </p>
         </div>
       </CardContent>

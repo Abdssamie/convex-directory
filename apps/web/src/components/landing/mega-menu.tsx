@@ -96,7 +96,7 @@ const menuSections = [
       },
       {
         title: "Design System",
-        description: "shadcn/ui standards and customization",
+        description: "Convex Zen standards and customization",
         icon: Zap,
         href: "#design-system",
       },

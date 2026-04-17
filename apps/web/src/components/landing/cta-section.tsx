@@ -48,7 +48,7 @@ export function CTASection() {
 
                 <p className="text-muted-foreground mx-auto max-w-2xl text-balance lg:text-xl">
                   Stop building from scratch. Get production-ready components, templates and
-                  dashboards that integrate seamlessly with your shadcn/ui projects.
+                  dashboards that integrate seamlessly with your Convex + TanStack Start projects.
                 </p>
               </div>
 
@@ -56,7 +56,7 @@ export function CTASection() {
               <div className="flex flex-col justify-center gap-4 sm:flex-row sm:gap-6">
                 <Button size="lg" className="cursor-pointer px-8 py-6 text-lg font-medium" asChild>
                   <a
-                    href="https://shadcnstore.com/blocks"
+                    href="https://github.com/Abdssamie/convex-zen"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -71,7 +71,7 @@ export function CTASection() {
                   asChild
                 >
                   <a
-                    href="https://github.com/silicondeck/shadcn-dashboard-landing-template"
+                    href="https://github.com/Abdssamie/convex-zen"
                     target="_blank"
                     rel="noopener noreferrer"
                   >

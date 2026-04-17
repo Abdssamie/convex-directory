@@ -16,7 +16,26 @@ import {
 } from "./features/email/betterAuth";
 import { rateLimiter } from "./lib/rateLimiter";
 
-const siteUrl = process.env.SITE_URL!;
+function normalizeUrl(url: string) {
+  return url.replace(/\/$/, "");
+}
+
+function getTrustedOrigins() {
+  const configuredOrigins = [
+    process.env.SITE_URL,
+    process.env.AUTH_TRUSTED_ORIGINS,
+    process.env.BETTER_AUTH_TRUSTED_ORIGINS,
+  ]
+    .filter((value): value is string => Boolean(value))
+    .flatMap((value) => value.split(","))
+    .map((value) => normalizeUrl(value.trim()))
+    .filter(Boolean);
+
+  return [...new Set(configuredOrigins)];
+}
+
+const trustedOrigins = getTrustedOrigins();
+const siteUrl = trustedOrigins[0] ?? "";
 
 export const authComponent = createClient<DataModel>(components.betterAuth);
 
@@ -34,7 +53,7 @@ function normalizeOrganizationInput<T extends { name?: string; slug?: string; lo
 function getBetterAuthConfig(ctx: GenericCtx<DataModel>) {
   return {
     baseURL: siteUrl,
-    trustedOrigins: [siteUrl],
+    trustedOrigins,
     database: authComponent.adapter(ctx),
     emailAndPassword: {
       enabled: true,
@@ -105,7 +124,6 @@ function getBetterAuthConfig(ctx: GenericCtx<DataModel>) {
           },
         },
         async sendInvitationEmail(data) {
-          const siteUrl = process.env.SITE_URL ?? "http://localhost:3001";
           const inviteLink = `${siteUrl}/invite/${data.id}`;
 
           await sendInvitationEmail({
