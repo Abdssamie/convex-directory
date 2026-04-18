@@ -6,6 +6,7 @@ import { useLocalizedNavigate } from "@/hooks/useLocalizedNavigate";
 import { useForm } from "@tanstack/react-form";
 import { toast } from "sonner";
 import z from "zod";
+import { useIntlayer } from "react-intlayer";
 
 import { authClient } from "@/lib/auth-client";
 
@@ -25,6 +26,7 @@ export default function SignUpForm({
   redirectTo?: string;
 }) {
   const navigate = useLocalizedNavigate();
+  const content = useIntlayer("sign-up-form");
 
   const form = useForm({
     defaultValues: {
@@ -46,7 +48,7 @@ export default function SignUpForm({
               to: "/verify-email",
               search: { email: value.email, redirectTo },
             });
-            toast.success("Sign up successful. Check your email to verify your account.");
+            toast.success(content.successMessage.value);
           },
           onError: (error) => {
             toast.error(error.error.message || error.error.statusText);
@@ -56,16 +58,16 @@ export default function SignUpForm({
     },
     validators: {
       onSubmit: z.object({
-        name: z.string().min(2, "Name must be at least 2 characters"),
-        email: z.email("Invalid email address"),
-        password: z.string().min(8, "Password must be at least 8 characters"),
+        name: z.string().min(2, content.fields.name.errorMin.value),
+        email: z.email(content.fields.email.errorInvalid.value),
+        password: z.string().min(8, content.fields.password.errorMin.value),
       }),
     },
   });
 
   return (
     <div className="mx-auto w-full mt-10 max-w-md p-6">
-      <h1 className="mb-6 text-center text-3xl font-bold">Create Account</h1>
+      <h1 className="mb-6 text-center text-3xl font-bold">{content.title}</h1>
 
       <form
         onSubmit={(e) => {
@@ -79,7 +81,7 @@ export default function SignUpForm({
           <form.Field name="name">
             {(field) => (
               <div className="space-y-2">
-                <Label htmlFor={field.name}>Name</Label>
+                <Label htmlFor={field.name}>{content.fields.name.label}</Label>
                 <Input
                   id={field.name}
                   name={field.name}
@@ -101,7 +103,7 @@ export default function SignUpForm({
           <form.Field name="email">
             {(field) => (
               <div className="space-y-2">
-                <Label htmlFor={field.name}>Email</Label>
+                <Label htmlFor={field.name}>{content.fields.email.label}</Label>
                 <Input
                   id={field.name}
                   name={field.name}
@@ -124,7 +126,7 @@ export default function SignUpForm({
           <form.Field name="password">
             {(field) => (
               <div className="space-y-2">
-                <Label htmlFor={field.name}>Password</Label>
+                <Label htmlFor={field.name}>{content.fields.password.label}</Label>
                 <Input
                   id={field.name}
                   name={field.name}
@@ -148,7 +150,7 @@ export default function SignUpForm({
         >
           {({ canSubmit, isSubmitting }) => (
             <Button type="submit" className="w-full" disabled={!canSubmit || isSubmitting}>
-              {isSubmitting ? "Submitting..." : "Sign Up"}
+              {isSubmitting ? content.submitting : content.submit}
             </Button>
           )}
         </form.Subscribe>
@@ -157,11 +159,11 @@ export default function SignUpForm({
       <div className="mt-4 text-center text-sm">
         {onSwitchToSignIn ? (
           <Button variant="link" onClick={onSwitchToSignIn} className="text-primary">
-            Already have an account? Sign In
+            {content.alreadyHaveAccount}
           </Button>
         ) : (
           <LocalizedLink to="/sign-in" className="text-primary underline-offset-4 hover:underline">
-            Already have an account? Sign In
+            {content.alreadyHaveAccount}
           </LocalizedLink>
         )}
       </div>

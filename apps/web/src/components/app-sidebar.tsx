@@ -10,77 +10,51 @@ import {
   Settings,
   CreditCard,
   Building2,
+  type LucideIcon,
 } from "lucide-react";
 import { api } from "@convex-zen/backend/convex/_generated/api";
 import { useQuery } from "convex/react";
 import { OrganizationSwitcher } from "@/components/organization-switcher";
+import { useIntlayer } from "react-intlayer";
+import { type To } from "@/components/localized-link";
 
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader } from "@/components/ui/sidebar";
 
-const data = {
-  navGroups: [
-    {
-      label: "Dashboards",
-      items: [
-        {
-          title: "Dashboard",
-          url: "/dashboard",
-          icon: LayoutDashboard,
-        },
-        {
-          title: "Home",
-          url: "/",
-          icon: House,
-        },
-      ],
-    },
-    {
-      label: "Auth",
-      items: [
-        {
-          title: "Sign In",
-          url: "/sign-in",
-          icon: LogIn,
-        },
-        {
-          title: "Sign Up",
-          url: "/sign-up",
-          icon: UserPlus,
-        },
-        {
-          title: "Forgot Password",
-          url: "/forgot-password",
-          icon: KeyRound,
-        },
-      ],
-    },
-    {
-      label: "Settings",
-      items: [
-        {
-          title: "Account",
-          url: "/settings/account",
-          icon: Settings,
-        },
-        {
-          title: "Organization",
-          url: "/settings/organization",
-          icon: Building2,
-        },
-        {
-          title: "Billing",
-          url: "/settings/billing",
-          icon: CreditCard,
-        },
-      ],
-    },
-  ],
+const iconMap: Record<string, LucideIcon> = {
+  "/dashboard": LayoutDashboard,
+  "/": House,
+  "/sign-in": LogIn,
+  "/sign-up": UserPlus,
+  "/forgot-password": KeyRound,
+  "/settings/account": Settings,
+  "/settings/organization": Building2,
+  "/settings/billing": CreditCard,
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const user = useQuery(api.auth.getCurrentUser);
+  const content = useIntlayer("app-sidebar");
+
+  type NavItem = {
+    title: { value: string };
+    url: { value: string };
+  };
+
+  type NavGroup = {
+    label: { value: string };
+    items: NavItem[];
+  };
+
+  const navGroups = ((content.groups as unknown as NavGroup[]) || []).map((group: NavGroup) => ({
+    label: group.label.value,
+    items: group.items.map((item: NavItem) => ({
+      title: item.title.value,
+      url: item.url.value as To,
+      icon: iconMap[item.url.value],
+    })),
+  }));
 
   return (
     <Sidebar {...props}>
@@ -88,15 +62,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <OrganizationSwitcher />
       </SidebarHeader>
       <SidebarContent>
-        {data.navGroups.map((group) => (
-          <NavMain key={group.label} label={group.label} items={group.items as any} />
+        {navGroups.map((group: { label: string; items: { title: string; url: To; icon: LucideIcon }[] }) => (
+          <NavMain key={group.label} label={group.label} items={group.items} />
         ))}
       </SidebarContent>
       <SidebarFooter>
         <NavUser
           user={{
             name: user?.name ?? "ConvexZen",
-            email: user?.email ?? "Signed in",
+            email: user?.email ?? ((content.signedIn as unknown as { value: string })?.value || "Signed in"),
             avatar: "",
           }}
         />
