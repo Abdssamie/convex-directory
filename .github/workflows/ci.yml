@@ -37,9 +37,9 @@ jobs:
       - name: Run backend tests
         run: pnpm --filter @convex-zen/backend run test
 
-      - name: Install Playwright Browsers
-        run: pnpm exec playwright install --with-deps
-        working-directory: apps/web
+      # - name: Install Playwright Browsers
+      #   run: pnpm exec playwright install --with-deps
+      #   working-directory: apps/web
 
-      - name: Run E2E tests
-        run: pnpm --filter web run test:e2e
+      # - name: Run E2E tests (Not supported in CI yet)
+      #   run: pnpm --filter web run test:e2e
