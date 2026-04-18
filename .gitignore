@@ -15,9 +15,9 @@ build
 packages/backend/.env.convex.prod
 
 # Convex generated files
-packages/backend/convex/_generated/
-apps/web/src/routeTree.gen.ts
-apps/web/src/routeTree.ts
+# packages/backend/convex/_generated/
+# apps/web/src/routeTree.gen.ts
+# apps/web/src/routeTree.ts
 
 # IDEs and editors
 .vscode/*
