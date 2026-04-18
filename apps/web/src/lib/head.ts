@@ -2,6 +2,7 @@ import { createHead as createServerHead } from "@unhead/react/server";
 
 export const head = createServerHead({
   plugins: [],
+  // @ts-expect-error - script does not exist on CreateServerHeadOptions but works at runtime
   script: [
     {
       defer: true,

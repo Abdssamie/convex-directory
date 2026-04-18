@@ -5,14 +5,16 @@ import { useState } from "react";
 import DashboardPage from "@/app/dashboard/page";
 import SignInForm from "@/components/sign-in-form";
 import SignUpForm from "@/components/sign-up-form";
+import { getPathWithoutLocale } from "intlayer";
 
-export const Route = createFileRoute("/dashboard")({
-  beforeLoad: ({ context, location }) => {
+export const Route = createFileRoute("/{-$locale}/dashboard")({
+  beforeLoad: ({ context, location, params }) => {
     if (!context.isAuthenticated) {
       throw redirect({
-        to: "/sign-in",
+        to: "/{-$locale}/sign-in",
+        params: { locale: params.locale ?? "" },
         search: {
-          redirectTo: location.href,
+          redirectTo: getPathWithoutLocale(location.href),
         },
       });
     }

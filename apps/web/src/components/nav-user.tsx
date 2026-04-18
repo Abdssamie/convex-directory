@@ -1,7 +1,7 @@
 "use client";
 
 import { CreditCard, EllipsisVertical, LogOut, CircleUser, Building2 } from "lucide-react";
-import { Link } from "@tanstack/react-router";
+import { LocalizedLink } from "@/components/localized-link";
 
 import { authClient } from "@/lib/auth-client";
 import { Logo } from "@/components/logo";
@@ -71,22 +71,22 @@ export function NavUser({
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem asChild className="cursor-pointer">
-                <Link to="/settings/account">
+                <LocalizedLink to="/settings/account">
                   <CircleUser />
                   Account
-                </Link>
+                </LocalizedLink>
               </DropdownMenuItem>
               <DropdownMenuItem asChild className="cursor-pointer">
-                <Link to="/settings/billing">
+                <LocalizedLink to="/settings/billing">
                   <CreditCard />
                   Billing
-                </Link>
+                </LocalizedLink>
               </DropdownMenuItem>
               <DropdownMenuItem asChild className="cursor-pointer">
-                <Link to="/settings/organization">
+                <LocalizedLink to="/settings/organization">
                   <Building2 />
                   Organization
-                </Link>
+                </LocalizedLink>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />

@@ -3,10 +3,13 @@ import { createFileRoute, redirect } from "@tanstack/react-router";
 import AuthLayout from "@/components/auth-layout";
 import MagicLinkForm from "@/components/magic-link-form";
 
-export const Route = createFileRoute("/magic-link")({
-  beforeLoad: ({ context }) => {
+export const Route = createFileRoute("/{-$locale}/magic-link")({
+  beforeLoad: ({ context, params }) => {
     if (context.isAuthenticated) {
-      throw redirect({ to: "/dashboard" });
+      throw redirect({ 
+        to: "/{-$locale}/dashboard",
+        params: { locale: params.locale ?? "" }
+      });
     }
   },
   component: RouteComponent,

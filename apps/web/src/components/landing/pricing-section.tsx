@@ -2,7 +2,7 @@
 
 import { CheckoutLink } from "@convex-dev/polar/react";
 import { api } from "@convex-zen/backend/convex/_generated/api";
-import { Link } from "@tanstack/react-router";
+import { LocalizedLink } from "@/components/localized-link";
 import { useAction, useQuery } from "convex/react";
 import { Check } from "lucide-react";
 import { useState } from "react";
@@ -206,7 +206,7 @@ function renderPlanAction({
   if (!isAuthenticated) {
     return (
       <Button className={className} variant={variant} asChild>
-        <Link to="/sign-in">Sign in</Link>
+        <LocalizedLink to="/sign-in">Sign in</LocalizedLink>
       </Button>
     );
   }
@@ -215,7 +215,7 @@ function renderPlanAction({
     if (plan.id === "free") {
       return (
         <Button className={className} variant={variant} asChild>
-          <Link to="/dashboard">Start free</Link>
+          <LocalizedLink to="/dashboard">Start free</LocalizedLink>
         </Button>
       );
     }

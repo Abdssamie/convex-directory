@@ -1,7 +1,8 @@
 import { Button } from "@convex-zen/ui/components/button";
 import { Input } from "@convex-zen/ui/components/input";
 import { Label } from "@convex-zen/ui/components/label";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { LocalizedLink } from "@/components/localized-link";
+import { useLocalizedNavigate } from "@/hooks/useLocalizedNavigate";
 import { useForm } from "@tanstack/react-form";
 import { toast } from "sonner";
 import z from "zod";
@@ -9,7 +10,7 @@ import z from "zod";
 import { authClient } from "@/lib/auth-client";
 
 export default function ResetPasswordForm({ token }: { token: string }) {
-  const navigate = useNavigate();
+  const navigate = useLocalizedNavigate();
 
   const form = useForm({
     defaultValues: {
@@ -110,9 +111,9 @@ export default function ResetPasswordForm({ token }: { token: string }) {
       </form>
 
       <div className="text-sm text-muted-foreground">
-        <Link to="/sign-in" className="text-primary underline-offset-4 hover:underline">
+        <LocalizedLink to="/sign-in" className="text-primary underline-offset-4 hover:underline">
           Back to sign in
-        </Link>
+        </LocalizedLink>
       </div>
     </div>
   );

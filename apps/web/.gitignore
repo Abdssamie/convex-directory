@@ -11,6 +11,9 @@
 # Testing
 /coverage
 
+# Intlayer
+.intlayer/
+
 # Build outputs
 /.next/
 /out/

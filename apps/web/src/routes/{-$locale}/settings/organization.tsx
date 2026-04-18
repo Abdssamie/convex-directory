@@ -20,11 +20,12 @@ import { BaseLayout } from "@/components/layouts/base-layout";
 import { authClient } from "@/lib/auth-client";
 import { slugifyOrganizationName, useOrganizationState } from "@/lib/organization";
 
-export const Route = createFileRoute("/settings/organization")({
+export const Route = createFileRoute("/{-$locale}/settings/organization")({
   beforeLoad: ({ context, location }) => {
     if (!context.isAuthenticated) {
       throw redirect({
-        to: "/sign-in",
+        to: "/{-$locale}/sign-in",
+        params: { locale: location.pathname.split("/")[1] || "en" },
         search: {
           redirectTo: location.href,
         },

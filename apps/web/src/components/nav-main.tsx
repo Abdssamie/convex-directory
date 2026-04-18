@@ -1,7 +1,8 @@
 "use client";
 
 import { ChevronRight, type LucideIcon } from "lucide-react";
-import { Link, useLocation } from "@tanstack/react-router";
+import { LocalizedLink, type To } from "@/components/localized-link";
+import { useLocation } from "@tanstack/react-router";
 
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
@@ -22,12 +23,12 @@ export function NavMain({
   label: string;
   items: {
     title: string;
-    url: string;
+    url: To;
     icon?: LucideIcon;
     isActive?: boolean;
     items?: {
       title: string;
-      url: string;
+      url: To;
       isActive?: boolean;
     }[];
   }[];
@@ -70,9 +71,9 @@ export function NavMain({
                             className="cursor-pointer"
                             isActive={location.pathname === subItem.url}
                           >
-                            <Link to={subItem.url}>
+                            <LocalizedLink to={subItem.url}>
                               <span>{subItem.title}</span>
-                            </Link>
+                            </LocalizedLink>
                           </SidebarMenuSubButton>
                         </SidebarMenuSubItem>
                       ))}
@@ -86,10 +87,10 @@ export function NavMain({
                   className="cursor-pointer"
                   isActive={location.pathname === item.url}
                 >
-                  <Link to={item.url}>
+                  <LocalizedLink to={item.url}>
                     {item.icon && <item.icon />}
                     <span>{item.title}</span>
-                  </Link>
+                  </LocalizedLink>
                 </SidebarMenuButton>
               )}
             </SidebarMenuItem>

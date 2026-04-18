@@ -1,6 +1,9 @@
 import { api } from "@convex-zen/backend/convex/_generated/api";
 import { Button } from "@convex-zen/ui/components/button";
-import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
+import { LocalizedLink } from "@/components/localized-link";
+import { useLocalizedNavigate } from "@/hooks/useLocalizedNavigate";
+import type { LocalizedTo } from "@/hooks/useLocalizedNavigate";
+import {  createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -8,7 +11,7 @@ import { toast } from "sonner";
 import AuthLayout from "@/components/auth-layout";
 import { authClient } from "@/lib/auth-client";
 
-export const Route = createFileRoute("/verify-email")({
+export const Route = createFileRoute("/{-$locale}/verify-email")({
   validateSearch: (
     search: Record<string, unknown>,
   ): { token?: string; email?: string; redirectTo?: string } => ({
@@ -20,7 +23,7 @@ export const Route = createFileRoute("/verify-email")({
 });
 
 function RouteComponent() {
-  const navigate = useNavigate();
+  const navigate = useLocalizedNavigate();
   const user = useQuery(api.auth.getCurrentUser);
   const { token, email, redirectTo } = Route.useSearch();
   const safeRedirectTo = redirectTo ?? "/onboarding/organization";
@@ -49,7 +52,7 @@ function RouteComponent() {
           }
           setStatus("verified");
           toast.success("Email verified");
-          navigate({ to: safeRedirectTo });
+          navigate({ to: safeRedirectTo as LocalizedTo });
         },
         onError: (error) => {
           if (cancelled) {
@@ -109,9 +112,9 @@ function RouteComponent() {
             Resend verification email
           </Button>
         ) : (
-          <Link to="/sign-in" className="text-primary underline-offset-4 hover:underline">
+          <LocalizedLink to="/sign-in" className="text-primary underline-offset-4 hover:underline">
             Sign in to resend verification
-          </Link>
+          </LocalizedLink>
         )}
       </div>
     </AuthLayout>

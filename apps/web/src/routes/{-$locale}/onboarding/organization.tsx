@@ -9,7 +9,9 @@ import {
 } from "@convex-zen/ui/components/card";
 import { Input } from "@convex-zen/ui/components/input";
 import { Label } from "@convex-zen/ui/components/label";
-import { Link, createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
+import { LocalizedLink } from "@/components/localized-link";
+import { useLocalizedNavigate } from "@/hooks/useLocalizedNavigate";
+import {  createFileRoute, redirect } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -17,11 +19,12 @@ import AuthLayout from "@/components/auth-layout";
 import { authClient } from "@/lib/auth-client";
 import { slugifyOrganizationName, useOrganizationState } from "@/lib/organization";
 
-export const Route = createFileRoute("/onboarding/organization")({
-  beforeLoad: ({ context, location }) => {
+export const Route = createFileRoute("/{-$locale}/onboarding/organization")({
+  beforeLoad: ({ context, location, params }) => {
     if (!context.isAuthenticated) {
       throw redirect({
-        to: "/sign-in",
+        to: "/{-$locale}/sign-in",
+        params: { locale: params.locale ?? "" },
         search: { redirectTo: location.href },
       });
     }
@@ -44,7 +47,7 @@ type InvitationSummary = {
 };
 
 function RouteComponent() {
-  const navigate = useNavigate();
+  const navigate = useLocalizedNavigate();
   const { organizations, isLoading } = useOrganizationState();
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
@@ -115,9 +118,9 @@ function RouteComponent() {
                   </div>
                   <div className="flex flex-wrap gap-2">
                     <Button size="sm" asChild>
-                      <Link to="/invite/$invitationId" params={{ invitationId: invitation.id }}>
+                      <LocalizedLink to="/invite/$invitationId" params={{ invitationId: invitation.id }}>
                         Accept
-                      </Link>
+                      </LocalizedLink>
                     </Button>
                   </div>
                 </div>
@@ -192,7 +195,7 @@ function RouteComponent() {
                 Create workspace
               </Button>
               <Button variant="outline" disabled={isLoading || invitationsLoading} asChild>
-                <Link to="/dashboard">I will do this later</Link>
+                <LocalizedLink to="/dashboard">I will do this later</LocalizedLink>
               </Button>
             </div>
           </CardContent>
