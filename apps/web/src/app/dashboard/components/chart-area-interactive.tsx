@@ -169,7 +169,9 @@ export function ChartAreaInteractive() {
       <CardHeader>
         <CardTitle>{content.chartAreaInteractive.totalVisitors}</CardTitle>
         <CardDescription>
-          <span className="hidden @[540px]/card:block">{content.chartAreaInteractive.totalLast3Months}</span>
+          <span className="hidden @[540px]/card:block">
+            {content.chartAreaInteractive.totalLast3Months}
+          </span>
           <span className="@[540px]/card:hidden">{content.chartAreaInteractive.last3Months}</span>
         </CardDescription>
         <CardAction>
@@ -180,7 +182,9 @@ export function ChartAreaInteractive() {
             variant="outline"
             className="hidden *:data-[slot=toggle-group-item]:!px-4 @[767px]/card:flex"
           >
-            <ToggleGroupItem value="90d">{content.chartAreaInteractive.last3Months}</ToggleGroupItem>
+            <ToggleGroupItem value="90d">
+              {content.chartAreaInteractive.last3Months}
+            </ToggleGroupItem>
             <ToggleGroupItem value="30d">{content.chartAreaInteractive.last30Days}</ToggleGroupItem>
             <ToggleGroupItem value="7d">{content.chartAreaInteractive.last7Days}</ToggleGroupItem>
           </ToggleGroup>

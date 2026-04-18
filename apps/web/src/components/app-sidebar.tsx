@@ -62,15 +62,19 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <OrganizationSwitcher />
       </SidebarHeader>
       <SidebarContent>
-        {navGroups.map((group: { label: string; items: { title: string; url: To; icon: LucideIcon }[] }) => (
-          <NavMain key={group.label} label={group.label} items={group.items} />
-        ))}
+        {navGroups.map(
+          (group: { label: string; items: { title: string; url: To; icon: LucideIcon }[] }) => (
+            <NavMain key={group.label} label={group.label} items={group.items} />
+          ),
+        )}
       </SidebarContent>
       <SidebarFooter>
         <NavUser
           user={{
             name: user?.name ?? "ConvexZen",
-            email: user?.email ?? ((content.signedIn as unknown as { value: string })?.value || "Signed in"),
+            email:
+              user?.email ??
+              ((content.signedIn as unknown as { value: string })?.value || "Signed in"),
             avatar: "",
           }}
         />

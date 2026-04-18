@@ -9,7 +9,7 @@ import {
 } from "@convex-zen/ui/components/card";
 import { LocalizedLink } from "@/components/localized-link";
 import { useLocalizedNavigate } from "@/hooks/useLocalizedNavigate";
-import {  createFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { Authenticated, Unauthenticated } from "convex/react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";

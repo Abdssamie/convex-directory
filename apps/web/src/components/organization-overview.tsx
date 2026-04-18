@@ -35,17 +35,19 @@ export function OrganizationOverview() {
       <Card>
         <CardHeader>
           <CardTitle>{content.organizationOverview.noActiveTitle}</CardTitle>
-          <CardDescription>
-            {content.organizationOverview.noActiveDesc}
-          </CardDescription>
+          <CardDescription>{content.organizationOverview.noActiveDesc}</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-3">
           <Button asChild>
-            <LocalizedLink to="/settings/organization">{content.organizationOverview.createOrg}</LocalizedLink>
+            <LocalizedLink to="/settings/organization">
+              {content.organizationOverview.createOrg}
+            </LocalizedLink>
           </Button>
           {organizations.length ? (
             <Button asChild variant="outline">
-              <LocalizedLink to="/settings/organization">{content.organizationOverview.chooseExisting}</LocalizedLink>
+              <LocalizedLink to="/settings/organization">
+                {content.organizationOverview.chooseExisting}
+              </LocalizedLink>
             </Button>
           ) : null}
         </CardContent>
@@ -62,9 +64,7 @@ export function OrganizationOverview() {
               <Building2 className="size-5" />
               {activeOrganization.name}
             </CardTitle>
-            <CardDescription>
-              {content.organizationOverview.activeWorkspaceDesc}
-            </CardDescription>
+            <CardDescription>{content.organizationOverview.activeWorkspaceDesc}</CardDescription>
           </div>
           <Badge>{activeOrganization.slug}</Badge>
         </div>
@@ -72,15 +72,21 @@ export function OrganizationOverview() {
       <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div className="grid gap-3 sm:grid-cols-3">
           <div className="rounded-lg border p-3">
-            <p className="text-muted-foreground text-sm">{content.organizationOverview.organizationsLabel}</p>
+            <p className="text-muted-foreground text-sm">
+              {content.organizationOverview.organizationsLabel}
+            </p>
             <p className="text-xl font-semibold">{organizations.length}</p>
           </div>
           <div className="rounded-lg border p-3">
-            <p className="text-muted-foreground text-sm">{content.organizationOverview.membersLabel}</p>
+            <p className="text-muted-foreground text-sm">
+              {content.organizationOverview.membersLabel}
+            </p>
             <p className="text-xl font-semibold">{activeOrganization.members.length}</p>
           </div>
           <div className="rounded-lg border p-3">
-            <p className="text-muted-foreground text-sm">{content.organizationOverview.pendingInvitesLabel}</p>
+            <p className="text-muted-foreground text-sm">
+              {content.organizationOverview.pendingInvitesLabel}
+            </p>
             <p className="text-xl font-semibold">
               {
                 activeOrganization.invitations.filter(

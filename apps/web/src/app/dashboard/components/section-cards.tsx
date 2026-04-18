@@ -54,7 +54,9 @@ export function SectionCards() {
           <div className="line-clamp-1 flex gap-2 font-medium">
             {content.sectionCards.down20Period} <TrendingDown className="size-4" />
           </div>
-          <div className="text-muted-foreground">{content.sectionCards.acquisitionNeedsAttention}</div>
+          <div className="text-muted-foreground">
+            {content.sectionCards.acquisitionNeedsAttention}
+          </div>
         </CardFooter>
       </Card>
       <Card className="@container/card">
@@ -74,7 +76,9 @@ export function SectionCards() {
           <div className="line-clamp-1 flex gap-2 font-medium">
             {content.sectionCards.strongUserRetention} <TrendingUp className="size-4" />
           </div>
-          <div className="text-muted-foreground">{content.sectionCards.engagementExceedTargets}</div>
+          <div className="text-muted-foreground">
+            {content.sectionCards.engagementExceedTargets}
+          </div>
         </CardFooter>
       </Card>
       <Card className="@container/card">

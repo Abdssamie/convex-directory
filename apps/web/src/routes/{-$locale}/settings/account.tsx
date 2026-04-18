@@ -9,7 +9,7 @@ import {
 } from "@convex-zen/ui/components/card";
 import { Button } from "@convex-zen/ui/components/button";
 import { LocalizedLink } from "@/components/localized-link";
-import {  createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 
 import { BaseLayout } from "@/components/layouts/base-layout";

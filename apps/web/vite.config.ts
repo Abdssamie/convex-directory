@@ -16,8 +16,7 @@ export default defineConfig({
     intlayer(),
     tanstackStart({
       router: {
-        routeFileIgnorePattern:
-          ".content.(ts|tsx|js|mjs|cjs|jsx|json|jsonc|json5)$",
+        routeFileIgnorePattern: ".content.(ts|tsx|js|mjs|cjs|jsx|json|jsonc|json5)$",
       },
     }),
     viteReact(),

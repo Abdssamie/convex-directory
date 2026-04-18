@@ -6,9 +6,9 @@ import MagicLinkForm from "@/components/magic-link-form";
 export const Route = createFileRoute("/{-$locale}/magic-link")({
   beforeLoad: ({ context, params }) => {
     if (context.isAuthenticated) {
-      throw redirect({ 
+      throw redirect({
         to: "/{-$locale}/dashboard",
-        params: { locale: params.locale ?? "" }
+        params: { locale: params.locale ?? "" },
       });
     }
   },

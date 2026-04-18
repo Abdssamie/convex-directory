@@ -131,10 +131,16 @@ export default function SignInForm({
 
       <div className="mt-4 space-y-2 text-center text-sm">
         <div className="flex items-center justify-center gap-4">
-          <LocalizedLink to="/forgot-password" className="text-primary underline-offset-4 hover:underline">
+          <LocalizedLink
+            to="/forgot-password"
+            className="text-primary underline-offset-4 hover:underline"
+          >
             Forgot password?
           </LocalizedLink>
-          <LocalizedLink to="/magic-link" className="text-primary underline-offset-4 hover:underline">
+          <LocalizedLink
+            to="/magic-link"
+            className="text-primary underline-offset-4 hover:underline"
+          >
             Use magic link
           </LocalizedLink>
         </div>

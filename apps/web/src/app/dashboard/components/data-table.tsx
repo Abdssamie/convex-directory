@@ -289,7 +289,9 @@ const getColumns = (content: any): ColumnDef<z.infer<typeof schema>>[] => [
           <DropdownMenuItem>{content.dataTable.actions.makeCopy}</DropdownMenuItem>
           <DropdownMenuItem>{content.dataTable.actions.favorite}</DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem variant="destructive">{content.dataTable.actions.delete}</DropdownMenuItem>
+          <DropdownMenuItem variant="destructive">
+            {content.dataTable.actions.delete}
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     ),
@@ -570,7 +572,8 @@ export function DataTable({
       <div className="flex items-center justify-between px-4">
         <div className="text-muted-foreground hidden flex-1 text-sm lg:flex">
           {currentTable.getFilteredSelectedRowModel().rows.length} {content.dataTable.pagination.of}{" "}
-          {currentTable.getFilteredRowModel().rows.length} {content.dataTable.pagination.rowsSelected}
+          {currentTable.getFilteredRowModel().rows.length}{" "}
+          {content.dataTable.pagination.rowsSelected}
         </div>
         <div className="flex w-full items-center gap-8 lg:w-fit">
           <div className="hidden items-center gap-2 lg:flex">
@@ -596,7 +599,8 @@ export function DataTable({
             </Select>
           </div>
           <div className="flex w-fit items-center justify-center text-sm font-medium">
-            {content.dataTable.pagination.page} {currentTable.getState().pagination.pageIndex + 1} {content.dataTable.pagination.of} {currentTable.getPageCount()}
+            {content.dataTable.pagination.page} {currentTable.getState().pagination.pageIndex + 1}{" "}
+            {content.dataTable.pagination.of} {currentTable.getPageCount()}
           </div>
           <div className="ml-auto flex items-center gap-2 lg:ml-0">
             <Button
@@ -660,7 +664,9 @@ export function DataTable({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="outline">{content.dataTable.tabs.outline}</SelectItem>
-            <SelectItem value="past-performance">{content.dataTable.tabs.pastPerformance}</SelectItem>
+            <SelectItem value="past-performance">
+              {content.dataTable.tabs.pastPerformance}
+            </SelectItem>
             <SelectItem value="key-personnel">{content.dataTable.tabs.keyPersonnel}</SelectItem>
             <SelectItem value="focus-documents">{content.dataTable.tabs.focusDocuments}</SelectItem>
           </SelectContent>
@@ -684,7 +690,9 @@ export function DataTable({
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm" className="cursor-pointer">
                 <Columns2 />
-                <span className="hidden lg:inline">{content.dataTable.toolbar.customizeColumns}</span>
+                <span className="hidden lg:inline">
+                  {content.dataTable.toolbar.customizeColumns}
+                </span>
                 <span className="lg:hidden">{content.dataTable.toolbar.columns}</span>
                 <ChevronDown />
               </Button>
@@ -788,7 +796,8 @@ export function DataTable({
               </Select>
             </div>
             <div className="flex w-fit items-center justify-center text-sm font-medium">
-              {content.dataTable.pagination.page} {table.getState().pagination.pageIndex + 1} {content.dataTable.pagination.of} {table.getPageCount()}
+              {content.dataTable.pagination.page} {table.getState().pagination.pageIndex + 1}{" "}
+              {content.dataTable.pagination.of} {table.getPageCount()}
             </div>
             <div className="ml-auto flex items-center gap-2 lg:ml-0">
               <Button

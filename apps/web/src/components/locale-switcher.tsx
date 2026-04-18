@@ -76,11 +76,7 @@ export const LocaleSwitcher: FC = () => {
 
         <SelectContent>
           {availableLocales.map((localeEl) => (
-            <SelectItem
-              key={localeEl}
-              value={localeEl}
-              className="cursor-pointer"
-            >
+            <SelectItem key={localeEl} value={localeEl} className="cursor-pointer">
               <div className="flex items-center gap-2 font-medium">
                 <span className="text-base">{getFlag(localeEl)}</span>
                 <span>{localeEl.toUpperCase()}</span>

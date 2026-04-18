@@ -3,7 +3,7 @@ import { Button } from "@convex-zen/ui/components/button";
 import { LocalizedLink } from "@/components/localized-link";
 import { useLocalizedNavigate } from "@/hooks/useLocalizedNavigate";
 import type { LocalizedTo } from "@/hooks/useLocalizedNavigate";
-import {  createFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";

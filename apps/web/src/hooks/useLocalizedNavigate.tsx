@@ -11,10 +11,7 @@ type BaseNavigateOptions = Parameters<NavigateFn>[0];
 
 export type LocalizedTo = StripLocalePrefix<FileRouteTypes["to"]>;
 
-export type LocalizedNavigateOptions = Omit<
-  BaseNavigateOptions,
-  "to" | "params" | "search"
-> & {
+export type LocalizedNavigateOptions = Omit<BaseNavigateOptions, "to" | "params" | "search"> & {
   to: LocalizedTo | string;
   params?: Omit<NonNullable<BaseNavigateOptions["params"]>, "locale">;
   search?: Record<string, unknown>;
@@ -32,7 +29,7 @@ export const useLocalizedNavigate = () => {
       return (navigate as (opts: unknown) => ReturnType<NavigateFn>)({
         ...rest,
         to: localizedTo,
-        params: { locale: localePrefix, ...(params ?? {}) },
+        params: { locale: localePrefix, ...params },
         ...(search !== undefined && { search }),
       });
     },

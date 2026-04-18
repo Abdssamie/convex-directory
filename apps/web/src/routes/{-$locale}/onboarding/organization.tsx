@@ -11,7 +11,7 @@ import { Input } from "@convex-zen/ui/components/input";
 import { Label } from "@convex-zen/ui/components/label";
 import { LocalizedLink } from "@/components/localized-link";
 import { useLocalizedNavigate } from "@/hooks/useLocalizedNavigate";
-import {  createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -118,7 +118,10 @@ function RouteComponent() {
                   </div>
                   <div className="flex flex-wrap gap-2">
                     <Button size="sm" asChild>
-                      <LocalizedLink to="/invite/$invitationId" params={{ invitationId: invitation.id }}>
+                      <LocalizedLink
+                        to="/invite/$invitationId"
+                        params={{ invitationId: invitation.id }}
+                      >
                         Accept
                       </LocalizedLink>
                     </Button>

@@ -155,17 +155,17 @@ It checks:
 
 ## Scripts
 
-| Command                   | Description                                  |
-| ------------------------- | -------------------------------------------- |
-| `pnpm run dev`            | Start frontend and Convex dev server         |
-| `pnpm run build`          | Build all packages                           |
-| `pnpm run typecheck`      | Type check the main app packages             |
-| `pnpm run lint`           | Lint and format source files                 |
-| `pnpm run dev:setup`      | Configure Convex project                     |
+| Command                        | Description                                    |
+| ------------------------------ | ---------------------------------------------- |
+| `pnpm run dev`                 | Start frontend and Convex dev server           |
+| `pnpm run build`               | Build all packages                             |
+| `pnpm run typecheck`           | Type check the main app packages               |
+| `pnpm run lint`                | Lint and format source files                   |
+| `pnpm run dev:setup`           | Configure Convex project                       |
 | `pnpm run sync:project-config` | Regenerate Wrangler config from project config |
-| `pnpm run doctor:deploy`  | Validate deploy prerequisites                |
-| `pnpm run deploy`         | Deploy Convex backend, then Cloudflare web   |
-| `pnpm run destroy`        | Delete the Cloudflare Worker                 |
+| `pnpm run doctor:deploy`       | Validate deploy prerequisites                  |
+| `pnpm run deploy`              | Deploy Convex backend, then Cloudflare web     |
+| `pnpm run destroy`             | Delete the Cloudflare Worker                   |
 
 ## Features Included
 

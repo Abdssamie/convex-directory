@@ -16,7 +16,10 @@ const appSidebarDictionary = {
         items: [
           { title: t({ en: "Sign In", fr: "Connexion" }), url: "/sign-in" },
           { title: t({ en: "Sign Up", fr: "Inscription" }), url: "/sign-up" },
-          { title: t({ en: "Forgot Password", fr: "Mot de passe oublié" }), url: "/forgot-password" },
+          {
+            title: t({ en: "Forgot Password", fr: "Mot de passe oublié" }),
+            url: "/forgot-password",
+          },
         ],
       },
       {

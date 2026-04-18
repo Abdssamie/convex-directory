@@ -1,5 +1,5 @@
 import { LocalizedLink } from "@/components/localized-link";
-import {  createFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 
 import AuthLayout from "@/components/auth-layout";
 import ResetPasswordForm from "@/components/reset-password-form";
@@ -23,7 +23,10 @@ function RouteComponent() {
       >
         <div className="space-y-3 text-sm text-muted-foreground">
           {error ? <p>Reason: {error}</p> : null}
-          <LocalizedLink to="/forgot-password" className="text-primary underline-offset-4 hover:underline">
+          <LocalizedLink
+            to="/forgot-password"
+            className="text-primary underline-offset-4 hover:underline"
+          >
             Request another reset link
           </LocalizedLink>
         </div>
