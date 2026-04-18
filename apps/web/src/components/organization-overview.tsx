@@ -10,7 +10,7 @@ import {
 } from "@convex-zen/ui/components/card";
 import { Button } from "@convex-zen/ui/components/button";
 import { Badge } from "@convex-zen/ui/components/badge";
-import { Link } from "@tanstack/react-router";
+import { LocalizedLink } from "@/components/localized-link";
 
 import { useOrganizationState } from "@/lib/organization";
 
@@ -39,11 +39,11 @@ export function OrganizationOverview() {
         </CardHeader>
         <CardContent className="flex flex-wrap gap-3">
           <Button asChild>
-            <Link to="/settings/organization">Create organization</Link>
+            <LocalizedLink to="/settings/organization">Create organization</LocalizedLink>
           </Button>
           {organizations.length ? (
             <Button asChild variant="outline">
-              <Link to="/settings/organization">Choose existing workspace</Link>
+              <LocalizedLink to="/settings/organization">Choose existing workspace</LocalizedLink>
             </Button>
           ) : null}
         </CardContent>
@@ -90,16 +90,16 @@ export function OrganizationOverview() {
         </div>
         <div className="flex flex-wrap gap-3">
           <Button asChild variant="outline">
-            <Link to="/settings/organization">
+            <LocalizedLink to="/settings/organization">
               <Users className="mr-2 size-4" />
               Manage members
-            </Link>
+            </LocalizedLink>
           </Button>
           <Button asChild>
-            <Link to="/settings/organization">
+            <LocalizedLink to="/settings/organization">
               <MailPlus className="mr-2 size-4" />
               Invite people
-            </Link>
+            </LocalizedLink>
           </Button>
         </div>
       </CardContent>

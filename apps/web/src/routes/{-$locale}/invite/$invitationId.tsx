@@ -7,7 +7,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@convex-zen/ui/components/card";
-import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
+import { LocalizedLink } from "@/components/localized-link";
+import { useLocalizedNavigate } from "@/hooks/useLocalizedNavigate";
+import {  createFileRoute } from "@tanstack/react-router";
 import { Authenticated, Unauthenticated } from "convex/react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -27,12 +29,12 @@ type InvitationDetails = {
   inviterEmail: string;
 };
 
-export const Route = createFileRoute("/invite/$invitationId")({
+export const Route = createFileRoute("/{-$locale}/invite/$invitationId")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const navigate = useNavigate();
+  const navigate = useLocalizedNavigate();
   const { invitationId } = Route.useParams();
   const session = authClient.useSession();
   const [invitation, setInvitation] = useState<InvitationDetails | null>(null);
@@ -183,20 +185,20 @@ function RouteComponent() {
             invitation.
           </p>
           <div className="flex gap-4">
-            <Link
+            <LocalizedLink
               to="/sign-in"
               search={{ redirectTo: `/invite/${invitationId}` }}
               className="text-primary underline-offset-4 hover:underline"
             >
               Sign in
-            </Link>
-            <Link
+            </LocalizedLink>
+            <LocalizedLink
               to="/sign-up"
               search={{ redirectTo: `/invite/${invitationId}` }}
               className="text-primary underline-offset-4 hover:underline"
             >
               Create account
-            </Link>
+            </LocalizedLink>
           </div>
         </Unauthenticated>
       </div>

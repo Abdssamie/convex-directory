@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import { Menu, LayoutDashboard, ChevronDown, X, Moon, Sun } from "lucide-react";
 import { Button } from "@convex-zen/ui/components/button";
@@ -26,9 +24,10 @@ import {
 import { Logo } from "@/components/logo";
 import { MegaMenu } from "@/components/landing/mega-menu";
 import { ModeToggle } from "@/components/mode-toggle";
+import { LocaleSwitcher } from "@/components/locale-switcher";
 import { useTheme } from "@/hooks/use-theme";
 import { authClient } from "@/lib/auth-client";
-import { Link } from "@tanstack/react-router";
+import { LocalizedLink } from "@/components/localized-link";
 
 const navigationItems = [
   { name: "Home", href: "#hero" },
@@ -84,10 +83,10 @@ export function LandingNavbar() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex h-16 items-center justify-between">
         {/* Logo */}
         <div className="flex items-center space-x-2">
-          <Link to="/" className="flex items-center space-x-2 cursor-pointer">
+          <LocalizedLink to="/" className="flex items-center space-x-2 cursor-pointer">
             <Logo size={32} />
             <span className="font-bold">ConvexZen</span>
-          </Link>
+          </LocalizedLink>
         </div>
 
         {/* Desktop Navigation */}
@@ -126,22 +125,23 @@ export function LandingNavbar() {
 
         {/* Desktop CTA */}
         <div className="hidden xl:flex items-center space-x-2">
+          <LocaleSwitcher />
           <ModeToggle variant="ghost" />
 
           {isAuthenticated ? (
             <Button variant="outline" asChild className="cursor-pointer">
-              <Link to="/dashboard">
+              <LocalizedLink to="/dashboard">
                 <LayoutDashboard className="h-4 w-4 mr-2" />
                 Dashboard
-              </Link>
+              </LocalizedLink>
             </Button>
           ) : (
             <>
               <Button variant="ghost" asChild className="cursor-pointer">
-                <Link to="/sign-in">Sign In</Link>
+                <LocalizedLink to="/sign-in">Sign In</LocalizedLink>
               </Button>
               <Button asChild className="cursor-pointer">
-                <Link to="/sign-up">Get Started</Link>
+                <LocalizedLink to="/sign-up">Get Started</LocalizedLink>
               </Button>
             </>
           )}
@@ -168,6 +168,7 @@ export function LandingNavbar() {
                   </div>
                   <SheetTitle className="text-lg font-semibold">ConvexZen</SheetTitle>
                   <div className="ml-auto flex items-center gap-2">
+                    <LocaleSwitcher />
                     <Button
                       variant="ghost"
                       size="icon"
@@ -260,10 +261,10 @@ export function LandingNavbar() {
                     className="w-full cursor-pointer"
                     onClick={() => setIsOpen(false)}
                   >
-                    <Link to="/dashboard">
+                    <LocalizedLink to="/dashboard">
                       <LayoutDashboard className="size-4" />
                       Dashboard
-                    </Link>
+                    </LocalizedLink>
                   </Button>
                 ) : (
                   <div className="grid grid-cols-2 gap-3">
@@ -274,7 +275,7 @@ export function LandingNavbar() {
                       className="cursor-pointer"
                       onClick={() => setIsOpen(false)}
                     >
-                      <Link to="/sign-in">Sign In</Link>
+                      <LocalizedLink to="/sign-in">Sign In</LocalizedLink>
                     </Button>
                     <Button
                       asChild
@@ -282,7 +283,7 @@ export function LandingNavbar() {
                       className="cursor-pointer"
                       onClick={() => setIsOpen(false)}
                     >
-                      <Link to="/sign-up">Get Started</Link>
+                      <LocalizedLink to="/sign-up">Get Started</LocalizedLink>
                     </Button>
                   </div>
                 )}

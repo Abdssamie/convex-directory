@@ -1,7 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { useNavigate } from "@tanstack/react-router";
+import { useLocalizedNavigate } from "@/hooks/useLocalizedNavigate";
+import type { LocalizedTo } from "@/hooks/useLocalizedNavigate";
 import { Command as CommandPrimitive } from "cmdk";
 import {
   Search,
@@ -115,7 +116,7 @@ interface CommandSearchProps {
 }
 
 export function CommandSearch({ open, onOpenChange }: CommandSearchProps) {
-  const navigate = useNavigate();
+  const navigate = useLocalizedNavigate();
   const commandRef = React.useRef<HTMLDivElement>(null);
 
   const searchItems: SearchItem[] = [
@@ -140,7 +141,7 @@ export function CommandSearch({ open, onOpenChange }: CommandSearchProps) {
   );
 
   const handleSelect = (url: string) => {
-    navigate({ to: url });
+    navigate({ to: url as LocalizedTo });
     onOpenChange(false);
     // Bounce effect like Vercel
     if (commandRef.current) {

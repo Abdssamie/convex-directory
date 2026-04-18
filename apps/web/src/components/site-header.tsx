@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { CommandSearch, SearchTrigger } from "@/components/command-search";
+import { LocaleSwitcher } from "@/components/locale-switcher";
 import { ModeToggle } from "@/components/mode-toggle";
 
 export function SiteHeader() {
@@ -42,6 +43,7 @@ export function SiteHeader() {
                 GitHub
               </a>
             </Button>
+            <LocaleSwitcher />
             <ModeToggle />
           </div>
         </div>

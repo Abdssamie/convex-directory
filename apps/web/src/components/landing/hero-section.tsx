@@ -5,7 +5,7 @@ import { Button } from "@convex-zen/ui/components/button";
 import { Badge } from "@convex-zen/ui/components/badge";
 import { DotPattern } from "@/components/dot-pattern";
 import { assetUrl } from "@/lib/utils";
-import { Link } from "@tanstack/react-router";
+import { LocalizedLink } from "@/components/localized-link";
 
 export function HeroSection() {
   return (
@@ -50,10 +50,10 @@ export function HeroSection() {
           {/* CTA Buttons */}
           <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
             <Button size="lg" className="text-base cursor-pointer" asChild>
-              <Link to="/sign-up">
+              <LocalizedLink to="/sign-up">
                 Get Started Free
                 <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
+              </LocalizedLink>
             </Button>
             <Button variant="outline" size="lg" className="text-base cursor-pointer" asChild>
               <a href="#">

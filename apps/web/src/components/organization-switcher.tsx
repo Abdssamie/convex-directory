@@ -1,7 +1,7 @@
 "use client";
 
 import { Building2, Check, ChevronsUpDown, PlusCircle, Settings2 } from "lucide-react";
-import { Link } from "@tanstack/react-router";
+import { LocalizedLink } from "@/components/localized-link";
 import { toast } from "sonner";
 
 import { useOrganizationState } from "@/lib/organization";
@@ -99,16 +99,16 @@ export function OrganizationSwitcher() {
             )}
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild className="cursor-pointer">
-              <Link to="/settings/organization">
+              <LocalizedLink to="/settings/organization">
                 <PlusCircle className="size-4" />
                 Create organization
-              </Link>
+              </LocalizedLink>
             </DropdownMenuItem>
             <DropdownMenuItem asChild className="cursor-pointer">
-              <Link to="/settings/organization">
+              <LocalizedLink to="/settings/organization">
                 <Settings2 className="size-4" />
                 Manage organization
-              </Link>
+              </LocalizedLink>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

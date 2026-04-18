@@ -1,7 +1,8 @@
 import { Button } from "@convex-zen/ui/components/button";
 import { Input } from "@convex-zen/ui/components/input";
 import { Label } from "@convex-zen/ui/components/label";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { LocalizedLink } from "@/components/localized-link";
+import { useLocalizedNavigate } from "@/hooks/useLocalizedNavigate";
 import { useForm } from "@tanstack/react-form";
 import { toast } from "sonner";
 import z from "zod";
@@ -19,7 +20,7 @@ export default function SignInForm({
   onSwitchToSignUp?: () => void;
   redirectTo?: string;
 }) {
-  const navigate = useNavigate();
+  const navigate = useLocalizedNavigate();
 
   const form = useForm({
     defaultValues: {
@@ -34,9 +35,7 @@ export default function SignInForm({
         },
         {
           onSuccess: () => {
-            navigate({
-              to: redirectTo,
-            });
+            void navigate({ to: redirectTo });
             toast.success("Sign in successful");
           },
           onError: (error) => {
@@ -44,12 +43,9 @@ export default function SignInForm({
 
             const message = getAuthErrorMessage(error).toLowerCase();
             if (message.includes("verify") || message.includes("verification")) {
-              navigate({
+              void navigate({
                 to: "/verify-email",
-                search: {
-                  email: value.email,
-                  redirectTo,
-                },
+                search: { email: value.email, redirectTo },
               });
             }
           },
@@ -135,21 +131,21 @@ export default function SignInForm({
 
       <div className="mt-4 space-y-2 text-center text-sm">
         <div className="flex items-center justify-center gap-4">
-          <Link to="/forgot-password" className="text-primary underline-offset-4 hover:underline">
+          <LocalizedLink to="/forgot-password" className="text-primary underline-offset-4 hover:underline">
             Forgot password?
-          </Link>
-          <Link to="/magic-link" className="text-primary underline-offset-4 hover:underline">
+          </LocalizedLink>
+          <LocalizedLink to="/magic-link" className="text-primary underline-offset-4 hover:underline">
             Use magic link
-          </Link>
+          </LocalizedLink>
         </div>
         {onSwitchToSignUp ? (
           <Button variant="link" onClick={onSwitchToSignUp} className="text-primary">
             Need an account? Sign Up
           </Button>
         ) : (
-          <Link to="/sign-up" className="text-primary underline-offset-4 hover:underline">
+          <LocalizedLink to="/sign-up" className="text-primary underline-offset-4 hover:underline">
             Need an account? Sign Up
-          </Link>
+          </LocalizedLink>
         )}
       </div>
     </div>

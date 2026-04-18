@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { LocalizedLink } from "@/components/localized-link";
 
 export default function Header() {
   const links = [
@@ -12,9 +12,9 @@ export default function Header() {
         <nav className="flex gap-4 text-lg">
           {links.map(({ to, label }) => {
             return (
-              <Link key={to} to={to}>
+              <LocalizedLink key={to} to={to}>
                 {label}
-              </Link>
+              </LocalizedLink>
             );
           })}
         </nav>

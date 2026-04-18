@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import AuthLayout from "@/components/auth-layout";
 import ForgotPasswordForm from "@/components/forgot-password-form";
 
-export const Route = createFileRoute("/forgot-password")({
+export const Route = createFileRoute("/{-$locale}/forgot-password")({
   component: RouteComponent,
 });
 

@@ -1,7 +1,9 @@
 "use client";
 
 import { ChevronRight, type LucideIcon } from "lucide-react";
-import { Link, useLocation } from "@tanstack/react-router";
+import { LocalizedLink, type To } from "@/components/localized-link";
+import { useLocation } from "@tanstack/react-router";
+import { getPathWithoutLocale } from "intlayer";
 
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
@@ -22,22 +24,23 @@ export function NavMain({
   label: string;
   items: {
     title: string;
-    url: string;
+    url: To;
     icon?: LucideIcon;
     isActive?: boolean;
     items?: {
       title: string;
-      url: string;
+      url: To;
       isActive?: boolean;
     }[];
   }[];
 }) {
   const location = useLocation();
+  const strippedPathname = getPathWithoutLocale(location.pathname) || "/";
 
   // Check if any subitem is active to determine if parent should be open
   const shouldBeOpen = (item: (typeof items)[0]) => {
     if (item.isActive) return true;
-    return item.items?.some((subItem) => location.pathname === subItem.url) || false;
+    return item.items?.some((subItem) => strippedPathname === subItem.url) || false;
   };
 
   return (
@@ -68,11 +71,11 @@ export function NavMain({
                           <SidebarMenuSubButton
                             asChild
                             className="cursor-pointer"
-                            isActive={location.pathname === subItem.url}
+                            isActive={strippedPathname === subItem.url}
                           >
-                            <Link to={subItem.url}>
+                            <LocalizedLink to={subItem.url}>
                               <span>{subItem.title}</span>
-                            </Link>
+                            </LocalizedLink>
                           </SidebarMenuSubButton>
                         </SidebarMenuSubItem>
                       ))}
@@ -84,12 +87,12 @@ export function NavMain({
                   asChild
                   tooltip={item.title}
                   className="cursor-pointer"
-                  isActive={location.pathname === item.url}
+                  isActive={strippedPathname === item.url}
                 >
-                  <Link to={item.url}>
+                  <LocalizedLink to={item.url}>
                     {item.icon && <item.icon />}
                     <span>{item.title}</span>
-                  </Link>
+                  </LocalizedLink>
                 </SidebarMenuButton>
               )}
             </SidebarMenuItem>

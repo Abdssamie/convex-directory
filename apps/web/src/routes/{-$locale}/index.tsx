@@ -15,7 +15,7 @@ import { LandingFooter } from "@/components/landing/footer";
 import { AboutSection } from "@/components/landing/about-section";
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/{-$locale}/")({
   component: LandingPage,
 });
 

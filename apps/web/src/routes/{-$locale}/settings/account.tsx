@@ -8,16 +8,18 @@ import {
   CardTitle,
 } from "@convex-zen/ui/components/card";
 import { Button } from "@convex-zen/ui/components/button";
-import { Link, createFileRoute, redirect } from "@tanstack/react-router";
+import { LocalizedLink } from "@/components/localized-link";
+import {  createFileRoute, redirect } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 
 import { BaseLayout } from "@/components/layouts/base-layout";
 
-export const Route = createFileRoute("/settings/account")({
+export const Route = createFileRoute("/{-$locale}/settings/account")({
   beforeLoad: ({ context, location }) => {
     if (!context.isAuthenticated) {
       throw redirect({
-        to: "/sign-in",
+        to: "/{-$locale}/sign-in",
+        params: { locale: location.pathname.split("/")[1] || "en" },
         search: {
           redirectTo: location.href,
         },
@@ -72,19 +74,19 @@ function RouteComponent() {
           <CardContent className="flex flex-wrap gap-3">
             {!user?.emailVerified ? (
               <Button asChild>
-                <Link
+                <LocalizedLink
                   to="/verify-email"
                   search={{ email: user?.email ?? undefined, redirectTo: "/dashboard" }}
                 >
                   Verify email
-                </Link>
+                </LocalizedLink>
               </Button>
             ) : null}
             <Button variant="outline" asChild>
-              <Link to="/forgot-password">Reset password</Link>
+              <LocalizedLink to="/forgot-password">Reset password</LocalizedLink>
             </Button>
             <Button variant="outline" asChild>
-              <Link to="/settings/billing">Open billing</Link>
+              <LocalizedLink to="/settings/billing">Open billing</LocalizedLink>
             </Button>
           </CardContent>
         </Card>

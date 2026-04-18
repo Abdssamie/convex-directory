@@ -1,7 +1,7 @@
 import { Button } from "@convex-zen/ui/components/button";
 import { Input } from "@convex-zen/ui/components/input";
 import { Label } from "@convex-zen/ui/components/label";
-import { Link } from "@tanstack/react-router";
+import { LocalizedLink } from "@/components/localized-link";
 import { useForm } from "@tanstack/react-form";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -97,9 +97,9 @@ export default function MagicLinkForm() {
       </form>
 
       <div className="text-sm text-muted-foreground">
-        <Link to="/sign-in" className="text-primary underline-offset-4 hover:underline">
+        <LocalizedLink to="/sign-in" className="text-primary underline-offset-4 hover:underline">
           Use a password instead
-        </Link>
+        </LocalizedLink>
       </div>
     </div>
   );

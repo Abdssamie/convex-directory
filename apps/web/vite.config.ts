@@ -4,6 +4,7 @@ import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import { Unhead } from "@unhead/react/vite";
 import viteReact from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
+import { intlayer } from "vite-intlayer";
 import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
@@ -12,7 +13,13 @@ export default defineConfig({
     tsconfigPaths(),
     tailwindcss(),
     Unhead(),
-    tanstackStart(),
+    intlayer(),
+    tanstackStart({
+      router: {
+        routeFileIgnorePattern:
+          ".content.(ts|tsx|js|mjs|cjs|jsx|json|jsonc|json5)$",
+      },
+    }),
     viteReact(),
   ],
   resolve: {

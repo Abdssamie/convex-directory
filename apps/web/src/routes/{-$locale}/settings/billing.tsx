@@ -3,11 +3,12 @@ import { createFileRoute, redirect } from "@tanstack/react-router";
 import Billing from "@/components/billing";
 import { BaseLayout } from "@/components/layouts/base-layout";
 
-export const Route = createFileRoute("/settings/billing")({
+export const Route = createFileRoute("/{-$locale}/settings/billing")({
   beforeLoad: ({ context, location }) => {
     if (!context.isAuthenticated) {
       throw redirect({
-        to: "/sign-in",
+        to: "/{-$locale}/sign-in",
+        params: { locale: location.pathname.split("/")[1] || "en" },
         search: {
           redirectTo: location.href,
         },
