@@ -44,6 +44,26 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
       {
         title: "ConvexZen",
       },
+      {
+        property: "og:title",
+        content: "ConvexZen",
+      },
+      {
+        property: "og:image",
+        content: "/og-image.png",
+      },
+      {
+        name: "twitter:card",
+        content: "summary_large_image",
+      },
+      {
+        name: "twitter:image",
+        content: "/og-image.png",
+      },
+      {
+        property: "og:type",
+        content: "website",
+      },
     ],
     links: [
       {
