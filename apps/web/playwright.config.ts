@@ -34,9 +34,9 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: "pnpm run dev",
+    command: process.env.CI ? "pnpm --filter web run dev:bare" : "pnpm run dev",
     url: "http://localhost:3001",
     reuseExistingServer: !process.env.CI,
-    cwd: "../../", // Run from root to ensure backend also starts if needed
+    cwd: "../../", // Run from root
   },
 });
