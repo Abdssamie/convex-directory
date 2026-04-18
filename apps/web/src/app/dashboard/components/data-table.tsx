@@ -52,6 +52,7 @@ import {
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 import { toast } from "sonner";
 import { z } from "zod";
+import { useIntlayer } from "react-intlayer";
 
 import { schema } from "../schemas/task-schema";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -122,7 +123,7 @@ function DragHandle({ id }: { id: number }) {
   );
 }
 
-const columns: ColumnDef<z.infer<typeof schema>>[] = [
+const getColumns = (content: any): ColumnDef<z.infer<typeof schema>>[] => [
   {
     id: "drag",
     header: () => null,
@@ -138,7 +139,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
             (table.getIsSomePageRowsSelected() && "indeterminate")
           }
           onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
+          aria-label={content.dataTable.pagination.rowsSelected}
         />
       </div>
     ),
@@ -147,7 +148,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
         <Checkbox
           checked={row.getIsSelected()}
           onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
+          aria-label={content.dataTable.pagination.rowsSelected}
         />
       </div>
     ),
@@ -156,7 +157,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
   },
   {
     accessorKey: "header",
-    header: "Header",
+    header: content.dataTable.columns.header,
     cell: ({ row }) => {
       return <TableCellViewer item={row.original} />;
     },
@@ -164,7 +165,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
   },
   {
     accessorKey: "type",
-    header: "Section Type",
+    header: content.dataTable.columns.sectionType,
     cell: ({ row }) => (
       <div className="w-32">
         <Badge variant="outline" className="text-muted-foreground px-1.5">
@@ -175,7 +176,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
   },
   {
     accessorKey: "status",
-    header: "Status",
+    header: content.dataTable.columns.status,
     cell: ({ row }) => (
       <Badge variant="outline" className="text-muted-foreground px-1.5">
         {row.original.status === "Done" ? (
@@ -189,20 +190,20 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
   },
   {
     accessorKey: "target",
-    header: () => <div className="w-full">Target</div>,
+    header: () => <div className="w-full">{content.dataTable.columns.target}</div>,
     cell: ({ row }) => (
       <form
         onSubmit={(e) => {
           e.preventDefault();
           toast.promise(new Promise((resolve) => setTimeout(resolve, 1000)), {
-            loading: `Saving ${row.original.header}`,
-            success: "Done",
-            error: "Error",
+            loading: `${content.dataTable.toast.saving} ${row.original.header}`,
+            success: content.dataTable.toast.done,
+            error: content.dataTable.toast.error,
           });
         }}
       >
         <Label htmlFor={`${row.original.id}-target`} className="sr-only">
-          Target
+          {content.dataTable.columns.target}
         </Label>
         <Input
           className="hover:bg-input/30 focus-visible:bg-background dark:hover:bg-input/30 dark:focus-visible:bg-input/30 h-8 w-16 border-transparent bg-transparent shadow-none focus-visible:border dark:bg-transparent"
@@ -214,20 +215,20 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
   },
   {
     accessorKey: "limit",
-    header: () => <div className="w-full">Limit</div>,
+    header: () => <div className="w-full">{content.dataTable.columns.limit}</div>,
     cell: ({ row }) => (
       <form
         onSubmit={(e) => {
           e.preventDefault();
           toast.promise(new Promise((resolve) => setTimeout(resolve, 1000)), {
-            loading: `Saving ${row.original.header}`,
-            success: "Done",
-            error: "Error",
+            loading: `${content.dataTable.toast.saving} ${row.original.header}`,
+            success: content.dataTable.toast.done,
+            error: content.dataTable.toast.error,
           });
         }}
       >
         <Label htmlFor={`${row.original.id}-limit`} className="sr-only">
-          Limit
+          {content.dataTable.columns.limit}
         </Label>
         <Input
           className="hover:bg-input/30 focus-visible:bg-background dark:hover:bg-input/30 dark:focus-visible:bg-input/30 h-8 w-16 border-transparent bg-transparent shadow-none focus-visible:border dark:bg-transparent"
@@ -239,7 +240,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
   },
   {
     accessorKey: "reviewer",
-    header: "Reviewer",
+    header: content.dataTable.columns.reviewer,
     cell: ({ row }) => {
       const isAssigned = row.original.reviewer !== "Assign reviewer";
 
@@ -250,7 +251,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
       return (
         <>
           <Label htmlFor={`${row.original.id}-reviewer`} className="sr-only">
-            Reviewer
+            {content.dataTable.columns.reviewer}
           </Label>
           <Select>
             <SelectTrigger
@@ -258,7 +259,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
               size="sm"
               id={`${row.original.id}-reviewer`}
             >
-              <SelectValue placeholder="Assign reviewer" />
+              <SelectValue placeholder={content.dataTable.actions.assignReviewer.value} />
             </SelectTrigger>
             <SelectContent align="end">
               <SelectItem value="Eddie Lake">Eddie Lake</SelectItem>
@@ -284,11 +285,11 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-32">
-          <DropdownMenuItem>Edit</DropdownMenuItem>
-          <DropdownMenuItem>Make a copy</DropdownMenuItem>
-          <DropdownMenuItem>Favorite</DropdownMenuItem>
+          <DropdownMenuItem>{content.dataTable.actions.edit}</DropdownMenuItem>
+          <DropdownMenuItem>{content.dataTable.actions.makeCopy}</DropdownMenuItem>
+          <DropdownMenuItem>{content.dataTable.actions.favorite}</DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
+          <DropdownMenuItem variant="destructive">{content.dataTable.actions.delete}</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     ),
@@ -331,6 +332,7 @@ export function DataTable({
   keyPersonnelData?: z.infer<typeof schema>[];
   focusDocumentsData?: z.infer<typeof schema>[];
 }) {
+  const content = useIntlayer("dashboard");
   const [data, setData] = React.useState(() => initialData);
   const [pastPerformance, setPastPerformance] = React.useState(() => pastPerformanceData);
   const [keyPersonnel, setKeyPersonnel] = React.useState(() => keyPersonnelData);
@@ -370,7 +372,7 @@ export function DataTable({
 
   const pastPerformanceTable = useReactTable({
     data: pastPerformance,
-    columns,
+    columns: React.useMemo(() => getColumns(content), [content]),
     state: {
       sorting,
       columnVisibility,
@@ -395,7 +397,7 @@ export function DataTable({
 
   const keyPersonnelTable = useReactTable({
     data: keyPersonnel,
-    columns,
+    columns: React.useMemo(() => getColumns(content), [content]),
     state: {
       sorting,
       columnVisibility,
@@ -420,7 +422,7 @@ export function DataTable({
 
   const focusDocumentsTable = useReactTable({
     data: focusDocuments,
-    columns,
+    columns: React.useMemo(() => getColumns(content), [content]),
     state: {
       sorting,
       columnVisibility,
@@ -445,7 +447,7 @@ export function DataTable({
 
   const table = useReactTable({
     data,
-    columns,
+    columns: React.useMemo(() => getColumns(content), [content]),
     state: {
       sorting,
       columnVisibility,
@@ -556,8 +558,8 @@ export function DataTable({
                 </SortableContext>
               ) : (
                 <TableRow>
-                  <TableCell colSpan={columns.length} className="h-24 text-center">
-                    No results.
+                  <TableCell colSpan={getColumns(content).length} className="h-24 text-center">
+                    {content.dataTable.pagination.noResults}
                   </TableCell>
                 </TableRow>
               )}
@@ -567,13 +569,13 @@ export function DataTable({
       </div>
       <div className="flex items-center justify-between px-4">
         <div className="text-muted-foreground hidden flex-1 text-sm lg:flex">
-          {currentTable.getFilteredSelectedRowModel().rows.length} of{" "}
-          {currentTable.getFilteredRowModel().rows.length} row(s) selected.
+          {currentTable.getFilteredSelectedRowModel().rows.length} {content.dataTable.pagination.of}{" "}
+          {currentTable.getFilteredRowModel().rows.length} {content.dataTable.pagination.rowsSelected}
         </div>
         <div className="flex w-full items-center gap-8 lg:w-fit">
           <div className="hidden items-center gap-2 lg:flex">
             <Label htmlFor="rows-per-page" className="text-sm font-medium">
-              Rows per page
+              {content.dataTable.pagination.rowsPerPage}
             </Label>
             <Select
               value={`${currentTable.getState().pagination.pageSize}`}
@@ -594,7 +596,7 @@ export function DataTable({
             </Select>
           </div>
           <div className="flex w-fit items-center justify-center text-sm font-medium">
-            Page {currentTable.getState().pagination.pageIndex + 1} of {currentTable.getPageCount()}
+            {content.dataTable.pagination.page} {currentTable.getState().pagination.pageIndex + 1} {content.dataTable.pagination.of} {currentTable.getPageCount()}
           </div>
           <div className="ml-auto flex items-center gap-2 lg:ml-0">
             <Button
@@ -603,7 +605,7 @@ export function DataTable({
               onClick={() => currentTable.setPageIndex(0)}
               disabled={!currentTable.getCanPreviousPage()}
             >
-              <span className="sr-only">Go to first page</span>
+              <span className="sr-only">{content.dataTable.pagination.goToFirst}</span>
               <ChevronsLeft />
             </Button>
             <Button
@@ -613,7 +615,7 @@ export function DataTable({
               onClick={() => currentTable.previousPage()}
               disabled={!currentTable.getCanPreviousPage()}
             >
-              <span className="sr-only">Go to previous page</span>
+              <span className="sr-only">{content.dataTable.pagination.goToPrevious}</span>
               <ChevronLeft />
             </Button>
             <Button
@@ -623,7 +625,7 @@ export function DataTable({
               onClick={() => currentTable.nextPage()}
               disabled={!currentTable.getCanNextPage()}
             >
-              <span className="sr-only">Go to next page</span>
+              <span className="sr-only">{content.dataTable.pagination.goToNext}</span>
               <ChevronRight />
             </Button>
             <Button
@@ -633,7 +635,7 @@ export function DataTable({
               onClick={() => currentTable.setPageIndex(currentTable.getPageCount() - 1)}
               disabled={!currentTable.getCanNextPage()}
             >
-              <span className="sr-only">Go to last page</span>
+              <span className="sr-only">{content.dataTable.pagination.goToLast}</span>
               <ChevronsRight />
             </Button>
           </div>
@@ -654,27 +656,27 @@ export function DataTable({
             size="sm"
             id="view-selector"
           >
-            <SelectValue placeholder="Select a view" />
+            <SelectValue placeholder={content.dataTable.tabs.selectView.value} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="outline">Outline</SelectItem>
-            <SelectItem value="past-performance">Past Performance</SelectItem>
-            <SelectItem value="key-personnel">Key Personnel</SelectItem>
-            <SelectItem value="focus-documents">Focus Documents</SelectItem>
+            <SelectItem value="outline">{content.dataTable.tabs.outline}</SelectItem>
+            <SelectItem value="past-performance">{content.dataTable.tabs.pastPerformance}</SelectItem>
+            <SelectItem value="key-personnel">{content.dataTable.tabs.keyPersonnel}</SelectItem>
+            <SelectItem value="focus-documents">{content.dataTable.tabs.focusDocuments}</SelectItem>
           </SelectContent>
         </Select>
         <TabsList className="**:data-[slot=badge]:bg-muted-foreground/30 hidden **:data-[slot=badge]:size-5 **:data-[slot=badge]:rounded-full **:data-[slot=badge]:px-1 sm:flex">
           <TabsTrigger value="outline" className="cursor-pointer">
-            Outline
+            {content.dataTable.tabs.outline}
           </TabsTrigger>
           <TabsTrigger value="past-performance" className="cursor-pointer">
-            Past Performance <Badge variant="secondary">3</Badge>
+            {content.dataTable.tabs.pastPerformance} <Badge variant="secondary">3</Badge>
           </TabsTrigger>
           <TabsTrigger value="key-personnel" className="cursor-pointer">
-            Key Personnel <Badge variant="secondary">2</Badge>
+            {content.dataTable.tabs.keyPersonnel} <Badge variant="secondary">2</Badge>
           </TabsTrigger>
           <TabsTrigger value="focus-documents" className="cursor-pointer">
-            Focus Documents
+            {content.dataTable.tabs.focusDocuments}
           </TabsTrigger>
         </TabsList>
         <div className="flex items-center gap-2">
@@ -682,8 +684,8 @@ export function DataTable({
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm" className="cursor-pointer">
                 <Columns2 />
-                <span className="hidden lg:inline">Customize Columns</span>
-                <span className="lg:hidden">Columns</span>
+                <span className="hidden lg:inline">{content.dataTable.toolbar.customizeColumns}</span>
+                <span className="lg:hidden">{content.dataTable.toolbar.columns}</span>
                 <ChevronDown />
               </Button>
             </DropdownMenuTrigger>
@@ -707,7 +709,7 @@ export function DataTable({
           </DropdownMenu>
           <Button variant="outline" size="sm" className="cursor-pointer">
             <Plus />
-            <span className="hidden lg:inline">Add Section</span>
+            <span className="hidden lg:inline">{content.dataTable.toolbar.addSection}</span>
           </Button>
         </div>
       </div>
@@ -748,8 +750,8 @@ export function DataTable({
                   </SortableContext>
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={columns.length} className="h-24 text-center">
-                      No results.
+                    <TableCell colSpan={getColumns(content).length} className="h-24 text-center">
+                      {content.dataTable.pagination.noResults}
                     </TableCell>
                   </TableRow>
                 )}
@@ -759,13 +761,13 @@ export function DataTable({
         </div>
         <div className="flex items-center justify-between px-4">
           <div className="text-muted-foreground hidden flex-1 text-sm lg:flex">
-            {table.getFilteredSelectedRowModel().rows.length} of{" "}
-            {table.getFilteredRowModel().rows.length} row(s) selected.
+            {table.getFilteredSelectedRowModel().rows.length} {content.dataTable.pagination.of}{" "}
+            {table.getFilteredRowModel().rows.length} {content.dataTable.pagination.rowsSelected}
           </div>
           <div className="flex w-full items-center gap-8 lg:w-fit">
             <div className="hidden items-center gap-2 lg:flex">
               <Label htmlFor="rows-per-page" className="text-sm font-medium">
-                Rows per page
+                {content.dataTable.pagination.rowsPerPage}
               </Label>
               <Select
                 value={`${table.getState().pagination.pageSize}`}
@@ -786,7 +788,7 @@ export function DataTable({
               </Select>
             </div>
             <div className="flex w-fit items-center justify-center text-sm font-medium">
-              Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+              {content.dataTable.pagination.page} {table.getState().pagination.pageIndex + 1} {content.dataTable.pagination.of} {table.getPageCount()}
             </div>
             <div className="ml-auto flex items-center gap-2 lg:ml-0">
               <Button
@@ -795,7 +797,7 @@ export function DataTable({
                 onClick={() => table.setPageIndex(0)}
                 disabled={!table.getCanPreviousPage()}
               >
-                <span className="sr-only">Go to first page</span>
+                <span className="sr-only">{content.dataTable.pagination.goToFirst}</span>
                 <ChevronsLeft />
               </Button>
               <Button
@@ -805,7 +807,7 @@ export function DataTable({
                 onClick={() => table.previousPage()}
                 disabled={!table.getCanPreviousPage()}
               >
-                <span className="sr-only">Go to previous page</span>
+                <span className="sr-only">{content.dataTable.pagination.goToPrevious}</span>
                 <ChevronLeft />
               </Button>
               <Button
@@ -815,7 +817,7 @@ export function DataTable({
                 onClick={() => table.nextPage()}
                 disabled={!table.getCanNextPage()}
               >
-                <span className="sr-only">Go to next page</span>
+                <span className="sr-only">{content.dataTable.pagination.goToNext}</span>
                 <ChevronRight />
               </Button>
               <Button
@@ -825,7 +827,7 @@ export function DataTable({
                 onClick={() => table.setPageIndex(table.getPageCount() - 1)}
                 disabled={!table.getCanNextPage()}
               >
-                <span className="sr-only">Go to last page</span>
+                <span className="sr-only">{content.dataTable.pagination.goToLast}</span>
                 <ChevronsRight />
               </Button>
             </div>

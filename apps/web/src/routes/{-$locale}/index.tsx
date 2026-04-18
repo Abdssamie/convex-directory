@@ -14,19 +14,20 @@ import { FaqSection } from "@/components/landing/faq-section";
 import { LandingFooter } from "@/components/landing/footer";
 import { AboutSection } from "@/components/landing/about-section";
 import { createFileRoute } from "@tanstack/react-router";
+import { useIntlayer } from "react-intlayer";
 
 export const Route = createFileRoute("/{-$locale}/")({
   component: LandingPage,
 });
 
 function LandingPage() {
+  const content = useIntlayer("landing");
+
   useSeoMeta({
-    title: "ConvexZen - Modern Web App Boilerplate",
-    description:
-      "Ship web apps and SaaS faster with the lowest cost, modern tech stack. Built with React, TanStack Start, Convex, and more.",
-    ogTitle: "ConvexZen - Ship Web Apps Faster",
-    ogDescription:
-      "The lowest cost, modern web app boilerplate to ship your SaaS. Built with React, TanStack Start, Convex, and more.",
+    title: content.seo.title.value,
+    description: content.seo.description.value,
+    ogTitle: content.seo.ogTitle.value,
+    ogDescription: content.seo.ogDescription.value,
     ogImage: "/og-image.png",
     twitterCard: "summary_large_image",
   });

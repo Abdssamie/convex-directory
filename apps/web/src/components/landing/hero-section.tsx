@@ -6,8 +6,11 @@ import { Badge } from "@convex-zen/ui/components/badge";
 import { DotPattern } from "@/components/dot-pattern";
 import { assetUrl } from "@/lib/utils";
 import { LocalizedLink } from "@/components/localized-link";
+import { useIntlayer } from "react-intlayer";
 
 export function HeroSection() {
+  const content = useIntlayer("landing");
+
   return (
     <section
       id="hero"
@@ -25,40 +28,37 @@ export function HeroSection() {
           <div className="mb-8 flex justify-center">
             <Badge variant="outline" className="px-4 py-2 border-foreground">
               <Star className="w-3 h-3 mr-2 fill-current" />
-              New: Premium Template Collection
+              {content.hero.badge}
               <ArrowRight className="w-3 h-3 ml-2" />
             </Badge>
           </div>
 
           {/* Main Headline */}
           <h1 className="mb-6 text-4xl font-bold tracking-tight sm:text-6xl lg:text-7xl">
-            Build Better
+            {content.hero.titlePart1}
             <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-              {" "}
-              Web Applications{" "}
+              {content.hero.titleHighlight}
             </span>
-            with Convex & Better Auth
+            {content.hero.titlePart2}
           </h1>
 
           {/* Subheading */}
           <p className="mx-auto mb-10 max-w-2xl text-lg text-muted-foreground sm:text-xl">
-            ConvexZen is a production-ready boilerplate with Convex, Better Auth, TanStack Router,
-            and Lucide Icons. Accelerate your development with our curated collection of blocks and
-            templates.
+            {content.hero.description}
           </p>
 
           {/* CTA Buttons */}
           <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
             <Button size="lg" className="text-base cursor-pointer" asChild>
               <LocalizedLink to="/sign-up">
-                Get Started Free
+                {content.hero.getStartedFree}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </LocalizedLink>
             </Button>
             <Button variant="outline" size="lg" className="text-base cursor-pointer" asChild>
               <a href="#">
                 <Play className="mr-2 h-4 w-4" />
-                Watch Demo
+                {content.hero.watchDemo}
               </a>
             </Button>
           </div>

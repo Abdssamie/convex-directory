@@ -13,16 +13,18 @@ import { Badge } from "@convex-zen/ui/components/badge";
 import { LocalizedLink } from "@/components/localized-link";
 
 import { useOrganizationState } from "@/lib/organization";
+import { useIntlayer } from "react-intlayer";
 
 export function OrganizationOverview() {
   const { activeOrganization, organizations, isLoading } = useOrganizationState();
+  const content = useIntlayer("dashboard");
 
   if (isLoading) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Organization</CardTitle>
-          <CardDescription>Loading workspace details.</CardDescription>
+          <CardTitle>{content.organizationOverview.loadingTitle}</CardTitle>
+          <CardDescription>{content.organizationOverview.loadingDesc}</CardDescription>
         </CardHeader>
       </Card>
     );
@@ -32,18 +34,18 @@ export function OrganizationOverview() {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>No active organization</CardTitle>
+          <CardTitle>{content.organizationOverview.noActiveTitle}</CardTitle>
           <CardDescription>
-            Create your first workspace or switch to one you already joined.
+            {content.organizationOverview.noActiveDesc}
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-3">
           <Button asChild>
-            <LocalizedLink to="/settings/organization">Create organization</LocalizedLink>
+            <LocalizedLink to="/settings/organization">{content.organizationOverview.createOrg}</LocalizedLink>
           </Button>
           {organizations.length ? (
             <Button asChild variant="outline">
-              <LocalizedLink to="/settings/organization">Choose existing workspace</LocalizedLink>
+              <LocalizedLink to="/settings/organization">{content.organizationOverview.chooseExisting}</LocalizedLink>
             </Button>
           ) : null}
         </CardContent>
@@ -61,7 +63,7 @@ export function OrganizationOverview() {
               {activeOrganization.name}
             </CardTitle>
             <CardDescription>
-              Active workspace for dashboard, members, and invitations.
+              {content.organizationOverview.activeWorkspaceDesc}
             </CardDescription>
           </div>
           <Badge>{activeOrganization.slug}</Badge>
@@ -70,15 +72,15 @@ export function OrganizationOverview() {
       <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div className="grid gap-3 sm:grid-cols-3">
           <div className="rounded-lg border p-3">
-            <p className="text-muted-foreground text-sm">Organizations</p>
+            <p className="text-muted-foreground text-sm">{content.organizationOverview.organizationsLabel}</p>
             <p className="text-xl font-semibold">{organizations.length}</p>
           </div>
           <div className="rounded-lg border p-3">
-            <p className="text-muted-foreground text-sm">Members</p>
+            <p className="text-muted-foreground text-sm">{content.organizationOverview.membersLabel}</p>
             <p className="text-xl font-semibold">{activeOrganization.members.length}</p>
           </div>
           <div className="rounded-lg border p-3">
-            <p className="text-muted-foreground text-sm">Pending invites</p>
+            <p className="text-muted-foreground text-sm">{content.organizationOverview.pendingInvitesLabel}</p>
             <p className="text-xl font-semibold">
               {
                 activeOrganization.invitations.filter(
@@ -92,13 +94,13 @@ export function OrganizationOverview() {
           <Button asChild variant="outline">
             <LocalizedLink to="/settings/organization">
               <Users className="mr-2 size-4" />
-              Manage members
+              {content.organizationOverview.manageMembers}
             </LocalizedLink>
           </Button>
           <Button asChild>
             <LocalizedLink to="/settings/organization">
               <MailPlus className="mr-2 size-4" />
-              Invite people
+              {content.organizationOverview.invitePeople}
             </LocalizedLink>
           </Button>
         </div>

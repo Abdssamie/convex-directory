@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Menu, LayoutDashboard, ChevronDown, X, Moon, Sun } from "lucide-react";
+import { useIntlayer } from "react-intlayer";
 import { Button } from "@convex-zen/ui/components/button";
 import {
   NavigationMenu,
@@ -29,33 +30,33 @@ import { useTheme } from "@/hooks/use-theme";
 import { authClient } from "@/lib/auth-client";
 import { LocalizedLink } from "@/components/localized-link";
 
-const navigationItems = [
-  { name: "Home", href: "#hero" },
-  { name: "Features", href: "#features" },
-  { name: "Solutions", href: "#features", hasMegaMenu: true },
-  { name: "Team", href: "#team" },
-  { name: "Pricing", href: "#pricing" },
-  { name: "FAQ", href: "#faq" },
-  { name: "Contact", href: "#contact" },
+const getNavigationItems = (content: any) => [
+  { name: content.navbar.home, href: "#hero" },
+  { name: content.navbar.features, href: "#features" },
+  { name: content.navbar.solutions, href: "#features", hasMegaMenu: true },
+  { name: content.navbar.team, href: "#team" },
+  { name: content.navbar.pricing, href: "#pricing" },
+  { name: content.navbar.faq, href: "#faq" },
+  { name: content.navbar.contact, href: "#contact" },
 ];
 
 // Solutions menu items for mobile
-const solutionsItems = [
-  { title: "Browse Products" },
-  { name: "Free Blocks", href: "#free-blocks" },
-  { name: "Premium Templates", href: "#premium-templates" },
-  { name: "Admin Dashboards", href: "#admin-dashboards" },
-  { name: "Landing Pages", href: "#landing-pages" },
-  { title: "Categories" },
-  { name: "E-commerce", href: "#ecommerce" },
-  { name: "SaaS Dashboards", href: "#saas-dashboards" },
-  { name: "Analytics", href: "#analytics" },
-  { name: "Authentication", href: "#authentication" },
-  { title: "Resources" },
-  { name: "Documentation", href: "#docs" },
-  { name: "Component Showcase", href: "#showcase" },
-  { name: "GitHub Repository", href: "#github" },
-  { name: "Design System", href: "#design-system" },
+const getSolutionsItems = (content: any) => [
+  { title: content.navbar.browseProducts },
+  { name: content.navbar.freeBlocks, href: "#free-blocks" },
+  { name: content.navbar.premiumTemplates, href: "#premium-templates" },
+  { name: content.navbar.adminDashboards, href: "#admin-dashboards" },
+  { name: content.navbar.landingPages, href: "#landing-pages" },
+  { title: content.navbar.categories },
+  { name: content.navbar.ecommerce, href: "#ecommerce" },
+  { name: content.navbar.saasDashboards, href: "#saas-dashboards" },
+  { name: content.navbar.analytics, href: "#analytics" },
+  { name: content.navbar.authentication, href: "#authentication" },
+  { title: content.navbar.resources },
+  { name: content.navbar.documentation, href: "#docs" },
+  { name: content.navbar.componentShowcase, href: "#showcase" },
+  { name: content.navbar.githubRepo, href: "#github" },
+  { name: content.navbar.designSystem, href: "#design-system" },
 ];
 
 // Smooth scroll function
@@ -76,6 +77,7 @@ export function LandingNavbar() {
   const [solutionsOpen, setSolutionsOpen] = useState(false);
   const { setTheme, resolvedTheme } = useTheme();
   const session = authClient.useSession();
+  const content = useIntlayer("landing");
   const isAuthenticated = !!session.data;
 
   return (
@@ -92,7 +94,7 @@ export function LandingNavbar() {
         {/* Desktop Navigation */}
         <NavigationMenu className="hidden xl:flex">
           <NavigationMenuList>
-            {navigationItems.map((item) => (
+            {getNavigationItems(content).map((item) => (
               <NavigationMenuItem key={item.name}>
                 {item.hasMegaMenu ? (
                   <>
@@ -132,16 +134,16 @@ export function LandingNavbar() {
             <Button variant="outline" asChild className="cursor-pointer">
               <LocalizedLink to="/dashboard">
                 <LayoutDashboard className="h-4 w-4 mr-2" />
-                Dashboard
+                {content.navbar.dashboard}
               </LocalizedLink>
             </Button>
           ) : (
             <>
               <Button variant="ghost" asChild className="cursor-pointer">
-                <LocalizedLink to="/sign-in">Sign In</LocalizedLink>
+                <LocalizedLink to="/sign-in">{content.navbar.signIn}</LocalizedLink>
               </Button>
               <Button asChild className="cursor-pointer">
-                <LocalizedLink to="/sign-up">Get Started</LocalizedLink>
+                <LocalizedLink to="/sign-up">{content.navbar.getStarted}</LocalizedLink>
               </Button>
             </>
           )}
@@ -193,7 +195,7 @@ export function LandingNavbar() {
               {/* Navigation Links */}
               <div className="flex-1 overflow-y-auto">
                 <nav className="p-6 space-y-1">
-                  {navigationItems.map((item) => (
+                  {getNavigationItems(content).map((item) => (
                     <div key={item.name}>
                       {item.hasMegaMenu ? (
                         <Collapsible open={solutionsOpen} onOpenChange={setSolutionsOpen}>
@@ -204,7 +206,7 @@ export function LandingNavbar() {
                             />
                           </CollapsibleTrigger>
                           <CollapsibleContent className="pl-4 space-y-1">
-                            {solutionsItems.map((solution, index) =>
+                            {getSolutionsItems(content).map((solution, index) =>
                               solution.title ? (
                                 <div
                                   key={`title-${index}`}
@@ -263,7 +265,7 @@ export function LandingNavbar() {
                   >
                     <LocalizedLink to="/dashboard">
                       <LayoutDashboard className="size-4" />
-                      Dashboard
+                      {content.navbar.dashboard}
                     </LocalizedLink>
                   </Button>
                 ) : (
@@ -275,7 +277,7 @@ export function LandingNavbar() {
                       className="cursor-pointer"
                       onClick={() => setIsOpen(false)}
                     >
-                      <LocalizedLink to="/sign-in">Sign In</LocalizedLink>
+                      <LocalizedLink to="/sign-in">{content.navbar.signIn}</LocalizedLink>
                     </Button>
                     <Button
                       asChild
@@ -283,7 +285,7 @@ export function LandingNavbar() {
                       className="cursor-pointer"
                       onClick={() => setIsOpen(false)}
                     >
-                      <LocalizedLink to="/sign-up">Get Started</LocalizedLink>
+                      <LocalizedLink to="/sign-up">{content.navbar.getStarted}</LocalizedLink>
                     </Button>
                   </div>
                 )}
