@@ -89,7 +89,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         {data.navGroups.map((group) => (
-          <NavMain key={group.label} label={group.label} items={group.items} />
+          <NavMain key={group.label} label={group.label} items={group.items as any} />
         ))}
       </SidebarContent>
       <SidebarFooter>
