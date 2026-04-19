@@ -5,21 +5,26 @@ const appSidebarDictionary = {
   content: {
     groups: [
       {
+        label: t({ en: "Directory", fr: "Répertoire" }),
+        items: [
+          {
+            title: t({ en: "Submit Project", fr: "Soumettre un projet" }),
+            url: "/dashboard/projects",
+          },
+          { title: t({ en: "Browse", fr: "Parcourir" }), url: "/directory" },
+        ],
+      },
+      {
+        label: t({ en: "Admin", fr: "Admin" }),
+        items: [
+          { title: t({ en: "Review Queue", fr: "File de révision" }), url: "/dashboard/admin" },
+        ],
+      },
+      {
         label: t({ en: "Dashboards", fr: "Tableaux de bord" }),
         items: [
           { title: t({ en: "Dashboard", fr: "Tableau de bord" }), url: "/dashboard" },
           { title: t({ en: "Home", fr: "Accueil" }), url: "/" },
-        ],
-      },
-      {
-        label: t({ en: "Auth", fr: "Authentification" }),
-        items: [
-          { title: t({ en: "Sign In", fr: "Connexion" }), url: "/sign-in" },
-          { title: t({ en: "Sign Up", fr: "Inscription" }), url: "/sign-up" },
-          {
-            title: t({ en: "Forgot Password", fr: "Mot de passe oublié" }),
-            url: "/forgot-password",
-          },
         ],
       },
       {

@@ -10,6 +10,9 @@ import {
   Settings,
   CreditCard,
   Building2,
+  FolderSearch,
+  PlusCircle,
+  ShieldCheck,
   type LucideIcon,
 } from "lucide-react";
 import { api } from "@convex-zen/backend/convex/_generated/api";
@@ -31,10 +34,14 @@ const iconMap: Record<string, LucideIcon> = {
   "/settings/account": Settings,
   "/settings/organization": Building2,
   "/settings/billing": CreditCard,
+  "/directory": FolderSearch,
+  "/dashboard/projects": PlusCircle,
+  "/dashboard/admin": ShieldCheck,
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const user = useQuery(api.auth.getCurrentUser);
+  const isAdmin = useQuery(api.projects.isAdminQuery);
   const content = useIntlayer("app-sidebar");
 
   type NavItem = {
@@ -47,14 +54,25 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     items: NavItem[];
   };
 
-  const navGroups = ((content.groups as unknown as NavGroup[]) || []).map((group: NavGroup) => ({
-    label: group.label.value,
-    items: group.items.map((item: NavItem) => ({
-      title: item.title.value,
-      url: item.url.value as To,
-      icon: iconMap[item.url.value],
-    })),
-  }));
+  const navGroups = ((content.groups as unknown as NavGroup[]) || [])
+    .filter((group: NavGroup) => {
+      if (
+        group.label.value === "Admin" ||
+        group.label.value === "Admin Review" ||
+        group.label.value === "Admin Review Queue"
+      ) {
+        return isAdmin;
+      }
+      return true;
+    })
+    .map((group: NavGroup) => ({
+      label: group.label.value,
+      items: group.items.map((item: NavItem) => ({
+        title: item.title.value,
+        url: item.url.value as To,
+        icon: iconMap[item.url.value],
+      })),
+    }));
 
   return (
     <Sidebar {...props}>

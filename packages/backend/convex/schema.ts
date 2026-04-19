@@ -107,6 +107,42 @@ export const tables = {
     .index("by_messageId", ["messageId"])
     .index("by_event", ["event"])
     .index("by_ts", ["ts"]),
+  projects: defineTable({
+    title: v.string(),
+    description: v.string(),
+    url: v.string(),
+    type: v.union(
+      v.literal("saas"),
+      v.literal("tool"),
+      v.literal("open-source"),
+      v.literal("component"),
+    ),
+    categoryId: v.id("categories"),
+    ownerId: v.optional(v.id("user")), // Better typing
+    createdBy: v.id("user"), // Better typing
+    status: v.union(v.literal("pending"), v.literal("approved"), v.literal("rejected")),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+    image: v.optional(v.string()),
+  })
+    .index("by_status", ["status"])
+    .index("by_type", ["type"])
+    .index("by_ownerId", ["ownerId"])
+    .index("by_createdBy", ["createdBy"]),
+  categories: defineTable({
+    name: v.string(),
+    slug: v.string(),
+  }).index("by_slug", ["slug"]),
+  claims: defineTable({
+    projectId: v.id("projects"),
+    userId: v.string(),
+    status: v.union(v.literal("pending"), v.literal("approved"), v.literal("rejected")),
+    reason: v.optional(v.string()),
+    createdAt: v.number(),
+  })
+    .index("by_projectId", ["projectId"])
+    .index("by_userId", ["userId"])
+    .index("by_status", ["status"]),
 };
 
 export default defineSchema(tables);

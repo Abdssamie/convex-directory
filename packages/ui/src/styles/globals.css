@@ -40,7 +40,7 @@
   --font-sans: Poppins, sans-serif;
   --font-serif: "Libre Baskerville", serif;
   --font-mono: "IBM Plex Mono", monospace;
-  --radius: 0.375rem;
+  --radius: 1rem;
   --shadow-x: 1px;
   --shadow-y: 1px;
   --shadow-blur: 16px;
@@ -95,7 +95,7 @@
   --font-sans: Poppins, sans-serif;
   --font-serif: "Libre Baskerville", serif;
   --font-mono: "IBM Plex Mono", monospace;
-  --radius: 0.375rem;
+  --radius: 1rem;
   --shadow-x: 1px;
   --shadow-y: 1px;
   --shadow-blur: 16px;

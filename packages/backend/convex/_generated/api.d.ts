@@ -9,6 +9,7 @@
  */
 
 import type * as auth from "../auth.js";
+import type * as claims from "../claims.js";
 import type * as features_email_betterAuth from "../features/email/betterAuth.js";
 import type * as features_email_brevo from "../features/email/brevo.js";
 import type * as features_email_brevo_client from "../features/email/brevo/client.js";
@@ -25,17 +26,15 @@ import type * as lib_org from "../lib/org.js";
 import type * as lib_rateLimiter from "../lib/rateLimiter.js";
 import type * as polar from "../polar.js";
 import type * as privateData from "../privateData.js";
+import type * as projects from "../projects.js";
 import type * as r2 from "../r2.js";
 import type * as shared_result from "../shared/result.js";
 
-import type {
-  ApiFromModules,
-  FilterApi,
-  FunctionReference,
-} from "convex/server";
+import type { ApiFromModules, FilterApi, FunctionReference } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
+  claims: typeof claims;
   "features/email/betterAuth": typeof features_email_betterAuth;
   "features/email/brevo": typeof features_email_brevo;
   "features/email/brevo/client": typeof features_email_brevo_client;
@@ -52,6 +51,7 @@ declare const fullApi: ApiFromModules<{
   "lib/rateLimiter": typeof lib_rateLimiter;
   polar: typeof polar;
   privateData: typeof privateData;
+  projects: typeof projects;
   r2: typeof r2;
   "shared/result": typeof shared_result;
 }>;
@@ -64,10 +64,7 @@ declare const fullApi: ApiFromModules<{
  * const myFunctionReference = api.myModule.myFunction;
  * ```
  */
-export declare const api: FilterApi<
-  typeof fullApi,
-  FunctionReference<any, "public">
->;
+export declare const api: FilterApi<typeof fullApi, FunctionReference<any, "public">>;
 
 /**
  * A utility for referencing Convex functions in your app's internal API.
@@ -77,10 +74,7 @@ export declare const api: FilterApi<
  * const myFunctionReference = internal.myModule.myFunction;
  * ```
  */
-export declare const internal: FilterApi<
-  typeof fullApi,
-  FunctionReference<any, "internal">
->;
+export declare const internal: FilterApi<typeof fullApi, FunctionReference<any, "internal">>;
 
 export declare const components: {
   betterAuth: import("../features/auth/_generated/component.js").ComponentApi<"betterAuth">;

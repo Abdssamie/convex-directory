@@ -5,36 +5,36 @@ export default {
   content: {
     seo: {
       title: t({
-        en: "ConvexZen - Modern Web App Boilerplate",
-        fr: "ConvexZen - Modèle d'application web moderne",
+        en: "Convex Directory - Discover Apps, Tools & Components",
+        fr: "Convex Directory - Découvrez des applications, outils et composants",
       }),
       description: t({
-        en: "Ship web apps and SaaS faster with the lowest cost, modern tech stack. Built with React, TanStack Start, Convex, and more.",
-        fr: "Déployez plus rapidement avec notre pile technologique moderne à moindre coût.",
+        en: "The ultimate directory for projects built with Convex. Explore SaaS apps, open-source tools, and UI components from the community.",
+        fr: "Le répertoire ultime des projets créés avec Convex.",
       }),
       ogTitle: t({
-        en: "ConvexZen - Ship Web Apps Faster",
-        fr: "ConvexZen - Déployez plus rapidement",
+        en: "Convex Directory - Built with Convex",
+        fr: "Convex Directory - Créé avec Convex",
       }),
       ogDescription: t({
-        en: "The lowest cost, modern web app boilerplate to ship your SaaS. Built with React, TanStack Start, Convex, and more.",
-        fr: "Le modèle d'application web moderne pour déployer votre SaaS.",
+        en: "Explore the ecosystem of apps, tools, and components powered by Convex.",
+        fr: "Explorez l'écosystème d'applications, d'outils et de composants alimentés par Convex.",
       }),
     },
     hero: {
       badge: t({
-        en: "New: Premium Template Collection",
-        fr: "Nouveau : Collection de modèles premium",
+        en: "New: Submit your project today!",
+        fr: "Nouveau : Soumettez votre projet dès aujourd'hui !",
       }),
-      titlePart1: t({ en: "Build Better", fr: "Créez de meilleures" }),
-      titleHighlight: t({ en: " Web Applications ", fr: " Applications Web " }),
-      titlePart2: t({ en: "with Convex & Better Auth", fr: "avec Convex & Better Auth" }),
+      titlePart1: t({ en: "The Ecosystem of", fr: "L'écosystème de" }),
+      titleHighlight: t({ en: " Convex ", fr: " Convex " }),
+      titlePart2: t({ en: "Apps & Tools", fr: "Apps & Outils" }),
       description: t({
-        en: "ConvexZen is a production-ready boilerplate with Convex, Better Auth, TanStack Router, and Lucide Icons. Accelerate your development with our curated collection of blocks and templates.",
-        fr: "ConvexZen est un modèle prêt pour la production avec Convex, Better Auth, TanStack Router et Lucide Icons.",
+        en: "Discover what the community is building with Convex. From SaaS prototypes to production-grade tools and open-source components.",
+        fr: "Découvrez ce que la communauté crée avec Convex. Des prototypes SaaS aux outils de production et composants open-source.",
       }),
-      getStartedFree: t({ en: "Get Started Free", fr: "Commencez gratuitement" }),
-      watchDemo: t({ en: "Watch Demo", fr: "Voir la démo" }),
+      getStartedFree: t({ en: "Explore Directory", fr: "Explorer le répertoire" }),
+      watchDemo: t({ en: "Submit Project", fr: "Soumettre un projet" }),
     },
     navbar: {
       home: t({ en: "Home", fr: "Accueil" }),
@@ -46,7 +46,7 @@ export default {
       contact: t({ en: "Contact", fr: "Contact" }),
       dashboard: t({ en: "Dashboard", fr: "Tableau de bord" }),
       signIn: t({ en: "Sign In", fr: "Connexion" }),
-      getStarted: t({ en: "Get Started", fr: "Commencer" }),
+      getStarted: t({ en: "Join Now", fr: "Rejoindre" }),
       browseProducts: t({ en: "Browse Products", fr: "Parcourir les produits" }),
       freeBlocks: t({ en: "Free Blocks", fr: "Blocs Gratuits" }),
       premiumTemplates: t({ en: "Premium Templates", fr: "Modèles Premium" }),

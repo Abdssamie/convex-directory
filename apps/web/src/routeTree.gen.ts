@@ -17,14 +17,18 @@ import { Route as Char123LocaleChar125SignInRouteImport } from './routes/{-$loca
 import { Route as Char123LocaleChar125ResetPasswordRouteImport } from './routes/{-$locale}/reset-password'
 import { Route as Char123LocaleChar125MagicLinkRouteImport } from './routes/{-$locale}/magic-link'
 import { Route as Char123LocaleChar125ForgotPasswordRouteImport } from './routes/{-$locale}/forgot-password'
+import { Route as Char123LocaleChar125DirectoryRouteImport } from './routes/{-$locale}/directory'
 import { Route as Char123LocaleChar125DashboardRouteImport } from './routes/{-$locale}/dashboard'
 import { Route as Char123LocaleChar125404RouteImport } from './routes/{-$locale}/404'
 import { Route as Char123LocaleChar125SplatRouteImport } from './routes/{-$locale}/$'
+import { Route as Char123LocaleChar125DashboardIndexRouteImport } from './routes/{-$locale}/dashboard/index'
 import { Route as Char123LocaleChar125SettingsOrganizationRouteImport } from './routes/{-$locale}/settings/organization'
 import { Route as Char123LocaleChar125SettingsBillingRouteImport } from './routes/{-$locale}/settings/billing'
 import { Route as Char123LocaleChar125SettingsAccountRouteImport } from './routes/{-$locale}/settings/account'
 import { Route as Char123LocaleChar125OnboardingOrganizationRouteImport } from './routes/{-$locale}/onboarding/organization'
 import { Route as Char123LocaleChar125InviteInvitationIdRouteImport } from './routes/{-$locale}/invite/$invitationId'
+import { Route as Char123LocaleChar125DashboardProjectsRouteImport } from './routes/{-$locale}/dashboard/projects'
+import { Route as Char123LocaleChar125DashboardAdminRouteImport } from './routes/{-$locale}/dashboard/admin'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
 const Char123LocaleChar125RouteRoute =
@@ -75,6 +79,12 @@ const Char123LocaleChar125ForgotPasswordRoute =
     path: '/forgot-password',
     getParentRoute: () => Char123LocaleChar125RouteRoute,
   } as any)
+const Char123LocaleChar125DirectoryRoute =
+  Char123LocaleChar125DirectoryRouteImport.update({
+    id: '/directory',
+    path: '/directory',
+    getParentRoute: () => Char123LocaleChar125RouteRoute,
+  } as any)
 const Char123LocaleChar125DashboardRoute =
   Char123LocaleChar125DashboardRouteImport.update({
     id: '/dashboard',
@@ -91,6 +101,12 @@ const Char123LocaleChar125SplatRoute =
     id: '/$',
     path: '/$',
     getParentRoute: () => Char123LocaleChar125RouteRoute,
+  } as any)
+const Char123LocaleChar125DashboardIndexRoute =
+  Char123LocaleChar125DashboardIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => Char123LocaleChar125DashboardRoute,
   } as any)
 const Char123LocaleChar125SettingsOrganizationRoute =
   Char123LocaleChar125SettingsOrganizationRouteImport.update({
@@ -122,6 +138,18 @@ const Char123LocaleChar125InviteInvitationIdRoute =
     path: '/invite/$invitationId',
     getParentRoute: () => Char123LocaleChar125RouteRoute,
   } as any)
+const Char123LocaleChar125DashboardProjectsRoute =
+  Char123LocaleChar125DashboardProjectsRouteImport.update({
+    id: '/projects',
+    path: '/projects',
+    getParentRoute: () => Char123LocaleChar125DashboardRoute,
+  } as any)
+const Char123LocaleChar125DashboardAdminRoute =
+  Char123LocaleChar125DashboardAdminRouteImport.update({
+    id: '/admin',
+    path: '/admin',
+    getParentRoute: () => Char123LocaleChar125DashboardRoute,
+  } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
@@ -132,7 +160,8 @@ export interface FileRoutesByFullPath {
   '/{-$locale}': typeof Char123LocaleChar125RouteRouteWithChildren
   '/{-$locale}/$': typeof Char123LocaleChar125SplatRoute
   '/{-$locale}/404': typeof Char123LocaleChar125404Route
-  '/{-$locale}/dashboard': typeof Char123LocaleChar125DashboardRoute
+  '/{-$locale}/dashboard': typeof Char123LocaleChar125DashboardRouteWithChildren
+  '/{-$locale}/directory': typeof Char123LocaleChar125DirectoryRoute
   '/{-$locale}/forgot-password': typeof Char123LocaleChar125ForgotPasswordRoute
   '/{-$locale}/magic-link': typeof Char123LocaleChar125MagicLinkRoute
   '/{-$locale}/reset-password': typeof Char123LocaleChar125ResetPasswordRoute
@@ -141,16 +170,19 @@ export interface FileRoutesByFullPath {
   '/{-$locale}/verify-email': typeof Char123LocaleChar125VerifyEmailRoute
   '/{-$locale}/': typeof Char123LocaleChar125IndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/{-$locale}/dashboard/admin': typeof Char123LocaleChar125DashboardAdminRoute
+  '/{-$locale}/dashboard/projects': typeof Char123LocaleChar125DashboardProjectsRoute
   '/{-$locale}/invite/$invitationId': typeof Char123LocaleChar125InviteInvitationIdRoute
   '/{-$locale}/onboarding/organization': typeof Char123LocaleChar125OnboardingOrganizationRoute
   '/{-$locale}/settings/account': typeof Char123LocaleChar125SettingsAccountRoute
   '/{-$locale}/settings/billing': typeof Char123LocaleChar125SettingsBillingRoute
   '/{-$locale}/settings/organization': typeof Char123LocaleChar125SettingsOrganizationRoute
+  '/{-$locale}/dashboard/': typeof Char123LocaleChar125DashboardIndexRoute
 }
 export interface FileRoutesByTo {
   '/{-$locale}/$': typeof Char123LocaleChar125SplatRoute
   '/{-$locale}/404': typeof Char123LocaleChar125404Route
-  '/{-$locale}/dashboard': typeof Char123LocaleChar125DashboardRoute
+  '/{-$locale}/directory': typeof Char123LocaleChar125DirectoryRoute
   '/{-$locale}/forgot-password': typeof Char123LocaleChar125ForgotPasswordRoute
   '/{-$locale}/magic-link': typeof Char123LocaleChar125MagicLinkRoute
   '/{-$locale}/reset-password': typeof Char123LocaleChar125ResetPasswordRoute
@@ -159,18 +191,22 @@ export interface FileRoutesByTo {
   '/{-$locale}/verify-email': typeof Char123LocaleChar125VerifyEmailRoute
   '/{-$locale}': typeof Char123LocaleChar125IndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/{-$locale}/dashboard/admin': typeof Char123LocaleChar125DashboardAdminRoute
+  '/{-$locale}/dashboard/projects': typeof Char123LocaleChar125DashboardProjectsRoute
   '/{-$locale}/invite/$invitationId': typeof Char123LocaleChar125InviteInvitationIdRoute
   '/{-$locale}/onboarding/organization': typeof Char123LocaleChar125OnboardingOrganizationRoute
   '/{-$locale}/settings/account': typeof Char123LocaleChar125SettingsAccountRoute
   '/{-$locale}/settings/billing': typeof Char123LocaleChar125SettingsBillingRoute
   '/{-$locale}/settings/organization': typeof Char123LocaleChar125SettingsOrganizationRoute
+  '/{-$locale}/dashboard': typeof Char123LocaleChar125DashboardIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/{-$locale}': typeof Char123LocaleChar125RouteRouteWithChildren
   '/{-$locale}/$': typeof Char123LocaleChar125SplatRoute
   '/{-$locale}/404': typeof Char123LocaleChar125404Route
-  '/{-$locale}/dashboard': typeof Char123LocaleChar125DashboardRoute
+  '/{-$locale}/dashboard': typeof Char123LocaleChar125DashboardRouteWithChildren
+  '/{-$locale}/directory': typeof Char123LocaleChar125DirectoryRoute
   '/{-$locale}/forgot-password': typeof Char123LocaleChar125ForgotPasswordRoute
   '/{-$locale}/magic-link': typeof Char123LocaleChar125MagicLinkRoute
   '/{-$locale}/reset-password': typeof Char123LocaleChar125ResetPasswordRoute
@@ -179,11 +215,14 @@ export interface FileRoutesById {
   '/{-$locale}/verify-email': typeof Char123LocaleChar125VerifyEmailRoute
   '/{-$locale}/': typeof Char123LocaleChar125IndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/{-$locale}/dashboard/admin': typeof Char123LocaleChar125DashboardAdminRoute
+  '/{-$locale}/dashboard/projects': typeof Char123LocaleChar125DashboardProjectsRoute
   '/{-$locale}/invite/$invitationId': typeof Char123LocaleChar125InviteInvitationIdRoute
   '/{-$locale}/onboarding/organization': typeof Char123LocaleChar125OnboardingOrganizationRoute
   '/{-$locale}/settings/account': typeof Char123LocaleChar125SettingsAccountRoute
   '/{-$locale}/settings/billing': typeof Char123LocaleChar125SettingsBillingRoute
   '/{-$locale}/settings/organization': typeof Char123LocaleChar125SettingsOrganizationRoute
+  '/{-$locale}/dashboard/': typeof Char123LocaleChar125DashboardIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -192,6 +231,7 @@ export interface FileRouteTypes {
     | '/{-$locale}/$'
     | '/{-$locale}/404'
     | '/{-$locale}/dashboard'
+    | '/{-$locale}/directory'
     | '/{-$locale}/forgot-password'
     | '/{-$locale}/magic-link'
     | '/{-$locale}/reset-password'
@@ -200,16 +240,19 @@ export interface FileRouteTypes {
     | '/{-$locale}/verify-email'
     | '/{-$locale}/'
     | '/api/auth/$'
+    | '/{-$locale}/dashboard/admin'
+    | '/{-$locale}/dashboard/projects'
     | '/{-$locale}/invite/$invitationId'
     | '/{-$locale}/onboarding/organization'
     | '/{-$locale}/settings/account'
     | '/{-$locale}/settings/billing'
     | '/{-$locale}/settings/organization'
+    | '/{-$locale}/dashboard/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/{-$locale}/$'
     | '/{-$locale}/404'
-    | '/{-$locale}/dashboard'
+    | '/{-$locale}/directory'
     | '/{-$locale}/forgot-password'
     | '/{-$locale}/magic-link'
     | '/{-$locale}/reset-password'
@@ -218,17 +261,21 @@ export interface FileRouteTypes {
     | '/{-$locale}/verify-email'
     | '/{-$locale}'
     | '/api/auth/$'
+    | '/{-$locale}/dashboard/admin'
+    | '/{-$locale}/dashboard/projects'
     | '/{-$locale}/invite/$invitationId'
     | '/{-$locale}/onboarding/organization'
     | '/{-$locale}/settings/account'
     | '/{-$locale}/settings/billing'
     | '/{-$locale}/settings/organization'
+    | '/{-$locale}/dashboard'
   id:
     | '__root__'
     | '/{-$locale}'
     | '/{-$locale}/$'
     | '/{-$locale}/404'
     | '/{-$locale}/dashboard'
+    | '/{-$locale}/directory'
     | '/{-$locale}/forgot-password'
     | '/{-$locale}/magic-link'
     | '/{-$locale}/reset-password'
@@ -237,11 +284,14 @@ export interface FileRouteTypes {
     | '/{-$locale}/verify-email'
     | '/{-$locale}/'
     | '/api/auth/$'
+    | '/{-$locale}/dashboard/admin'
+    | '/{-$locale}/dashboard/projects'
     | '/{-$locale}/invite/$invitationId'
     | '/{-$locale}/onboarding/organization'
     | '/{-$locale}/settings/account'
     | '/{-$locale}/settings/billing'
     | '/{-$locale}/settings/organization'
+    | '/{-$locale}/dashboard/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -307,6 +357,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char123LocaleChar125ForgotPasswordRouteImport
       parentRoute: typeof Char123LocaleChar125RouteRoute
     }
+    '/{-$locale}/directory': {
+      id: '/{-$locale}/directory'
+      path: '/directory'
+      fullPath: '/{-$locale}/directory'
+      preLoaderRoute: typeof Char123LocaleChar125DirectoryRouteImport
+      parentRoute: typeof Char123LocaleChar125RouteRoute
+    }
     '/{-$locale}/dashboard': {
       id: '/{-$locale}/dashboard'
       path: '/dashboard'
@@ -327,6 +384,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/{-$locale}/$'
       preLoaderRoute: typeof Char123LocaleChar125SplatRouteImport
       parentRoute: typeof Char123LocaleChar125RouteRoute
+    }
+    '/{-$locale}/dashboard/': {
+      id: '/{-$locale}/dashboard/'
+      path: '/'
+      fullPath: '/{-$locale}/dashboard/'
+      preLoaderRoute: typeof Char123LocaleChar125DashboardIndexRouteImport
+      parentRoute: typeof Char123LocaleChar125DashboardRoute
     }
     '/{-$locale}/settings/organization': {
       id: '/{-$locale}/settings/organization'
@@ -363,6 +427,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char123LocaleChar125InviteInvitationIdRouteImport
       parentRoute: typeof Char123LocaleChar125RouteRoute
     }
+    '/{-$locale}/dashboard/projects': {
+      id: '/{-$locale}/dashboard/projects'
+      path: '/projects'
+      fullPath: '/{-$locale}/dashboard/projects'
+      preLoaderRoute: typeof Char123LocaleChar125DashboardProjectsRouteImport
+      parentRoute: typeof Char123LocaleChar125DashboardRoute
+    }
+    '/{-$locale}/dashboard/admin': {
+      id: '/{-$locale}/dashboard/admin'
+      path: '/admin'
+      fullPath: '/{-$locale}/dashboard/admin'
+      preLoaderRoute: typeof Char123LocaleChar125DashboardAdminRouteImport
+      parentRoute: typeof Char123LocaleChar125DashboardRoute
+    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
@@ -373,10 +451,32 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface Char123LocaleChar125DashboardRouteChildren {
+  Char123LocaleChar125DashboardAdminRoute: typeof Char123LocaleChar125DashboardAdminRoute
+  Char123LocaleChar125DashboardProjectsRoute: typeof Char123LocaleChar125DashboardProjectsRoute
+  Char123LocaleChar125DashboardIndexRoute: typeof Char123LocaleChar125DashboardIndexRoute
+}
+
+const Char123LocaleChar125DashboardRouteChildren: Char123LocaleChar125DashboardRouteChildren =
+  {
+    Char123LocaleChar125DashboardAdminRoute:
+      Char123LocaleChar125DashboardAdminRoute,
+    Char123LocaleChar125DashboardProjectsRoute:
+      Char123LocaleChar125DashboardProjectsRoute,
+    Char123LocaleChar125DashboardIndexRoute:
+      Char123LocaleChar125DashboardIndexRoute,
+  }
+
+const Char123LocaleChar125DashboardRouteWithChildren =
+  Char123LocaleChar125DashboardRoute._addFileChildren(
+    Char123LocaleChar125DashboardRouteChildren,
+  )
+
 interface Char123LocaleChar125RouteRouteChildren {
   Char123LocaleChar125SplatRoute: typeof Char123LocaleChar125SplatRoute
   Char123LocaleChar125404Route: typeof Char123LocaleChar125404Route
-  Char123LocaleChar125DashboardRoute: typeof Char123LocaleChar125DashboardRoute
+  Char123LocaleChar125DashboardRoute: typeof Char123LocaleChar125DashboardRouteWithChildren
+  Char123LocaleChar125DirectoryRoute: typeof Char123LocaleChar125DirectoryRoute
   Char123LocaleChar125ForgotPasswordRoute: typeof Char123LocaleChar125ForgotPasswordRoute
   Char123LocaleChar125MagicLinkRoute: typeof Char123LocaleChar125MagicLinkRoute
   Char123LocaleChar125ResetPasswordRoute: typeof Char123LocaleChar125ResetPasswordRoute
@@ -395,7 +495,9 @@ const Char123LocaleChar125RouteRouteChildren: Char123LocaleChar125RouteRouteChil
   {
     Char123LocaleChar125SplatRoute: Char123LocaleChar125SplatRoute,
     Char123LocaleChar125404Route: Char123LocaleChar125404Route,
-    Char123LocaleChar125DashboardRoute: Char123LocaleChar125DashboardRoute,
+    Char123LocaleChar125DashboardRoute:
+      Char123LocaleChar125DashboardRouteWithChildren,
+    Char123LocaleChar125DirectoryRoute: Char123LocaleChar125DirectoryRoute,
     Char123LocaleChar125ForgotPasswordRoute:
       Char123LocaleChar125ForgotPasswordRoute,
     Char123LocaleChar125MagicLinkRoute: Char123LocaleChar125MagicLinkRoute,

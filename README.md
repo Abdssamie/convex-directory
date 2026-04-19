@@ -53,6 +53,24 @@ This boilerplate uses one deploy path:
 
 This avoids frontend/backend drift and keeps deploy behavior predictable across new projects.
 
+## Environment Variables
+
+This project uses environment variables across the backend and frontend.
+
+### 1. Convex Backend (Cloud)
+Variables in `packages/backend/.env.convex.example` must be set in your Convex Dashboard (Settings > Environment Variables) or via CLI:
+```bash
+npx convex env set NAME VALUE
+```
+These are required for Auth (`SITE_URL`, `AUTH_TRUSTED_ORIGINS`), Email (Brevo), Storage (R2), and Payments (Polar).
+
+> **Note:** For local development, set both `SITE_URL` and `AUTH_TRUSTED_ORIGINS` to `http://localhost:3001` in the Convex Dashboard.
+
+### 2. Frontend (Local)
+Vite requires `VITE_CONVEX_URL`. When you run `npx convex dev`, it creates a `.env.local` in `packages/backend/`. You **must** sync this to the frontend:
+- Copy `CONVEX_URL` from `packages/backend/.env.local`
+- Paste into `apps/web/.env.local` as `VITE_CONVEX_URL`
+
 ## Quick Start
 
 ```bash
@@ -60,12 +78,11 @@ This avoids frontend/backend drift and keeps deploy behavior predictable across 
 pnpm install
 
 # Setup Convex (creates project, generates keys)
-pnpm run dev:setup
+cd packages/backend && npx convex dev
 
-# Copy env examples
-cp packages/backend/.env.local.example apps/web/.env.local
-cp packages/backend/.env.convex.example packages/backend/.env.convex
-cp apps/web/.env.example apps/web/.env.local
+# Sync Environment Variables
+# 1. Set variables from .env.convex.example in Convex Dashboard
+# 2. Copy CONVEX_URL from packages/backend/.env.local to apps/web/.env.local as VITE_CONVEX_URL
 
 # Dev
 pnpm run dev

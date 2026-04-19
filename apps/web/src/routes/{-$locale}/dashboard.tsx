@@ -1,8 +1,7 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute, redirect, Outlet } from "@tanstack/react-router";
 import { Authenticated, AuthLoading, Unauthenticated } from "convex/react";
 import { useState } from "react";
 
-import DashboardPage from "@/app/dashboard/page";
 import SignInForm from "@/components/sign-in-form";
 import SignUpForm from "@/components/sign-up-form";
 import { getPathWithoutLocale } from "intlayer";
@@ -28,7 +27,7 @@ function RouteComponent() {
   return (
     <>
       <Authenticated>
-        <DashboardPage />
+        <Outlet />
       </Authenticated>
       <Unauthenticated>
         {showSignIn ? (

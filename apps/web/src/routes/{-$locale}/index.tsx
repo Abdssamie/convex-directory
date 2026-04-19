@@ -1,6 +1,7 @@
 import { useSeoMeta } from "@unhead/react";
 import { LandingNavbar } from "@/components/landing/navbar";
 import { HeroSection } from "@/components/landing/hero-section";
+import { DirectoryGrid } from "@/components/landing/directory-grid";
 import { LogoCarousel } from "@/components/landing/logo-carousel";
 import { StatsSection } from "@/components/landing/stats-section";
 import { FeaturesSection } from "@/components/landing/features-section";
@@ -40,6 +41,7 @@ function LandingPage() {
       {/* Main Content */}
       <main>
         <HeroSection />
+        <DirectoryGrid />
         <LogoCarousel />
         <StatsSection />
         <AboutSection />

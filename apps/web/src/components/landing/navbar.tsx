@@ -32,6 +32,7 @@ import { LocalizedLink } from "@/components/localized-link";
 
 const getNavigationItems = (content: any) => [
   { name: content.navbar.home, href: "#hero" },
+  { name: "Directory", href: "#directory" },
   { name: content.navbar.features, href: "#features" },
   { name: content.navbar.solutions, href: "#features", hasMegaMenu: true },
   { name: content.navbar.team, href: "#team" },
