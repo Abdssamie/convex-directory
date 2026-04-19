@@ -1,8 +1,8 @@
 "use client";
 
 import { ArrowRight } from "lucide-react";
-import { Card, CardContent } from "@convex-zen/ui/components/card";
-import { Badge } from "@convex-zen/ui/components/badge";
+import { Card, CardContent } from "@convex-directory/ui/components/card";
+import { Badge } from "@convex-directory/ui/components/badge";
 
 const blogs = [
   {

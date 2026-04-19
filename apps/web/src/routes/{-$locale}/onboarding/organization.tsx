@@ -1,14 +1,14 @@
-import { Badge } from "@convex-zen/ui/components/badge";
-import { Button } from "@convex-zen/ui/components/button";
+import { Badge } from "@convex-directory/ui/components/badge";
+import { Button } from "@convex-directory/ui/components/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@convex-zen/ui/components/card";
-import { Input } from "@convex-zen/ui/components/input";
-import { Label } from "@convex-zen/ui/components/label";
+} from "@convex-directory/ui/components/card";
+import { Input } from "@convex-directory/ui/components/input";
+import { Label } from "@convex-directory/ui/components/label";
 import { LocalizedLink } from "@/components/localized-link";
 import { useLocalizedNavigate } from "@/hooks/useLocalizedNavigate";
 import { createFileRoute, redirect } from "@tanstack/react-router";

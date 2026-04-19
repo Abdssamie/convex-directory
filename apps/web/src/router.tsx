@@ -1,5 +1,5 @@
 import { ConvexQueryClient } from "@convex-dev/react-query";
-import { env } from "@convex-zen/env/web";
+import { env } from "@convex-directory/env/web";
 import { QueryClient } from "@tanstack/react-query";
 import { createRouter as createTanStackRouter } from "@tanstack/react-router";
 import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query";

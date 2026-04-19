@@ -7,9 +7,9 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@convex-zen/ui/components/card";
-import { Button } from "@convex-zen/ui/components/button";
-import { Badge } from "@convex-zen/ui/components/badge";
+} from "@convex-directory/ui/components/card";
+import { Button } from "@convex-directory/ui/components/button";
+import { Badge } from "@convex-directory/ui/components/badge";
 import { LocalizedLink } from "@/components/localized-link";
 
 import { useOrganizationState } from "@/lib/organization";

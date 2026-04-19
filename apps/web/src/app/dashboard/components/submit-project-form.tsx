@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "convex/react";
-import { api } from "@convex-zen/backend/convex/_generated/api";
+import { api } from "@convex-directory/backend/convex/_generated/api";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -10,17 +10,17 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@convex-zen/ui/components/form";
-import { Input } from "@convex-zen/ui/components/input";
-import { Textarea } from "@convex-zen/ui/components/textarea";
+} from "@convex-directory/ui/components/form";
+import { Input } from "@convex-directory/ui/components/input";
+import { Textarea } from "@convex-directory/ui/components/textarea";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@convex-zen/ui/components/select";
-import { Button } from "@convex-zen/ui/components/button";
+} from "@convex-directory/ui/components/select";
+import { Button } from "@convex-directory/ui/components/button";
 import { toast } from "sonner";
 
 const formSchema = z.object({

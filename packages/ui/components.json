@@ -12,11 +12,11 @@
   },
   "iconLibrary": "lucide",
   "aliases": {
-    "components": "@convex-zen/ui/components",
-    "utils": "@convex-zen/ui/lib/utils",
-    "hooks": "@convex-zen/ui/hooks",
-    "lib": "@convex-zen/ui/lib",
-    "ui": "@convex-zen/ui/components"
+    "components": "@convex-directory/ui/components",
+    "utils": "@convex-directory/ui/lib/utils",
+    "hooks": "@convex-directory/ui/hooks",
+    "lib": "@convex-directory/ui/lib",
+    "ui": "@convex-directory/ui/components"
   },
   "menuColor": "default",
   "menuAccent": "subtle",

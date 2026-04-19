@@ -1,14 +1,14 @@
 "use client";
 
 import { CircleHelp } from "lucide-react";
-import { Button } from "@convex-zen/ui/components/button";
+import { Button } from "@convex-directory/ui/components/button";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@convex-zen/ui/components/accordion";
-import { Badge } from "@convex-zen/ui/components/badge";
+} from "@convex-directory/ui/components/accordion";
+import { Badge } from "@convex-directory/ui/components/badge";
 
 type FaqItem = {
   value: string;

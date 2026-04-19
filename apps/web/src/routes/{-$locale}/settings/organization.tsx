@@ -1,16 +1,16 @@
-import { api } from "@convex-zen/backend/convex/_generated/api";
-import { Badge } from "@convex-zen/ui/components/badge";
-import { Button } from "@convex-zen/ui/components/button";
+import { api } from "@convex-directory/backend/convex/_generated/api";
+import { Badge } from "@convex-directory/ui/components/badge";
+import { Button } from "@convex-directory/ui/components/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@convex-zen/ui/components/card";
-import { Input } from "@convex-zen/ui/components/input";
-import { Label } from "@convex-zen/ui/components/label";
-import { Textarea } from "@convex-zen/ui/components/textarea";
+} from "@convex-directory/ui/components/card";
+import { Input } from "@convex-directory/ui/components/input";
+import { Label } from "@convex-directory/ui/components/label";
+import { Textarea } from "@convex-directory/ui/components/textarea";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { useEffect, useState } from "react";

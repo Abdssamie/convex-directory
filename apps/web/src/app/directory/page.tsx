@@ -1,5 +1,5 @@
 import { useQuery } from "convex/react";
-import { api } from "@convex-zen/backend/convex/_generated/api";
+import { api } from "@convex-directory/backend/convex/_generated/api";
 import { useState } from "react";
 import {
   Card,
@@ -8,11 +8,11 @@ import {
   CardDescription,
   CardContent,
   CardFooter,
-} from "@convex-zen/ui/components/card";
-import { Button } from "@convex-zen/ui/components/button";
-import { Input } from "@convex-zen/ui/components/input";
-import { Tabs, TabsList, TabsTrigger } from "@convex-zen/ui/components/tabs";
-import { Badge } from "@convex-zen/ui/components/badge";
+} from "@convex-directory/ui/components/card";
+import { Button } from "@convex-directory/ui/components/button";
+import { Input } from "@convex-directory/ui/components/input";
+import { Tabs, TabsList, TabsTrigger } from "@convex-directory/ui/components/tabs";
+import { Badge } from "@convex-directory/ui/components/badge";
 import { ExternalLink, Search } from "lucide-react";
 import { BaseLayout } from "@/components/layouts/base-layout";
 

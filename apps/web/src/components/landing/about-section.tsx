@@ -1,9 +1,9 @@
 "use client";
 
-import { Button } from "@convex-zen/ui/components/button";
-import { Badge } from "@convex-zen/ui/components/badge";
-import { Card, CardContent } from "@convex-zen/ui/components/card";
-import { CardDecorator } from "@convex-zen/ui/components/card-decorator";
+import { Button } from "@convex-directory/ui/components/button";
+import { Badge } from "@convex-directory/ui/components/badge";
+import { Card, CardContent } from "@convex-directory/ui/components/card";
+import { CardDecorator } from "@convex-directory/ui/components/card-decorator";
 import { Github, Code, Palette, Layout, Crown } from "lucide-react";
 
 const values = [

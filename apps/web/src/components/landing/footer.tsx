@@ -3,16 +3,16 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Separator } from "@convex-zen/ui/components/separator";
-import { Button } from "@convex-zen/ui/components/button";
-import { Input } from "@convex-zen/ui/components/input";
+import { Separator } from "@convex-directory/ui/components/separator";
+import { Button } from "@convex-directory/ui/components/button";
+import { Input } from "@convex-directory/ui/components/input";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from "@convex-zen/ui/components/form";
+} from "@convex-directory/ui/components/form";
 import { Logo } from "@/components/logo";
 import { Github, Twitter, Linkedin, Youtube, Heart } from "lucide-react";
 

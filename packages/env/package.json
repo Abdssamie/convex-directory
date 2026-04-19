@@ -1,5 +1,5 @@
 {
-  "name": "@convex-zen/env",
+  "name": "@convex-directory/env",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -12,7 +12,7 @@
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@convex-zen/config": "workspace:*",
+    "@convex-directory/config": "workspace:*",
     "typescript": "^5"
   }
 }

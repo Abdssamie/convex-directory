@@ -3,11 +3,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Button } from "@convex-zen/ui/components/button";
-import { Badge } from "@convex-zen/ui/components/badge";
-import { Input } from "@convex-zen/ui/components/input";
-import { Textarea } from "@convex-zen/ui/components/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@convex-zen/ui/components/card";
+import { Button } from "@convex-directory/ui/components/button";
+import { Badge } from "@convex-directory/ui/components/badge";
+import { Input } from "@convex-directory/ui/components/input";
+import { Textarea } from "@convex-directory/ui/components/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@convex-directory/ui/components/card";
 import {
   Form,
   FormControl,
@@ -15,7 +15,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@convex-zen/ui/components/form";
+} from "@convex-directory/ui/components/form";
 import { Mail, Github, BookOpen } from "lucide-react";
 
 const contactFormSchema = z.object({

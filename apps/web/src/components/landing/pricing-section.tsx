@@ -1,15 +1,15 @@
 "use client";
 
 import { CheckoutLink } from "@convex-dev/polar/react";
-import { api } from "@convex-zen/backend/convex/_generated/api";
+import { api } from "@convex-directory/backend/convex/_generated/api";
 import { LocalizedLink } from "@/components/localized-link";
 import { useAction, useQuery } from "convex/react";
 import { Check } from "lucide-react";
 import { useState } from "react";
 
-import { Badge } from "@convex-zen/ui/components/badge";
-import { Button } from "@convex-zen/ui/components/button";
-import { ToggleGroup, ToggleGroupItem } from "@convex-zen/ui/components/toggle-group";
+import { Badge } from "@convex-directory/ui/components/badge";
+import { Button } from "@convex-directory/ui/components/button";
+import { ToggleGroup, ToggleGroupItem } from "@convex-directory/ui/components/toggle-group";
 
 import { authClient } from "@/lib/auth-client";
 import {
@@ -205,7 +205,7 @@ function renderPlanAction({
 
   if (!isAuthenticated) {
     return (
-      <Button className={className} variant={variant} asChild>
+      <Button className={className} variant={variant} size="lg" asChild>
         <LocalizedLink to="/sign-in">Sign in</LocalizedLink>
       </Button>
     );
@@ -214,7 +214,7 @@ function renderPlanAction({
   if (!subscription) {
     if (plan.id === "free") {
       return (
-        <Button className={className} variant={variant} asChild>
+        <Button className={className} variant={variant} size="lg" asChild>
           <LocalizedLink to="/dashboard">Start free</LocalizedLink>
         </Button>
       );
@@ -222,7 +222,7 @@ function renderPlanAction({
 
     if (!product) {
       return (
-        <Button className={className} variant={variant} disabled>
+        <Button className={className} variant={variant} size="lg" disabled>
           Missing Polar product
         </Button>
       );
@@ -243,7 +243,7 @@ function renderPlanAction({
 
   if (isCurrentSelection) {
     return (
-      <Button className={className} variant={variant} disabled>
+      <Button className={className} variant={variant} size="lg" disabled>
         Current plan
       </Button>
     );
@@ -251,7 +251,7 @@ function renderPlanAction({
 
   if (!product) {
     return (
-      <Button className={className} variant={variant} disabled>
+      <Button className={className} variant={variant} size="lg" disabled>
         Missing Polar product
       </Button>
     );
@@ -261,6 +261,7 @@ function renderPlanAction({
     <Button
       className={className}
       variant={variant}
+      size="lg"
       disabled={pending}
       onClick={() => void onSwitch()}
     >

@@ -1,10 +1,10 @@
 "use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@convex-zen/ui/components/avatar";
-import { Button } from "@convex-zen/ui/components/button";
-import { Badge } from "@convex-zen/ui/components/badge";
-import { Card, CardContent } from "@convex-zen/ui/components/card";
-import { CardDecorator } from "@convex-zen/ui/components/card-decorator";
+import { Avatar, AvatarFallback, AvatarImage } from "@convex-directory/ui/components/avatar";
+import { Button } from "@convex-directory/ui/components/button";
+import { Badge } from "@convex-directory/ui/components/badge";
+import { Card, CardContent } from "@convex-directory/ui/components/card";
+import { CardDecorator } from "@convex-directory/ui/components/card-decorator";
 import { Github, Linkedin, Globe } from "lucide-react";
 
 const team = [

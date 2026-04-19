@@ -15,7 +15,7 @@ import {
   ShieldCheck,
   type LucideIcon,
 } from "lucide-react";
-import { api } from "@convex-zen/backend/convex/_generated/api";
+import { api } from "@convex-directory/backend/convex/_generated/api";
 import { useQuery } from "convex/react";
 import { OrganizationSwitcher } from "@/components/organization-switcher";
 import { useIntlayer } from "react-intlayer";

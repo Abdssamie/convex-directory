@@ -1,5 +1,5 @@
 import { convexBetterAuthReactStart } from "@convex-dev/better-auth/react-start";
-import { env } from "@convex-zen/env/web";
+import { env } from "@convex-directory/env/web";
 
 export const { handler, getToken, fetchAuthQuery, fetchAuthMutation, fetchAuthAction } =
   convexBetterAuthReactStart({

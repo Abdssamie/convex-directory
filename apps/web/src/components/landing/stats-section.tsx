@@ -1,7 +1,7 @@
 "use client";
 
 import { Package, Download, Users, Star } from "lucide-react";
-import { Card, CardContent } from "@convex-zen/ui/components/card";
+import { Card, CardContent } from "@convex-directory/ui/components/card";
 import { DotPattern } from "@/components/dot-pattern";
 
 const stats = [

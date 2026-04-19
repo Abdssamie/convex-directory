@@ -6,13 +6,13 @@ A production-grade SaaS starter built for minimal budget. Zero vendor lock-in, f
 
 Most SaaS starters cost $50+/month before you make a single dollar. This one is designed to run $0 until you're ready to charge:
 
-| Service       | This Stack  | Alternatives       | Why It Wins                                       |
-| :------------ | :---------- | :----------------- | :------------------------------------------------ |
-| **Hosting**   | Cloudflare  | Vercel, Netlify    | Unlimited bandwidth and global edge performance.  |
-| **Database**  | Convex      | Supabase, Firebase | End-to-end TypeScript safety with real-time sync. |
-| **Email**        | Brevo       | Resend, SendGrid   | Highest free daily sending limit (300/day).       |
-| **Localization** | Intlayer    | i18next, next-intl | Type-safe, natively framework-agnostic.           |
-| **Payments**     | Polar       | Stripe             | Acts as Merchant of Record; handles global taxes. |
+| Service          | This Stack | Alternatives       | Why It Wins                                       |
+| :--------------- | :--------- | :----------------- | :------------------------------------------------ |
+| **Hosting**      | Cloudflare | Vercel, Netlify    | Unlimited bandwidth and global edge performance.  |
+| **Database**     | Convex     | Supabase, Firebase | End-to-end TypeScript safety with real-time sync. |
+| **Email**        | Brevo      | Resend, SendGrid   | Highest free daily sending limit (300/day).       |
+| **Localization** | Intlayer   | i18next, next-intl | Type-safe, natively framework-agnostic.           |
+| **Payments**     | Polar      | Stripe             | Acts as Merchant of Record; handles global taxes. |
 
 **Total cost to launch: $0** (all free tiers are generous enough for an MVP)
 
@@ -58,16 +58,21 @@ This avoids frontend/backend drift and keeps deploy behavior predictable across 
 This project uses environment variables across the backend and frontend.
 
 ### 1. Convex Backend (Cloud)
+
 Variables in `packages/backend/.env.convex.example` must be set in your Convex Dashboard (Settings > Environment Variables) or via CLI:
+
 ```bash
 npx convex env set NAME VALUE
 ```
+
 These are required for Auth (`SITE_URL`, `AUTH_TRUSTED_ORIGINS`), Email (Brevo), Storage (R2), and Payments (Polar).
 
 > **Note:** For local development, set both `SITE_URL` and `AUTH_TRUSTED_ORIGINS` to `http://localhost:3001` in the Convex Dashboard.
 
 ### 2. Frontend (Local)
+
 Vite requires `VITE_CONVEX_URL`. When you run `npx convex dev`, it creates a `.env.local` in `packages/backend/`. You **must** sync this to the frontend:
+
 - Copy `CONVEX_URL` from `packages/backend/.env.local`
 - Paste into `apps/web/.env.local` as `VITE_CONVEX_URL`
 

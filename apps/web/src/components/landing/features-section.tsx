@@ -11,8 +11,8 @@ import {
   Layout,
   Palette,
 } from "lucide-react";
-import { Button } from "@convex-zen/ui/components/button";
-import { Badge } from "@convex-zen/ui/components/badge";
+import { Button } from "@convex-directory/ui/components/button";
+import { Badge } from "@convex-directory/ui/components/badge";
 import { Image3D } from "@/components/image-3d";
 
 const mainFeatures = [
@@ -118,13 +118,13 @@ export function FeaturesSection() {
             </ul>
 
             <div className="flex flex-col sm:flex-row gap-4 pe-4 pt-2">
-              <Button size="lg" className="cursor-pointer">
-                <a href="https://github.com/Abdssamie/convex-zen" className="flex items-center">
+              <Button size="lg" asChild>
+                <a href="https://github.com/Abdssamie/convex-zen">
                   Browse Templates
-                  <ArrowRight className="ms-2 size-4" aria-hidden="true" />
+                  <ArrowRight aria-hidden="true" />
                 </a>
               </Button>
-              <Button size="lg" variant="outline" className="cursor-pointer">
+              <Button size="lg" variant="outline" asChild>
                 <a href="https://github.com/Abdssamie/convex-zen">View Components</a>
               </Button>
             </div>
@@ -163,13 +163,13 @@ export function FeaturesSection() {
             </ul>
 
             <div className="flex flex-col sm:flex-row gap-4 pe-4 pt-2">
-              <Button size="lg" className="cursor-pointer">
-                <a href="#" className="flex items-center">
+              <Button size="lg" asChild>
+                <a href="#">
                   View Documentation
-                  <ArrowRight className="ms-2 size-4" aria-hidden="true" />
+                  <ArrowRight aria-hidden="true" />
                 </a>
               </Button>
-              <Button size="lg" variant="outline" className="cursor-pointer">
+              <Button size="lg" variant="outline" asChild>
                 <a
                   href="https://github.com/Abdssamie/convex-zen"
                   target="_blank"

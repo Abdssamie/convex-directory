@@ -1,8 +1,8 @@
 "use client";
 
 import { ArrowRight, Play, Star } from "lucide-react";
-import { Button } from "@convex-zen/ui/components/button";
-import { Badge } from "@convex-zen/ui/components/badge";
+import { Button } from "@convex-directory/ui/components/button";
+import { Badge } from "@convex-directory/ui/components/badge";
 import { DotPattern } from "@/components/dot-pattern";
 import { assetUrl } from "@/lib/utils";
 import { LocalizedLink } from "@/components/localized-link";
@@ -49,15 +49,15 @@ export function HeroSection() {
 
           {/* CTA Buttons */}
           <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
-            <Button size="lg" className="text-base cursor-pointer" asChild>
+            <Button size="lg" asChild>
               <LocalizedLink to="/sign-up">
                 {content.hero.getStartedFree}
-                <ArrowRight className="ml-2 h-4 w-4" />
+                <ArrowRight className="h-4 w-4" />
               </LocalizedLink>
             </Button>
-            <Button variant="outline" size="lg" className="text-base cursor-pointer" asChild>
+            <Button variant="outline" size="lg" asChild>
               <a href="#">
-                <Play className="mr-2 h-4 w-4" />
+                <Play className="h-4 w-4" />
                 {content.hero.watchDemo}
               </a>
             </Button>

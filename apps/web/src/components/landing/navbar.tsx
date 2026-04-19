@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Menu, LayoutDashboard, ChevronDown, X, Moon, Sun } from "lucide-react";
 import { useIntlayer } from "react-intlayer";
-import { Button } from "@convex-zen/ui/components/button";
+import { Button } from "@convex-directory/ui/components/button";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -9,19 +9,19 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-} from "@convex-zen/ui/components/navigation-menu";
+} from "@convex-directory/ui/components/navigation-menu";
 import {
   Sheet,
   SheetContent,
   SheetTrigger,
   SheetHeader,
   SheetTitle,
-} from "@convex-zen/ui/components/sheet";
+} from "@convex-directory/ui/components/sheet";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@convex-zen/ui/components/collapsible";
+} from "@convex-directory/ui/components/collapsible";
 import { Logo } from "@/components/logo";
 import { MegaMenu } from "@/components/landing/mega-menu";
 import { ModeToggle } from "@/components/mode-toggle";
@@ -134,7 +134,7 @@ export function LandingNavbar() {
           {isAuthenticated ? (
             <Button variant="outline" asChild className="cursor-pointer">
               <LocalizedLink to="/dashboard">
-                <LayoutDashboard className="h-4 w-4 mr-2" />
+                <LayoutDashboard className="h-4 w-4" />
                 {content.navbar.dashboard}
               </LocalizedLink>
             </Button>

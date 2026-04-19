@@ -1,10 +1,10 @@
 import { useQuery, useMutation } from "convex/react";
-import { api } from "@convex-zen/backend/convex/_generated/api";
+import { api } from "@convex-directory/backend/convex/_generated/api";
 import { BaseLayout } from "@/components/layouts/base-layout";
-import { Card, CardHeader, CardTitle, CardContent } from "@convex-zen/ui/components/card";
-import { Button } from "@convex-zen/ui/components/button";
+import { Card, CardHeader, CardTitle, CardContent } from "@convex-directory/ui/components/card";
+import { Button } from "@convex-directory/ui/components/button";
 import { toast } from "sonner";
-import type { Id } from "@convex-zen/backend/convex/_generated/dataModel";
+import type { Id } from "@convex-directory/backend/convex/_generated/dataModel";
 
 export default function AdminDashboard() {
   const pendingProjects = useQuery(api.projects.getProjects, { status: "pending" });

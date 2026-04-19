@@ -3,7 +3,7 @@
 import * as React from "react";
 import { Moon, Sun } from "lucide-react";
 
-import { Button } from "@convex-zen/ui/components/button";
+import { Button } from "@convex-directory/ui/components/button";
 import { useTheme } from "@/hooks/use-theme";
 import { useCircularTransition } from "@/hooks/use-circular-transition";
 import "./theme-customizer/circular-transition.css";

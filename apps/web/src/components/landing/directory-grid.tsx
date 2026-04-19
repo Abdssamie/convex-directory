@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "convex/react";
-import { api } from "@convex-zen/backend/convex/_generated/api";
+import { api } from "@convex-directory/backend/convex/_generated/api";
 import { useState } from "react";
 import {
   Card,
@@ -10,10 +10,10 @@ import {
   CardDescription,
   CardContent,
   CardFooter,
-} from "@convex-zen/ui/components/card";
-import { Button } from "@convex-zen/ui/components/button";
-import { Badge } from "@convex-zen/ui/components/badge";
-import { Tabs, TabsList, TabsTrigger } from "@convex-zen/ui/components/tabs";
+} from "@convex-directory/ui/components/card";
+import { Button } from "@convex-directory/ui/components/button";
+import { Badge } from "@convex-directory/ui/components/badge";
+import { Tabs, TabsList, TabsTrigger } from "@convex-directory/ui/components/tabs";
 import { ExternalLink, ArrowRight } from "lucide-react";
 
 export function DirectoryGrid() {

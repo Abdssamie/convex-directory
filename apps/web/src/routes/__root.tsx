@@ -1,6 +1,6 @@
 import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react";
 import type { ConvexQueryClient } from "@convex-dev/react-query";
-import { Toaster } from "@convex-zen/ui/components/sonner";
+import { Toaster } from "@convex-directory/ui/components/sonner";
 import { QueryClientProvider, type QueryClient } from "@tanstack/react-query";
 import {
   HeadContent,

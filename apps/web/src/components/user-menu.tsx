@@ -1,5 +1,5 @@
-import { api } from "@convex-zen/backend/convex/_generated/api";
-import { Button } from "@convex-zen/ui/components/button";
+import { api } from "@convex-directory/backend/convex/_generated/api";
+import { Button } from "@convex-directory/ui/components/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,7 +8,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@convex-zen/ui/components/dropdown-menu";
+} from "@convex-directory/ui/components/dropdown-menu";
 import { useQuery } from "convex/react";
 
 import { authClient } from "@/lib/auth-client";
@@ -18,14 +18,16 @@ export default function UserMenu() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger render={<Button variant="outline" />}>{user?.name}</DropdownMenuTrigger>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline">{user?.name}</Button>
+      </DropdownMenuTrigger>
       <DropdownMenuContent className="bg-card">
         <DropdownMenuGroup>
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>{user?.email}</DropdownMenuItem>
+          <DropdownMenuItem className="text-muted-foreground">{user?.email}</DropdownMenuItem>
           <DropdownMenuItem
-            variant="destructive"
+            className="text-destructive focus:text-destructive"
             onClick={() => {
               authClient.signOut({
                 fetchOptions: {

@@ -1,6 +1,6 @@
 "use client";
 
-import { Card } from "@convex-zen/ui/components/card";
+import { Card } from "@convex-directory/ui/components/card";
 
 // Simple icon component for company logos
 const SimpleIcon = ({ iconSlug, size = 24 }: { iconSlug: string; size?: number }) => {

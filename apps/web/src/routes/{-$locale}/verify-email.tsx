@@ -1,5 +1,5 @@
-import { api } from "@convex-zen/backend/convex/_generated/api";
-import { Button } from "@convex-zen/ui/components/button";
+import { api } from "@convex-directory/backend/convex/_generated/api";
+import { Button } from "@convex-directory/ui/components/button";
 import { LocalizedLink } from "@/components/localized-link";
 import { useLocalizedNavigate } from "@/hooks/useLocalizedNavigate";
 import type { LocalizedTo } from "@/hooks/useLocalizedNavigate";

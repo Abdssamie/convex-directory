@@ -1,9 +1,9 @@
 "use client";
 
 import { ArrowRight, TrendingUp, Package, Github } from "lucide-react";
-import { Button } from "@convex-zen/ui/components/button";
-import { Badge } from "@convex-zen/ui/components/badge";
-import { Separator } from "@convex-zen/ui/components/separator";
+import { Button } from "@convex-directory/ui/components/button";
+import { Badge } from "@convex-directory/ui/components/badge";
+import { Separator } from "@convex-directory/ui/components/separator";
 
 export function CTASection() {
   return (
@@ -54,30 +54,25 @@ export function CTASection() {
 
               {/* CTA Buttons */}
               <div className="flex flex-col justify-center gap-4 sm:flex-row sm:gap-6">
-                <Button size="lg" className="cursor-pointer px-8 py-6 text-lg font-medium" asChild>
+                <Button size="lg" asChild>
                   <a
                     href="https://github.com/Abdssamie/convex-zen"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <Package className="me-2 size-5" />
+                    <Package />
                     Browse Components
                   </a>
                 </Button>
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="cursor-pointer px-8 py-6 text-lg font-medium group"
-                  asChild
-                >
+                <Button variant="outline" size="lg" className="group" asChild>
                   <a
                     href="https://github.com/Abdssamie/convex-zen"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <Github className="me-2 size-5" />
+                    <Github />
                     View on GitHub
-                    <ArrowRight className="ms-2 size-4 transition-transform group-hover:translate-x-1" />
+                    <ArrowRight className="transition-transform group-hover:translate-x-1" />
                   </a>
                 </Button>
               </div>
