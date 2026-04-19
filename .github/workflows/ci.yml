@@ -31,6 +31,8 @@ jobs:
       - name: Generate Convex types
         run: npx convex codegen
         working-directory: packages/backend
+        env:
+          CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY }}
 
       - name: Run lint
         run: pnpm lint
