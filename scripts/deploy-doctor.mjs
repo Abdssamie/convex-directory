@@ -60,7 +60,12 @@ if (process.env.GITHUB_ACTIONS === "true") {
   }
 }
 
-if (process.env.SITE_URL && process.env.SITE_URL !== projectConfig.productionUrl) {
+const normalizeUrl = (url) => (url ? url.replace(/\/+$/, "") : "");
+
+if (
+  process.env.SITE_URL &&
+  normalizeUrl(process.env.SITE_URL) !== normalizeUrl(projectConfig.productionUrl)
+) {
   fail(
     `SITE_URL does not match project.config.json (${process.env.SITE_URL} !== ${projectConfig.productionUrl})`,
   );
