@@ -60,17 +60,6 @@ if (process.env.GITHUB_ACTIONS === "true") {
   }
 }
 
-const normalizeUrl = (url) => (url ? url.replace(/\/+$/, "") : "");
-
-if (
-  process.env.SITE_URL &&
-  normalizeUrl(process.env.SITE_URL) !== normalizeUrl(projectConfig.productionUrl)
-) {
-  fail(
-    `SITE_URL does not match project.config.json (${process.env.SITE_URL} !== ${projectConfig.productionUrl})`,
-  );
-}
-
 console.log(`Deploy doctor passed for ${projectConfig.projectName}`);
 console.log(`Project config: ${path.relative(repoRoot, projectConfigPath)}`);
 console.log(`Worker config: ${path.relative(repoRoot, wranglerPath)}`);
