@@ -24,7 +24,6 @@ Most SaaS starters cost $50+/month before you make a single dollar. This one is 
 - **Better Auth** – Open-source auth that works with Convex. No vendor lock-in
 - **Polar** – Developer-friendly payments. 0% until $1k, then 5%
 - **Brevo** – Email marketing. Free: 300 emails/day
-- **Convalytics** – Privacy-first web + product analytics
 - **Intlayer** – Complete i18n and localization for the entire stack
 - **TailwindCSS** – Styling
 - **TanStack Start** + **Convex** – Full-stack React with SSR, streaming, and realtime backend
