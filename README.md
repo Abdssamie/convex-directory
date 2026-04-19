@@ -11,7 +11,6 @@ Most SaaS starters cost $50+/month before you make a single dollar. This one is 
 | **Hosting**   | Cloudflare  | Vercel, Netlify    | Unlimited bandwidth and global edge performance.  |
 | **Database**  | Convex      | Supabase, Firebase | End-to-end TypeScript safety with real-time sync. |
 | **Email**        | Brevo       | Resend, SendGrid   | Highest free daily sending limit (300/day).       |
-| **Analytics**    | Convalytics | PostHog, Mixpanel  | Simple, privacy-focused, and stays free.          |
 | **Localization** | Intlayer    | i18next, next-intl | Type-safe, natively framework-agnostic.           |
 | **Payments**     | Polar       | Stripe             | Acts as Merchant of Record; handles global taxes. |
 
