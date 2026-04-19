@@ -1,7 +1,7 @@
 {
   "projectName": "convex-directory",
   "workerName": "convex-directory-web-abdssamie",
-  "productionUrl": "https://convex-directory-web-abdssamie.abdessamie-elmoubarki.workers.dev",
+  "productionUrl": "https://convex-directory-web-abdssamie.pages.dev",
   "cloudflare": {
     "compatibilityDate": "2026-04-17",
     "compatibilityFlags": ["nodejs_compat"],
