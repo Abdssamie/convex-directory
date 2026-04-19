@@ -16,8 +16,11 @@ jobs:
       VITE_CONVEX_URL: ${{ secrets.VITE_CONVEX_URL }}
       VITE_CONVEX_SITE_URL: ${{ secrets.VITE_CONVEX_SITE_URL }}
       SITE_URL: ${{ secrets.SITE_URL }}
+      AUTH_TRUSTED_ORIGINS: ${{ secrets.AUTH_TRUSTED_ORIGINS }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+      ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
 
     steps:
       - name: Checkout
@@ -39,6 +42,23 @@ jobs:
 
       - name: Sync project config
         run: pnpm run sync:project-config
+
+      - name: Sync secrets to Convex
+        run: |
+          npx convex env set SITE_URL "$SITE_URL"
+          npx convex env set AUTH_TRUSTED_ORIGINS "$AUTH_TRUSTED_ORIGINS"
+          if [ -n "$BREVO_API_KEY" ]; then npx convex env set BREVO_API_KEY "$BREVO_API_KEY"; fi
+          if [ -n "$ADMIN_EMAIL" ]; then npx convex env set ADMIN_EMAIL "$ADMIN_EMAIL"; fi
+        working-directory: packages/backend
+
+      - name: Sync secrets to Cloudflare
+        run: |
+          echo "$SITE_URL" | npx wrangler pages secret put SITE_URL --project-name "$WORKER_NAME"
+          echo "$VITE_CONVEX_URL" | npx wrangler pages secret put VITE_CONVEX_URL --project-name "$WORKER_NAME"
+        env:
+          WORKER_NAME: convex-directory-web-abdssamie
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
       - name: Validate deploy config
         run: pnpm run doctor:deploy

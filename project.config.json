@@ -1,7 +1,7 @@
 {
-  "projectName": "convex-zen",
-  "workerName": "convex-zen-web-abdssamie",
-  "productionUrl": "https://convex-zen-web-abdssamie.abdessamie-elmoubarki.workers.dev",
+  "projectName": "convex-directory",
+  "workerName": "convex-directory-web-abdssamie",
+  "productionUrl": "https://convex-directory-web-abdssamie.abdessamie-elmoubarki.workers.dev",
   "cloudflare": {
     "compatibilityDate": "2026-04-17",
     "compatibilityFlags": ["nodejs_compat"],
