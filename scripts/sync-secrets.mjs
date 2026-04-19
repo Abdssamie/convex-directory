@@ -39,9 +39,9 @@ function syncCloudflare() {
 
     try {
       console.log(`  - Pushing ${name}...`);
-      // We use wrangler pages secret put since project.config uses a .pages.dev URL
+      // We use npx --yes to prevent installation prompts in CI
       execSync(
-        `echo "${value}" | npx wrangler pages secret put ${name} --project-name ${workerName}`,
+        `echo "${value}" | npx --yes wrangler pages secret put ${name} --project-name ${workerName}`,
         {
           stdio: "inherit",
         },
