@@ -1,7 +1,4 @@
 import { Polar } from "@convex-dev/polar";
-import { customerSessionsCreate } from "@polar-sh/sdk/funcs/customerSessionsCreate.js";
-import { customersCreate } from "@polar-sh/sdk/funcs/customersCreate.js";
-import { customersList } from "@polar-sh/sdk/funcs/customersList.js";
 import { subscriptionsUpdate } from "@polar-sh/sdk/funcs/subscriptionsUpdate.js";
 import { v } from "convex/values";
 
@@ -80,10 +77,13 @@ type PolarSubscription = NonNullable<Awaited<ReturnType<typeof polar.getCurrentS
 type PolarSubscriptionProduct = PolarSubscription["product"];
 
 export const {
+  changeCurrentSubscription,
+  cancelCurrentSubscription,
+  getConfiguredProducts,
   listAllProducts,
   listAllSubscriptions,
   generateCheckoutLink,
-  cancelCurrentSubscription,
+  generateCustomerPortalUrl,
 } = polar.api();
 
 export const getCurrentSubscription = query({
@@ -177,24 +177,6 @@ export const switchCurrentSubscription = action({
   },
 });
 
-export const generateCustomerPortalUrl = action({
-  args: {},
-  handler: async (ctx) => {
-    const authUser = await getAuthUserInfo(ctx);
-    if (!authUser) {
-      throw new Error("Not authenticated");
-    }
-
-    const customerId = await ensurePolarCustomer(ctx, authUser);
-    const session = await customerSessionsCreate(polar.polar, { customerId });
-    if (!session.ok) {
-      throw session.error;
-    }
-
-    return { url: session.value.customerPortalUrl };
-  },
-});
-
 function buildBillingPlans(products: PolarProducts) {
   const productsByPlan = new Map<
     BillingPlanId,
@@ -278,45 +260,6 @@ function getDefaultProrationBehavior(
   }
 
   return "next_period";
-}
-
-async function ensurePolarCustomer(ctx: ActionCtx, authUser: PolarUserInfo) {
-  const existingCustomer = await polar.getCustomerByUserId(ctx as never, authUser.userId);
-  if (existingCustomer) {
-    return existingCustomer.id;
-  }
-
-  const customers = await customersList(polar.polar, {
-    email: authUser.email,
-    limit: 1,
-  });
-  if (!customers.ok) {
-    throw customers.error;
-  }
-
-  const matchedCustomer = customers.value.result.items[0];
-  const customerId = matchedCustomer ? matchedCustomer.id : await createPolarCustomer(authUser);
-
-  await ctx.runMutation(components.polar.lib.insertCustomer, {
-    id: customerId,
-    userId: authUser.userId,
-  });
-
-  return customerId;
-}
-
-async function createPolarCustomer(authUser: PolarUserInfo) {
-  const createdCustomer = await customersCreate(polar.polar, {
-    email: authUser.email,
-    metadata: {
-      userId: authUser.userId,
-    },
-  });
-  if (!createdCustomer.ok) {
-    throw createdCustomer.error;
-  }
-
-  return createdCustomer.value.id;
 }
 
 function getPlanId(metadata: ProductMetadata): BillingPlanId | null {

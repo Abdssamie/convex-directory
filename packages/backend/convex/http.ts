@@ -13,6 +13,6 @@ http.route({
 });
 
 authComponent.registerRoutes(http, createAuth);
-polar.registerRoutes(http as Parameters<typeof polar.registerRoutes>[0]);
+polar.registerRoutes(http);
 
 export default http;
