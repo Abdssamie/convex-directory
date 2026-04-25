@@ -53,11 +53,11 @@ export default function SignInForm({
       },
       {
         onSuccess: () => {
-          toast.success(content.success);
+          toast.success(content.success.value);
           location.reload();
         },
         onError: (ctx) => {
-          toast.error(ctx.error.message || content.error);
+          toast.error(ctx.error.message || content.error.value);
         },
       },
     );
@@ -66,7 +66,7 @@ export default function SignInForm({
 
   return (
     <div className="mx-auto max-w-md p-6 bg-card border rounded-2xl shadow-sm">
-      <h1 className="mb-6 text-center text-3xl font-bold">{content.title}</h1>
+      <h1 className="mb-6 text-center text-3xl font-bold">{content.title.value}</h1>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField
@@ -74,7 +74,7 @@ export default function SignInForm({
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{content.email}</FormLabel>
+                <FormLabel>{content.email.value}</FormLabel>
                 <FormControl>
                   <Input placeholder="name@example.com" {...field} className="rounded-xl" />
                 </FormControl>
@@ -87,7 +87,7 @@ export default function SignInForm({
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{content.password}</FormLabel>
+                <FormLabel>{content.password.value}</FormLabel>
                 <FormControl>
                   <Input type="password" {...field} className="rounded-xl" />
                 </FormControl>
@@ -97,19 +97,19 @@ export default function SignInForm({
           />
           <div className="flex justify-end">
             <LocalizedLink to="/forgot-password" className="text-sm text-primary hover:underline">
-              {content.forgotPassword}
+              {content.forgotPassword.value}
             </LocalizedLink>
           </div>
           <Button type="submit" className="w-full rounded-xl" disabled={isLoading}>
-            {isLoading ? content.signingIn : content.signIn}
+            {isLoading ? content.signingIn.value : content.signIn.value}
           </Button>
         </form>
       </Form>
       {onSwitchToSignUp && (
         <div className="mt-6 text-center text-sm">
-          <span className="text-muted-foreground">{content.noAccount} </span>
+          <span className="text-muted-foreground">{content.noAccount.value} </span>
           <button onClick={onSwitchToSignUp} className="font-medium text-primary hover:underline">
-            {content.signUp}
+            {content.signUp.value}
           </button>
         </div>
       )}

@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/table";
 import { PROJECT_CATEGORIES } from "@/lib/project-categories";
 import { toast } from "sonner";
+import { useIntlayer } from "react-intlayer";
 
 type ProjectType = "saas" | "tool" | "open-source" | "component";
 
@@ -114,6 +115,7 @@ export function FastProjectUploader() {
   const bulkCreateProjects = useMutation(api.projects.bulkCreateProjectsByAdmin);
   const generateUploadUrl = useMutation(api.r2.generateUploadUrl);
   const syncMetadata = useMutation(api.r2.syncMetadata);
+  const content = useIntlayer("dashboard");
 
   const [rawInput, setRawInput] = useState("");
   const [defaultType, setDefaultType] = useState<ProjectType>("saas");
@@ -224,31 +226,32 @@ export function FastProjectUploader() {
     <Card className="rounded-3xl border-primary/20">
       <CardHeader className="space-y-3">
         <div className="flex items-center gap-2">
-          <Badge className="rounded-full">Admin Only</Badge>
+          <Badge className="rounded-full">{content.admin.bulkUploader.adminOnly.value}</Badge>
           <Badge variant="outline" className="rounded-full">
-            Approved, unclaimed
+            {content.admin.bulkUploader.approvedUnclaimed.value}
           </Badge>
         </div>
         <CardTitle className="flex items-center gap-2 text-2xl">
           <WandSparkles className="h-5 w-5" />
-          Fast Project Upload
+          {content.admin.bulkUploader.title.value}
         </CardTitle>
         <CardDescription>
-          Paste one project per line with <code>title | url | description | optional category</code>
-          . Then attach logo and screenshot files per row and publish the batch. Imported projects
-          go live approved, but ownership stays unclaimed until a real user claims them.
+          {content.admin.bulkUploader.description.value} Imported projects go live approved, but
+          ownership stays unclaimed until a real user claims them.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="grid gap-4 md:grid-cols-1">
           <div className="space-y-2">
-            <Label htmlFor="bulk-project-type">Default type</Label>
+            <Label htmlFor="bulk-project-type">
+              {content.admin.bulkUploader.defaultType.value}
+            </Label>
             <Select
               value={defaultType}
               onValueChange={(value) => setDefaultType(value as ProjectType)}
             >
               <SelectTrigger id="bulk-project-type" className="rounded-xl">
-                <SelectValue placeholder="Choose type" />
+                <SelectValue placeholder={content.admin.bulkUploader.chooseType.value} />
               </SelectTrigger>
               <SelectContent className="rounded-xl">
                 <SelectItem value="saas">SaaS</SelectItem>
@@ -261,7 +264,7 @@ export function FastProjectUploader() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="bulk-project-input">Paste rows</Label>
+          <Label htmlFor="bulk-project-input">{content.admin.bulkUploader.pasteRows.value}</Label>
           <Textarea
             id="bulk-project-input"
             className="min-h-40 rounded-2xl font-mono text-sm"
@@ -282,7 +285,7 @@ export function FastProjectUploader() {
         <div className="flex flex-wrap gap-3">
           <Button onClick={handleParse} disabled={!canParse} className="rounded-xl">
             <Upload className="mr-2 h-4 w-4" />
-            Parse rows
+            {content.admin.bulkUploader.parseRows.value}
           </Button>
           <Button
             variant="outline"
@@ -293,7 +296,7 @@ export function FastProjectUploader() {
             disabled={!rawInput && rows.length === 0}
             className="rounded-xl"
           >
-            Clear
+            {content.admin.bulkUploader.clear.value}
           </Button>
           <div className="flex items-center text-sm text-muted-foreground">
             {rows.length} parsed · {readyRows.length} ready · {PROJECT_CATEGORIES.length} categories
@@ -472,12 +475,15 @@ export function FastProjectUploader() {
                 {isSubmitting ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Publishing...
+                    {content.admin.bulkUploader.publishing.value}
                   </>
                 ) : (
                   <>
                     <ImagePlus className="mr-2 h-4 w-4" />
-                    Publish {readyRows.length} projects
+                    {content.admin.bulkUploader.publish.value.replace(
+                      "{count}",
+                      String(readyRows.length),
+                    )}
                   </>
                 )}
               </Button>

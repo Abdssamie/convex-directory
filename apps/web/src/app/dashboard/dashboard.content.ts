@@ -37,6 +37,22 @@ const dashboardDictionary = {
         claimRejected: t({ en: "Claim rejected", fr: "Réclamation rejetée" }),
         error: t({ en: "Error occurred", fr: "Une erreur est survenue" }),
       },
+      bulkUploader: {
+        title: t({ en: "Fast Project Upload", fr: "Téléchargement rapide de projets" }),
+        description: t({
+          en: "Paste one project per line with title | url | description | optional category.",
+          fr: "Collez un projet par ligne avec titre | url | description | catégorie optionnelle.",
+        }),
+        adminOnly: t({ en: "Admin Only", fr: "Admin uniquement" }),
+        approvedUnclaimed: t({ en: "Approved, unclaimed", fr: "Approuvé, non réclamé" }),
+        defaultType: t({ en: "Default type", fr: "Type par défaut" }),
+        chooseType: t({ en: "Choose type", fr: "Choisir le type" }),
+        pasteRows: t({ en: "Paste rows", fr: "Coller les lignes" }),
+        parseRows: t({ en: "Parse rows", fr: "Analyser les lignes" }),
+        clear: t({ en: "Clear", fr: "Effacer" }),
+        publish: t({ en: "Publish {count} projects", fr: "Publier {count} projets" }),
+        publishing: t({ en: "Publishing...", fr: "Publication..." }),
+      },
     },
     welcome: {
       title: t({ en: "Welcome back!", fr: "Bon retour !" }),
