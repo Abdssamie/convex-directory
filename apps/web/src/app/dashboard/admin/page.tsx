@@ -1,31 +1,23 @@
-import { useQuery, useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "@convex-directory/backend/convex/_generated/api";
-import { BaseLayout } from "@/components/layouts/base-layout";
-import { Card, CardHeader, CardTitle, CardContent } from "@convex-directory/ui/components/card";
-import { Button } from "@convex-directory/ui/components/button";
-import { Badge } from "@convex-directory/ui/components/badge";
-import { toast } from "sonner";
 import type { Id } from "@convex-directory/backend/convex/_generated/dataModel";
-import type { FunctionReturnType } from "convex/server";
-import { FastProjectUploader } from "@/app/dashboard/components/fast-project-uploader";
-
-type PendingProject = FunctionReturnType<typeof api.projects.getProjects>[number];
-type PendingClaim = FunctionReturnType<typeof api.claims.getPendingClaims>[number];
-type OwnershipProject = FunctionReturnType<
-  typeof api.projects.getApprovedProjectsOwnershipStatus
->[number];
+import { BaseLayout } from "@/components/layouts/base-layout";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@convex-directory/ui/components/card";
+import { Button } from "@convex-directory/ui/components/button";
+import { toast } from "sonner";
+import { useIntlayer } from "react-intlayer";
 
 export default function AdminDashboard() {
   const isAdmin = useQuery(api.projects.isAdminQuery);
-  const pendingProjects = useQuery(
-    api.projects.getProjects,
-    isAdmin ? { status: "pending" } : "skip",
-  );
-  const pendingClaims = useQuery(api.claims.getPendingClaims, isAdmin ? {} : "skip");
-  const ownershipProjects = useQuery(
-    api.projects.getApprovedProjectsOwnershipStatus,
-    isAdmin ? {} : "skip",
-  );
+  const pendingProjects = useQuery(api.projects.getProjects, { status: "pending" });
+  const pendingClaims = useQuery(api.claims.getPendingClaims);
+  const content = useIntlayer("dashboard");
 
   const approveProject = useMutation(api.projects.approveProject);
   const rejectProject = useMutation(api.projects.rejectProject);
@@ -35,103 +27,107 @@ export default function AdminDashboard() {
   const handleApproveProject = async (id: Id<"projects">) => {
     try {
       await approveProject({ id });
-      toast.success("Project approved");
+      toast.success(content.admin.toast.projectApproved.value);
     } catch {
-      toast.error("Failed to approve");
+      toast.error(content.admin.toast.error.value);
+    }
+  };
+
+  const handleRejectProject = async (id: Id<"projects">) => {
+    try {
+      await rejectProject({ id });
+      toast.success(content.admin.toast.projectRejected.value);
+    } catch {
+      toast.error(content.admin.toast.error.value);
     }
   };
 
   const handleApproveClaim = async (claimId: Id<"claims">) => {
     try {
       await approveClaim({ claimId });
-      toast.success("Claim approved");
+      toast.success(content.admin.toast.claimApproved.value);
     } catch {
-      toast.error("Failed to approve claim");
+      toast.error(content.admin.toast.error.value);
     }
   };
 
   const handleRejectClaim = async (claimId: Id<"claims">) => {
     try {
       await rejectClaim({ claimId });
-      toast.success("Claim rejected");
+      toast.success(content.admin.toast.claimRejected.value);
     } catch {
-      toast.error("Failed to reject claim");
+      toast.error(content.admin.toast.error.value);
     }
   };
 
   if (isAdmin === undefined) {
     return (
-      <BaseLayout title="Admin Review" description="Checking access.">
-        <div className="container mx-auto px-4 py-12 text-muted-foreground">Loading access...</div>
+      <BaseLayout
+        title={content.admin.title.value}
+        description={content.admin.checkingAccess.value}
+      >
+        <div className="flex h-svh items-center justify-center">
+          {content.admin.checkingAccess.value}
+        </div>
       </BaseLayout>
     );
   }
 
   if (!isAdmin) {
     return (
-      <BaseLayout title="Access denied" description="This admin page is private.">
-        <div className="container mx-auto px-4 py-12">
-          <Card className="rounded-2xl">
-            <CardHeader>
-              <CardTitle>Access denied</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">
-                This page is restricted to the configured admin account.
-              </p>
-            </CardContent>
-          </Card>
-        </div>
+      <BaseLayout title={content.admin.title.value} description={content.admin.description.value}>
+        <div className="flex h-svh items-center justify-center">Unauthorized</div>
       </BaseLayout>
     );
   }
 
   return (
-    <BaseLayout
-      title="Admin Review"
-      description="Fast private publishing plus review queue for project submissions and claims."
-    >
-      <div className="container mx-auto px-4 py-12 space-y-12">
-        <FastProjectUploader />
-
+    <BaseLayout title={content.admin.title.value} description={content.admin.description.value}>
+      <div className="container mx-auto px-4 py-8 space-y-8">
         <section>
-          <h2 className="text-3xl font-bold mb-6">Pending Submissions</h2>
+          <h2 className="text-2xl font-bold mb-4">{content.admin.projects.title.value}</h2>
           <div className="grid gap-4">
-            {pendingProjects?.map((p: PendingProject) => (
-              <Card key={p._id} className="rounded-2xl">
+            {pendingProjects?.length === 0 && (
+              <p className="text-muted-foreground">{content.admin.projects.noProjects.value}</p>
+            )}
+            {pendingProjects?.map((project) => (
+              <Card key={project._id} className="rounded-2xl">
                 <CardHeader className="flex flex-row items-center justify-between">
                   <div>
-                    <CardTitle>{p.title}</CardTitle>
-                    <p className="text-sm text-muted-foreground">{p.url}</p>
+                    <CardTitle>{project.title}</CardTitle>
+                    <CardDescription>{project.url}</CardDescription>
                   </div>
                   <div className="flex gap-2">
-                    <Button onClick={() => handleApproveProject(p._id)} className="rounded-xl">
-                      Approve
+                    <Button
+                      onClick={() => handleApproveProject(project._id)}
+                      className="rounded-xl"
+                    >
+                      {content.admin.projects.approve.value}
                     </Button>
                     <Button
                       variant="destructive"
-                      onClick={() => rejectProject({ id: p._id })}
+                      onClick={() => handleRejectProject(project._id)}
                       className="rounded-xl"
                     >
-                      Reject
+                      {content.admin.projects.reject.value}
                     </Button>
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p>{p.description}</p>
+                  <p className="text-sm">{project.description}</p>
                 </CardContent>
               </Card>
             ))}
-            {pendingProjects?.length === 0 && (
-              <p className="text-muted-foreground">No pending submissions.</p>
-            )}
           </div>
         </section>
 
         <section>
-          <h2 className="text-3xl font-bold mb-6">Pending Claims</h2>
+          <h2 className="text-2xl font-bold mb-4">{content.admin.claims.title.value}</h2>
           <div className="grid gap-4">
-            {pendingClaims?.map((c: PendingClaim) => (
+            {pendingClaims?.length === 0 && (
+              <p className="text-muted-foreground">{content.admin.claims.noClaims.value}</p>
+            )}
+            {pendingClaims?.map((c) => (
               <Card key={c._id} className="rounded-2xl">
                 <CardHeader className="flex flex-row items-center justify-between">
                   <div>
@@ -140,72 +136,24 @@ export default function AdminDashboard() {
                   </div>
                   <div className="flex gap-2">
                     <Button onClick={() => handleApproveClaim(c._id)} className="rounded-xl">
-                      Approve Ownership
+                      {content.admin.claims.approve.value}
                     </Button>
                     <Button
                       variant="destructive"
                       onClick={() => handleRejectClaim(c._id)}
                       className="rounded-xl"
                     >
-                      Reject
+                      {content.admin.claims.reject.value}
                     </Button>
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p>Reason: {c.reason}</p>
-                </CardContent>
-              </Card>
-            ))}
-            {pendingClaims?.length === 0 && (
-              <p className="text-muted-foreground">No pending claims.</p>
-            )}
-          </div>
-        </section>
-
-        <section>
-          <h2 className="text-3xl font-bold mb-6">Ownership Tracking</h2>
-          <div className="grid gap-4">
-            {ownershipProjects?.map((project: OwnershipProject) => (
-              <Card key={project._id} className="rounded-2xl">
-                <CardHeader className="flex flex-row items-start justify-between gap-4">
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <CardTitle>{project.title}</CardTitle>
-                      <Badge
-                        variant={
-                          project.claimState === "claimed"
-                            ? "default"
-                            : project.claimState === "pending"
-                              ? "secondary"
-                              : "outline"
-                        }
-                        className="capitalize"
-                      >
-                        {project.claimState}
-                      </Badge>
-                    </div>
-                    <p className="text-sm text-muted-foreground">{project.url}</p>
-                  </div>
-                  <div className="text-right text-sm text-muted-foreground">
-                    <p>Pending claims: {project.pendingClaimsCount}</p>
-                    <p>Approved claims: {project.approvedClaimsCount}</p>
-                    <p>Rejected claims: {project.rejectedClaimsCount}</p>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    {project.claimState === "claimed"
-                      ? "This project already has an owner."
-                      : project.claimState === "pending"
-                        ? "This project has claim requests waiting for review."
-                        : "This project is approved but still unclaimed."}
+                  <p>
+                    {content.admin.claims.reason.value}: {c.reason}
                   </p>
                 </CardContent>
               </Card>
             ))}
-            {ownershipProjects?.length === 0 && (
-              <p className="text-muted-foreground">No approved projects found.</p>
-            )}
           </div>
         </section>
       </div>

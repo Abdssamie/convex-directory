@@ -1,5 +1,5 @@
-import { api } from "@convex-directory/backend/convex/_generated/api";
-import { Badge } from "@convex-directory/ui/components/badge";
+import { createFileRoute } from "@tanstack/react-router";
+import { BaseLayout } from "@/components/layouts/base-layout";
 import {
   Card,
   CardContent,
@@ -7,87 +7,85 @@ import {
   CardHeader,
   CardTitle,
 } from "@convex-directory/ui/components/card";
-import { Button } from "@convex-directory/ui/components/button";
+import { Badge } from "@convex-directory/ui/components/badge";
 import { LocalizedLink } from "@/components/localized-link";
-import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
-
-import { BaseLayout } from "@/components/layouts/base-layout";
+import { api } from "@convex-directory/backend/convex/_generated/api";
+import { useIntlayer } from "react-intlayer";
 
 export const Route = createFileRoute("/{-$locale}/settings/account")({
-  beforeLoad: ({ context, location }) => {
-    if (!context.isAuthenticated) {
-      throw redirect({
-        to: "/{-$locale}/sign-in",
-        params: { locale: location.pathname.split("/")[1] || "en" },
-        search: {
-          redirectTo: location.href,
-        },
-      });
-    }
-  },
-  component: RouteComponent,
+  component: AccountPage,
 });
 
-function RouteComponent() {
+function AccountPage() {
   const user = useQuery(api.auth.getCurrentUser);
+  const content = useIntlayer("account-settings");
 
   return (
-    <BaseLayout title="Account" description="Review your Better Auth profile and security status.">
-      <div className="grid gap-6 px-4 lg:px-6">
-        <Card>
+    <BaseLayout title={content.title.value} description={content.description.value}>
+      <div className="container mx-auto px-4 py-8 space-y-6">
+        <Card className="rounded-2xl">
           <CardHeader>
-            <CardTitle>Profile</CardTitle>
-            <CardDescription>Your current account details from Better Auth.</CardDescription>
+            <CardTitle>{content.profile.title.value}</CardTitle>
+            <CardDescription>{content.profile.description.value}</CardDescription>
           </CardHeader>
-          <CardContent className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">Name</p>
-              <p className="font-medium">{user?.name ?? "Unknown user"}</p>
+          <CardContent className="space-y-4">
+            <div className="flex flex-col space-y-1">
+              <p className="text-sm text-muted-foreground">{content.profile.name.value}</p>
+              <p className="font-medium">{user?.name}</p>
             </div>
-            <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">Email</p>
-              <p className="font-medium">{user?.email ?? "No email"}</p>
+            <div className="flex flex-col space-y-1">
+              <p className="text-sm text-muted-foreground">{content.profile.email.value}</p>
+              <p className="font-medium">{user?.email}</p>
             </div>
-            <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">Verification</p>
+            <div className="flex flex-col space-y-1">
+              <p className="text-sm text-muted-foreground">{content.profile.verification.value}</p>
               <div>
-                <Badge variant={user?.emailVerified ? "default" : "secondary"}>
-                  {user?.emailVerified ? "Verified" : "Pending verification"}
-                </Badge>
+                {user?.emailVerified ? (
+                  <Badge variant="default" className="rounded-lg">
+                    {content.profile.verified.value}
+                  </Badge>
+                ) : (
+                  <Badge variant="destructive" className="rounded-lg">
+                    {content.profile.notVerified.value}
+                  </Badge>
+                )}
               </div>
             </div>
-            <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">User ID</p>
-              <p className="font-mono text-sm">{user?._id ?? "Loading..."}</p>
+            <div className="flex flex-col space-y-1">
+              <p className="text-sm text-muted-foreground">{content.profile.userId.value}</p>
+              <p className="font-mono text-xs text-muted-foreground">{user?._id}</p>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="rounded-2xl border-destructive/20">
           <CardHeader>
-            <CardTitle>Security</CardTitle>
-            <CardDescription>
-              Common account actions for verification and password management.
-            </CardDescription>
+            <CardTitle>{content.security.title.value}</CardTitle>
           </CardHeader>
-          <CardContent className="flex flex-wrap gap-3">
-            {!user?.emailVerified ? (
-              <Button asChild>
-                <LocalizedLink
-                  to="/verify-email"
-                  search={{ email: user?.email ?? undefined, redirectTo: "/dashboard" }}
-                >
-                  Verify email
-                </LocalizedLink>
-              </Button>
-            ) : null}
-            <Button variant="outline" asChild>
-              <LocalizedLink to="/forgot-password">Reset password</LocalizedLink>
-            </Button>
-            <Button variant="outline" asChild>
-              <LocalizedLink to="/settings/billing">Open billing</LocalizedLink>
-            </Button>
+          <CardContent className="flex flex-col gap-4">
+            <div className="flex items-center justify-between py-2">
+              <div className="space-y-0.5">
+                <p className="text-sm font-medium">{content.security.resetPassword.value}</p>
+              </div>
+              <LocalizedLink
+                to="/forgot-password"
+                className="text-sm font-medium text-primary hover:underline"
+              >
+                {content.security.resetPassword.value}
+              </LocalizedLink>
+            </div>
+            <div className="flex items-center justify-between py-2 border-t">
+              <div className="space-y-0.5">
+                <p className="text-sm font-medium">{content.security.openBilling.value}</p>
+              </div>
+              <LocalizedLink
+                to="/settings/billing"
+                className="text-sm font-medium text-primary hover:underline"
+              >
+                {content.security.openBilling.value}
+              </LocalizedLink>
+            </div>
           </CardContent>
         </Card>
       </div>

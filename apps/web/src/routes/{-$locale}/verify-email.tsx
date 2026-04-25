@@ -26,7 +26,7 @@ function RouteComponent() {
   const navigate = useLocalizedNavigate();
   const user = useQuery(api.auth.getCurrentUser);
   const { token, email, redirectTo } = Route.useSearch();
-  const safeRedirectTo = redirectTo ?? "/onboarding/organization";
+  const safeRedirectTo = redirectTo ?? "/dashboard";
   const [status, setStatus] = useState<"idle" | "verifying" | "verified" | "failed">(
     token ? "verifying" : "idle",
   );

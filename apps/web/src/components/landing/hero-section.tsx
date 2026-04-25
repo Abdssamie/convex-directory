@@ -48,17 +48,17 @@ export function HeroSection() {
 
           {/* CTA Buttons */}
           <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
-            <Button size="lg" asChild>
-              <LocalizedLink to="/sign-up">
+            <Button size="lg" asChild className="cursor-pointer">
+              <LocalizedLink to="/directory">
                 {content.hero.getStartedFree}
                 <ArrowRight className="h-4 w-4" />
               </LocalizedLink>
             </Button>
-            <Button variant="outline" size="lg" asChild>
-              <a href="#">
+            <Button variant="outline" size="lg" asChild className="cursor-pointer">
+              <LocalizedLink to="/dashboard/submit">
                 <Play className="h-4 w-4" />
                 {content.hero.watchDemo}
-              </a>
+              </LocalizedLink>
             </Button>
           </div>
         </div>

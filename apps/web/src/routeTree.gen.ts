@@ -26,12 +26,10 @@ import { Route as Char123LocaleChar125ComponentsRouteImport } from "./routes/{-$
 import { Route as Char123LocaleChar125404RouteImport } from "./routes/{-$locale}/404";
 import { Route as Char123LocaleChar125SplatRouteImport } from "./routes/{-$locale}/$";
 import { Route as Char123LocaleChar125DashboardIndexRouteImport } from "./routes/{-$locale}/dashboard/index";
-import { Route as Char123LocaleChar125SettingsOrganizationRouteImport } from "./routes/{-$locale}/settings/organization";
 import { Route as Char123LocaleChar125SettingsBillingRouteImport } from "./routes/{-$locale}/settings/billing";
 import { Route as Char123LocaleChar125SettingsAccountRouteImport } from "./routes/{-$locale}/settings/account";
 import { Route as Char123LocaleChar125SaasCategorySlugRouteImport } from "./routes/{-$locale}/saas/$categorySlug";
 import { Route as Char123LocaleChar125ProductsProjectIdRouteImport } from "./routes/{-$locale}/products/$projectId";
-import { Route as Char123LocaleChar125OnboardingOrganizationRouteImport } from "./routes/{-$locale}/onboarding/organization";
 import { Route as Char123LocaleChar125InviteInvitationIdRouteImport } from "./routes/{-$locale}/invite/$invitationId";
 import { Route as Char123LocaleChar125DashboardSubmitRouteImport } from "./routes/{-$locale}/dashboard/submit";
 import { Route as Char123LocaleChar125DashboardAdminRouteImport } from "./routes/{-$locale}/dashboard/admin";
@@ -124,12 +122,6 @@ const Char123LocaleChar125DashboardIndexRoute =
     path: "/",
     getParentRoute: () => Char123LocaleChar125DashboardRoute,
   } as any);
-const Char123LocaleChar125SettingsOrganizationRoute =
-  Char123LocaleChar125SettingsOrganizationRouteImport.update({
-    id: "/settings/organization",
-    path: "/settings/organization",
-    getParentRoute: () => Char123LocaleChar125RouteRoute,
-  } as any);
 const Char123LocaleChar125SettingsBillingRoute =
   Char123LocaleChar125SettingsBillingRouteImport.update({
     id: "/settings/billing",
@@ -152,12 +144,6 @@ const Char123LocaleChar125ProductsProjectIdRoute =
   Char123LocaleChar125ProductsProjectIdRouteImport.update({
     id: "/products/$projectId",
     path: "/products/$projectId",
-    getParentRoute: () => Char123LocaleChar125RouteRoute,
-  } as any);
-const Char123LocaleChar125OnboardingOrganizationRoute =
-  Char123LocaleChar125OnboardingOrganizationRouteImport.update({
-    id: "/onboarding/organization",
-    path: "/onboarding/organization",
     getParentRoute: () => Char123LocaleChar125RouteRoute,
   } as any);
 const Char123LocaleChar125InviteInvitationIdRoute =
@@ -205,12 +191,10 @@ export interface FileRoutesByFullPath {
   "/{-$locale}/dashboard/admin": typeof Char123LocaleChar125DashboardAdminRoute;
   "/{-$locale}/dashboard/submit": typeof Char123LocaleChar125DashboardSubmitRoute;
   "/{-$locale}/invite/$invitationId": typeof Char123LocaleChar125InviteInvitationIdRoute;
-  "/{-$locale}/onboarding/organization": typeof Char123LocaleChar125OnboardingOrganizationRoute;
   "/{-$locale}/products/$projectId": typeof Char123LocaleChar125ProductsProjectIdRoute;
   "/{-$locale}/saas/$categorySlug": typeof Char123LocaleChar125SaasCategorySlugRoute;
   "/{-$locale}/settings/account": typeof Char123LocaleChar125SettingsAccountRoute;
   "/{-$locale}/settings/billing": typeof Char123LocaleChar125SettingsBillingRoute;
-  "/{-$locale}/settings/organization": typeof Char123LocaleChar125SettingsOrganizationRoute;
   "/{-$locale}/dashboard/": typeof Char123LocaleChar125DashboardIndexRoute;
 }
 export interface FileRoutesByTo {
@@ -232,12 +216,10 @@ export interface FileRoutesByTo {
   "/{-$locale}/dashboard/admin": typeof Char123LocaleChar125DashboardAdminRoute;
   "/{-$locale}/dashboard/submit": typeof Char123LocaleChar125DashboardSubmitRoute;
   "/{-$locale}/invite/$invitationId": typeof Char123LocaleChar125InviteInvitationIdRoute;
-  "/{-$locale}/onboarding/organization": typeof Char123LocaleChar125OnboardingOrganizationRoute;
   "/{-$locale}/products/$projectId": typeof Char123LocaleChar125ProductsProjectIdRoute;
   "/{-$locale}/saas/$categorySlug": typeof Char123LocaleChar125SaasCategorySlugRoute;
   "/{-$locale}/settings/account": typeof Char123LocaleChar125SettingsAccountRoute;
   "/{-$locale}/settings/billing": typeof Char123LocaleChar125SettingsBillingRoute;
-  "/{-$locale}/settings/organization": typeof Char123LocaleChar125SettingsOrganizationRoute;
   "/{-$locale}/dashboard": typeof Char123LocaleChar125DashboardIndexRoute;
 }
 export interface FileRoutesById {
@@ -262,12 +244,10 @@ export interface FileRoutesById {
   "/{-$locale}/dashboard/admin": typeof Char123LocaleChar125DashboardAdminRoute;
   "/{-$locale}/dashboard/submit": typeof Char123LocaleChar125DashboardSubmitRoute;
   "/{-$locale}/invite/$invitationId": typeof Char123LocaleChar125InviteInvitationIdRoute;
-  "/{-$locale}/onboarding/organization": typeof Char123LocaleChar125OnboardingOrganizationRoute;
   "/{-$locale}/products/$projectId": typeof Char123LocaleChar125ProductsProjectIdRoute;
   "/{-$locale}/saas/$categorySlug": typeof Char123LocaleChar125SaasCategorySlugRoute;
   "/{-$locale}/settings/account": typeof Char123LocaleChar125SettingsAccountRoute;
   "/{-$locale}/settings/billing": typeof Char123LocaleChar125SettingsBillingRoute;
-  "/{-$locale}/settings/organization": typeof Char123LocaleChar125SettingsOrganizationRoute;
   "/{-$locale}/dashboard/": typeof Char123LocaleChar125DashboardIndexRoute;
 }
 export interface FileRouteTypes {
@@ -293,12 +273,10 @@ export interface FileRouteTypes {
     | "/{-$locale}/dashboard/admin"
     | "/{-$locale}/dashboard/submit"
     | "/{-$locale}/invite/$invitationId"
-    | "/{-$locale}/onboarding/organization"
     | "/{-$locale}/products/$projectId"
     | "/{-$locale}/saas/$categorySlug"
     | "/{-$locale}/settings/account"
     | "/{-$locale}/settings/billing"
-    | "/{-$locale}/settings/organization"
     | "/{-$locale}/dashboard/";
   fileRoutesByTo: FileRoutesByTo;
   to:
@@ -320,12 +298,10 @@ export interface FileRouteTypes {
     | "/{-$locale}/dashboard/admin"
     | "/{-$locale}/dashboard/submit"
     | "/{-$locale}/invite/$invitationId"
-    | "/{-$locale}/onboarding/organization"
     | "/{-$locale}/products/$projectId"
     | "/{-$locale}/saas/$categorySlug"
     | "/{-$locale}/settings/account"
     | "/{-$locale}/settings/billing"
-    | "/{-$locale}/settings/organization"
     | "/{-$locale}/dashboard";
   id:
     | "__root__"
@@ -349,12 +325,10 @@ export interface FileRouteTypes {
     | "/{-$locale}/dashboard/admin"
     | "/{-$locale}/dashboard/submit"
     | "/{-$locale}/invite/$invitationId"
-    | "/{-$locale}/onboarding/organization"
     | "/{-$locale}/products/$projectId"
     | "/{-$locale}/saas/$categorySlug"
     | "/{-$locale}/settings/account"
     | "/{-$locale}/settings/billing"
-    | "/{-$locale}/settings/organization"
     | "/{-$locale}/dashboard/";
   fileRoutesById: FileRoutesById;
 }
@@ -484,13 +458,6 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof Char123LocaleChar125DashboardIndexRouteImport;
       parentRoute: typeof Char123LocaleChar125DashboardRoute;
     };
-    "/{-$locale}/settings/organization": {
-      id: "/{-$locale}/settings/organization";
-      path: "/settings/organization";
-      fullPath: "/{-$locale}/settings/organization";
-      preLoaderRoute: typeof Char123LocaleChar125SettingsOrganizationRouteImport;
-      parentRoute: typeof Char123LocaleChar125RouteRoute;
-    };
     "/{-$locale}/settings/billing": {
       id: "/{-$locale}/settings/billing";
       path: "/settings/billing";
@@ -517,13 +484,6 @@ declare module "@tanstack/react-router" {
       path: "/products/$projectId";
       fullPath: "/{-$locale}/products/$projectId";
       preLoaderRoute: typeof Char123LocaleChar125ProductsProjectIdRouteImport;
-      parentRoute: typeof Char123LocaleChar125RouteRoute;
-    };
-    "/{-$locale}/onboarding/organization": {
-      id: "/{-$locale}/onboarding/organization";
-      path: "/onboarding/organization";
-      fullPath: "/{-$locale}/onboarding/organization";
-      preLoaderRoute: typeof Char123LocaleChar125OnboardingOrganizationRouteImport;
       parentRoute: typeof Char123LocaleChar125RouteRoute;
     };
     "/{-$locale}/invite/$invitationId": {
@@ -601,11 +561,9 @@ interface Char123LocaleChar125RouteRouteChildren {
   Char123LocaleChar125VerifyEmailRoute: typeof Char123LocaleChar125VerifyEmailRoute;
   Char123LocaleChar125IndexRoute: typeof Char123LocaleChar125IndexRoute;
   Char123LocaleChar125InviteInvitationIdRoute: typeof Char123LocaleChar125InviteInvitationIdRoute;
-  Char123LocaleChar125OnboardingOrganizationRoute: typeof Char123LocaleChar125OnboardingOrganizationRoute;
   Char123LocaleChar125ProductsProjectIdRoute: typeof Char123LocaleChar125ProductsProjectIdRoute;
   Char123LocaleChar125SettingsAccountRoute: typeof Char123LocaleChar125SettingsAccountRoute;
   Char123LocaleChar125SettingsBillingRoute: typeof Char123LocaleChar125SettingsBillingRoute;
-  Char123LocaleChar125SettingsOrganizationRoute: typeof Char123LocaleChar125SettingsOrganizationRoute;
 }
 
 const Char123LocaleChar125RouteRouteChildren: Char123LocaleChar125RouteRouteChildren = {
@@ -625,11 +583,9 @@ const Char123LocaleChar125RouteRouteChildren: Char123LocaleChar125RouteRouteChil
   Char123LocaleChar125VerifyEmailRoute: Char123LocaleChar125VerifyEmailRoute,
   Char123LocaleChar125IndexRoute: Char123LocaleChar125IndexRoute,
   Char123LocaleChar125InviteInvitationIdRoute: Char123LocaleChar125InviteInvitationIdRoute,
-  Char123LocaleChar125OnboardingOrganizationRoute: Char123LocaleChar125OnboardingOrganizationRoute,
   Char123LocaleChar125ProductsProjectIdRoute: Char123LocaleChar125ProductsProjectIdRoute,
   Char123LocaleChar125SettingsAccountRoute: Char123LocaleChar125SettingsAccountRoute,
   Char123LocaleChar125SettingsBillingRoute: Char123LocaleChar125SettingsBillingRoute,
-  Char123LocaleChar125SettingsOrganizationRoute: Char123LocaleChar125SettingsOrganizationRoute,
 };
 
 const Char123LocaleChar125RouteRouteWithChildren = Char123LocaleChar125RouteRoute._addFileChildren(

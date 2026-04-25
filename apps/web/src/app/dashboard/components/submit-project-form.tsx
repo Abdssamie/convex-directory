@@ -23,21 +23,23 @@ import {
 import { Button } from "@convex-directory/ui/components/button";
 import { PROJECT_CATEGORIES } from "@/lib/project-categories";
 import { toast } from "sonner";
-
-const formSchema = z.object({
-  title: z.string().min(2, "Title must be at least 2 characters"),
-  description: z.string().min(10, "Description must be at least 10 characters"),
-  url: z.string().url("Must be a valid URL"),
-  type: z.enum(["saas", "tool", "open-source", "component"]),
-  categorySlug: z.string(),
-  logo: z.any().optional(),
-  screenshot: z.any().optional(),
-});
+import { useIntlayer } from "react-intlayer";
 
 export function SubmitProjectForm() {
   const submitProject = useMutation(api.projects.submitProject);
   const generateUploadUrl = useMutation(api.r2.generateUploadUrl);
   const syncMetadata = useMutation(api.r2.syncMetadata);
+  const content = useIntlayer("submit-project-form");
+
+  const formSchema = z.object({
+    title: z.string().min(2, content.validation.titleMin.value),
+    description: z.string().min(10, content.validation.descMin.value),
+    url: z.string().url(content.validation.urlInvalid.value),
+    type: z.enum(["saas", "tool", "open-source", "component"]),
+    categorySlug: z.string(),
+    logo: z.any().optional(),
+    screenshot: z.any().optional(),
+  });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -78,10 +80,10 @@ export function SubmitProjectForm() {
 
       const { logo: _logo, screenshot: _screenshot, ...projectData } = values;
       await submitProject({ ...projectData, productLogoKey, screenshotKey });
-      toast.success("Project submitted successfully! Waiting for approval.");
+      toast.success(content.success.value);
       form.reset();
     } catch {
-      toast.error("Failed to submit project.");
+      toast.error(content.error.value);
     }
   }
 
@@ -96,9 +98,13 @@ export function SubmitProjectForm() {
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Project Title</FormLabel>
+              <FormLabel>{content.fields.title.label.value}</FormLabel>
               <FormControl>
-                <Input placeholder="My Cool Convex App" {...field} className="rounded-xl" />
+                <Input
+                  placeholder={content.fields.title.placeholder.value}
+                  {...field}
+                  className="rounded-xl"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -110,9 +116,13 @@ export function SubmitProjectForm() {
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Description</FormLabel>
+              <FormLabel>{content.fields.description.label.value}</FormLabel>
               <FormControl>
-                <Textarea placeholder="What does it do?" {...field} className="rounded-xl" />
+                <Textarea
+                  placeholder={content.fields.description.placeholder.value}
+                  {...field}
+                  className="rounded-xl"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -125,9 +135,13 @@ export function SubmitProjectForm() {
             name="url"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>URL</FormLabel>
+                <FormLabel>{content.fields.url.label.value}</FormLabel>
                 <FormControl>
-                  <Input placeholder="https://..." {...field} className="rounded-xl" />
+                  <Input
+                    placeholder={content.fields.url.placeholder.value}
+                    {...field}
+                    className="rounded-xl"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -139,18 +153,22 @@ export function SubmitProjectForm() {
             name="type"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Type</FormLabel>
+                <FormLabel>{content.fields.type.label.value}</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
                     <SelectTrigger className="rounded-xl">
-                      <SelectValue placeholder="Select type" />
+                      <SelectValue placeholder={content.fields.type.placeholder.value} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent className="rounded-xl">
-                    <SelectItem value="saas">SaaS</SelectItem>
-                    <SelectItem value="tool">Tool</SelectItem>
-                    <SelectItem value="open-source">Open Source</SelectItem>
-                    <SelectItem value="component">Component</SelectItem>
+                    <SelectItem value="saas">{content.fields.type.options.saas.value}</SelectItem>
+                    <SelectItem value="tool">{content.fields.type.options.tool.value}</SelectItem>
+                    <SelectItem value="open-source">
+                      {content.fields.type.options.openSource.value}
+                    </SelectItem>
+                    <SelectItem value="component">
+                      {content.fields.type.options.component.value}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -163,11 +181,11 @@ export function SubmitProjectForm() {
             name="categorySlug"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Category</FormLabel>
+                <FormLabel>{content.fields.category.label.value}</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
                     <SelectTrigger className="rounded-xl">
-                      <SelectValue placeholder="Select category" />
+                      <SelectValue placeholder={content.fields.category.placeholder.value} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent className="rounded-xl">
@@ -190,7 +208,7 @@ export function SubmitProjectForm() {
             name="logo"
             render={({ field: { value: _value, onChange, ...fieldProps } }) => (
               <FormItem>
-                <FormLabel>Product Logo</FormLabel>
+                <FormLabel>{content.fields.logo.label.value}</FormLabel>
                 <FormControl>
                   <Input
                     {...fieldProps}
@@ -210,7 +228,7 @@ export function SubmitProjectForm() {
             name="screenshot"
             render={({ field: { value: _value, onChange, ...fieldProps } }) => (
               <FormItem>
-                <FormLabel>Project Screenshot</FormLabel>
+                <FormLabel>{content.fields.screenshot.label.value}</FormLabel>
                 <FormControl>
                   <Input
                     {...fieldProps}
@@ -227,7 +245,7 @@ export function SubmitProjectForm() {
         </div>
 
         <Button type="submit" disabled={form.formState.isSubmitting} className="w-full rounded-xl">
-          {form.formState.isSubmitting ? "Submitting..." : "Submit for Review"}
+          {form.formState.isSubmitting ? content.submitting.value : content.submit.value}
         </Button>
       </form>
     </Form>

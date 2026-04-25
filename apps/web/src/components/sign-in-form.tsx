@@ -1,159 +1,118 @@
-import { Button } from "@convex-directory/ui/components/button";
-import { Input } from "@convex-directory/ui/components/input";
-import { Label } from "@convex-directory/ui/components/label";
-import { LocalizedLink } from "@/components/localized-link";
-import { useLocalizedNavigate } from "@/hooks/useLocalizedNavigate";
-import { useForm } from "@tanstack/react-form";
+"use client";
+
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import { toast } from "sonner";
-import z from "zod";
+import { useIntlayer } from "react-intlayer";
 
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
-
-function getAuthErrorMessage(error: { error: { message?: string; statusText?: string } }) {
-  return error.error.message || error.error.statusText || "Authentication failed";
-}
+import { LocalizedLink } from "@/components/localized-link";
 
 export default function SignInForm({
   onSwitchToSignUp,
-  redirectTo = "/dashboard",
+  redirectTo,
 }: {
   onSwitchToSignUp?: () => void;
   redirectTo?: string;
 }) {
-  const navigate = useLocalizedNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+  const content = useIntlayer("sign-in-form");
 
-  const form = useForm({
+  const formSchema = z.object({
+    email: z.string().email(),
+    password: z.string().min(8),
+  });
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
       password: "",
     },
-    onSubmit: async ({ value }) => {
-      await authClient.signIn.email(
-        {
-          email: value.email,
-          password: value.password,
-        },
-        {
-          onSuccess: () => {
-            void navigate({ to: redirectTo });
-            toast.success("Sign in successful");
-          },
-          onError: (error) => {
-            toast.error(getAuthErrorMessage(error));
-
-            const message = getAuthErrorMessage(error).toLowerCase();
-            if (message.includes("verify") || message.includes("verification")) {
-              void navigate({
-                to: "/verify-email",
-                search: { email: value.email, redirectTo },
-              });
-            }
-          },
-        },
-      );
-    },
-    validators: {
-      onSubmit: z.object({
-        email: z.email("Invalid email address"),
-        password: z.string().min(8, "Password must be at least 8 characters"),
-      }),
-    },
   });
 
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsLoading(true);
+    await authClient.signIn.email(
+      {
+        email: values.email,
+        password: values.password,
+        callbackURL: redirectTo || "/dashboard",
+      },
+      {
+        onSuccess: () => {
+          toast.success(content.success.value);
+          location.reload();
+        },
+        onError: (ctx) => {
+          toast.error(ctx.error.message || content.error.value);
+        },
+      },
+    );
+    setIsLoading(false);
+  }
+
   return (
-    <div className="mx-auto w-full mt-10 max-w-md p-6">
-      <h1 className="mb-6 text-center text-3xl font-bold">Welcome Back</h1>
-
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          form.handleSubmit();
-        }}
-        className="space-y-4"
-      >
-        <div>
-          <form.Field name="email">
-            {(field) => (
-              <div className="space-y-2">
-                <Label htmlFor={field.name}>Email</Label>
-                <Input
-                  id={field.name}
-                  name={field.name}
-                  type="email"
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                />
-                {field.state.meta.errors.map((error) => (
-                  <p key={error?.message} className="text-red-500">
-                    {error?.message}
-                  </p>
-                ))}
-              </div>
+    <div className="mx-auto max-w-md p-6 bg-card border rounded-2xl shadow-sm">
+      <h1 className="mb-6 text-center text-3xl font-bold">{content.title.value}</h1>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{content.email.value}</FormLabel>
+                <FormControl>
+                  <Input placeholder="name@example.com" {...field} className="rounded-xl" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
             )}
-          </form.Field>
-        </div>
-
-        <div>
-          <form.Field name="password">
-            {(field) => (
-              <div className="space-y-2">
-                <Label htmlFor={field.name}>Password</Label>
-                <Input
-                  id={field.name}
-                  name={field.name}
-                  type="password"
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                />
-                {field.state.meta.errors.map((error) => (
-                  <p key={error?.message} className="text-red-500">
-                    {error?.message}
-                  </p>
-                ))}
-              </div>
+          />
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{content.password.value}</FormLabel>
+                <FormControl>
+                  <Input type="password" {...field} className="rounded-xl" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
             )}
-          </form.Field>
-        </div>
-
-        <form.Subscribe
-          selector={(state) => ({ canSubmit: state.canSubmit, isSubmitting: state.isSubmitting })}
-        >
-          {({ canSubmit, isSubmitting }) => (
-            <Button type="submit" className="w-full" disabled={!canSubmit || isSubmitting}>
-              {isSubmitting ? "Submitting..." : "Sign In"}
-            </Button>
-          )}
-        </form.Subscribe>
-      </form>
-
-      <div className="mt-4 space-y-2 text-center text-sm">
-        <div className="flex items-center justify-center gap-4">
-          <LocalizedLink
-            to="/forgot-password"
-            className="text-primary underline-offset-4 hover:underline"
-          >
-            Forgot password?
-          </LocalizedLink>
-          <LocalizedLink
-            to="/magic-link"
-            className="text-primary underline-offset-4 hover:underline"
-          >
-            Use magic link
-          </LocalizedLink>
-        </div>
-        {onSwitchToSignUp ? (
-          <Button variant="link" onClick={onSwitchToSignUp} className="text-primary">
-            Need an account? Sign Up
+          />
+          <div className="flex justify-end">
+            <LocalizedLink to="/forgot-password" className="text-sm text-primary hover:underline">
+              {content.forgotPassword.value}
+            </LocalizedLink>
+          </div>
+          <Button type="submit" className="w-full rounded-xl" disabled={isLoading}>
+            {isLoading ? content.signingIn.value : content.signIn.value}
           </Button>
-        ) : (
-          <LocalizedLink to="/sign-up" className="text-primary underline-offset-4 hover:underline">
-            Need an account? Sign Up
-          </LocalizedLink>
-        )}
-      </div>
+        </form>
+      </Form>
+      {onSwitchToSignUp && (
+        <div className="mt-6 text-center text-sm">
+          <span className="text-muted-foreground">{content.noAccount.value} </span>
+          <button onClick={onSwitchToSignUp} className="font-medium text-primary hover:underline">
+            {content.signUp.value}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

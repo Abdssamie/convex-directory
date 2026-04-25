@@ -42,7 +42,7 @@ export function LandingNavbar() {
 
   const navItems = [
     { name: content.navbar.directory, to: "/" },
-    { name: content.navbar.submit, to: "/sign-up" },
+    { name: content.navbar.submit, to: "/dashboard/submit" },
   ] as const;
 
   return (
@@ -90,7 +90,7 @@ export function LandingNavbar() {
                 <LocalizedLink to="/sign-in">{content.navbar.signIn}</LocalizedLink>
               </Button>
               <Button size="sm" asChild className="cursor-pointer">
-                <LocalizedLink to="/sign-up">{content.navbar.submit}</LocalizedLink>
+                <LocalizedLink to="/dashboard/submit">{content.navbar.submit}</LocalizedLink>
               </Button>
             </>
           )}
@@ -174,7 +174,9 @@ export function LandingNavbar() {
                     className="cursor-pointer"
                     onClick={() => setIsOpen(false)}
                   >
-                    <LocalizedLink to="/sign-up">{content.navbar.submitShort}</LocalizedLink>
+                    <LocalizedLink to="/dashboard/submit">
+                      {content.navbar.submitShort}
+                    </LocalizedLink>
                   </Button>
                 </div>
               )}

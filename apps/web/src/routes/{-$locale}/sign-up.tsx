@@ -1,29 +1,27 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
-
-import AuthLayout from "@/components/auth-layout";
 import SignUpForm from "@/components/sign-up-form";
 
 export const Route = createFileRoute("/{-$locale}/sign-up")({
-  validateSearch: (search: Record<string, unknown>): { redirectTo?: string } => ({
-    redirectTo: typeof search.redirectTo === "string" ? search.redirectTo : undefined,
+  validateSearch: (search: Record<string, unknown>) => ({
+    redirectTo: search.redirectTo as string | undefined,
   }),
   beforeLoad: ({ context, params }) => {
     if (context.isAuthenticated) {
       throw redirect({
-        to: "/{-$locale}/onboarding/organization",
+        to: "/{-$locale}/dashboard",
         params: { locale: params.locale ?? "" },
       });
     }
   },
-  component: RouteComponent,
+  component: SignUpPage,
 });
 
-function RouteComponent() {
+function SignUpPage() {
   const { redirectTo } = Route.useSearch();
 
   return (
-    <AuthLayout title="Create account" description="Start with email and password.">
-      <SignUpForm redirectTo={redirectTo ?? "/onboarding/organization"} />
-    </AuthLayout>
+    <div className="flex min-h-svh items-center justify-center">
+      <SignUpForm redirectTo={redirectTo ?? "/dashboard"} />
+    </div>
   );
 }

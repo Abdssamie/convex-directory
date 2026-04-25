@@ -21,6 +21,8 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 
+import { useIntlayer } from "react-intlayer";
+
 export function NavUser({
   user,
 }: {
@@ -31,6 +33,7 @@ export function NavUser({
   };
 }) {
   const { isMobile } = useSidebar();
+  const content = useIntlayer("account-settings");
 
   return (
     <SidebarMenu>
@@ -73,7 +76,7 @@ export function NavUser({
               <DropdownMenuItem asChild className="cursor-pointer">
                 <LocalizedLink to="/settings/account">
                   <CircleUser />
-                  Account
+                  {content.profile.title.value}
                 </LocalizedLink>
               </DropdownMenuItem>
             </DropdownMenuGroup>
@@ -91,7 +94,10 @@ export function NavUser({
               }}
             >
               <LogOut />
-              Log out
+              {content.profile.title.value === "Account Settings" ||
+              content.profile.title.value === "Profile"
+                ? "Log out"
+                : "Se déconnecter"}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
