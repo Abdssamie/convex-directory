@@ -32,9 +32,9 @@ export function SubmitProjectForm() {
   const content = useIntlayer("submit-project-form");
 
   const formSchema = z.object({
-    title: z.string().min(2, content.validation.titleMin.value),
-    description: z.string().min(10, content.validation.descMin.value),
-    url: z.string().url(content.validation.urlInvalid.value),
+    title: z.string().min(2, content.validation.titleMin),
+    description: z.string().min(10, content.validation.descMin),
+    url: z.string().url(content.validation.urlInvalid),
     type: z.enum(["saas", "tool", "open-source", "component"]),
     categorySlug: z.string(),
     logo: z.any().optional(),
@@ -80,10 +80,10 @@ export function SubmitProjectForm() {
 
       const { logo: _logo, screenshot: _screenshot, ...projectData } = values;
       await submitProject({ ...projectData, productLogoKey, screenshotKey });
-      toast.success(content.success.value);
+      toast.success(content.success);
       form.reset();
     } catch {
-      toast.error(content.error.value);
+      toast.error(content.error);
     }
   }
 
@@ -98,10 +98,10 @@ export function SubmitProjectForm() {
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{content.fields.title.label.value}</FormLabel>
+              <FormLabel>{content.fields.title.label}</FormLabel>
               <FormControl>
                 <Input
-                  placeholder={content.fields.title.placeholder.value}
+                  placeholder={content.fields.title.placeholder}
                   {...field}
                   className="rounded-xl"
                 />
@@ -116,10 +116,10 @@ export function SubmitProjectForm() {
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{content.fields.description.label.value}</FormLabel>
+              <FormLabel>{content.fields.description.label}</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder={content.fields.description.placeholder.value}
+                  placeholder={content.fields.description.placeholder}
                   {...field}
                   className="rounded-xl"
                 />
@@ -135,10 +135,10 @@ export function SubmitProjectForm() {
             name="url"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{content.fields.url.label.value}</FormLabel>
+                <FormLabel>{content.fields.url.label}</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder={content.fields.url.placeholder.value}
+                    placeholder={content.fields.url.placeholder}
                     {...field}
                     className="rounded-xl"
                   />
@@ -153,21 +153,21 @@ export function SubmitProjectForm() {
             name="type"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{content.fields.type.label.value}</FormLabel>
+                <FormLabel>{content.fields.type.label}</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
                     <SelectTrigger className="rounded-xl">
-                      <SelectValue placeholder={content.fields.type.placeholder.value} />
+                      <SelectValue placeholder={content.fields.type.placeholder} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent className="rounded-xl">
-                    <SelectItem value="saas">{content.fields.type.options.saas.value}</SelectItem>
-                    <SelectItem value="tool">{content.fields.type.options.tool.value}</SelectItem>
+                    <SelectItem value="saas">{content.fields.type.options.saas}</SelectItem>
+                    <SelectItem value="tool">{content.fields.type.options.tool}</SelectItem>
                     <SelectItem value="open-source">
-                      {content.fields.type.options.openSource.value}
+                      {content.fields.type.options.openSource}
                     </SelectItem>
                     <SelectItem value="component">
-                      {content.fields.type.options.component.value}
+                      {content.fields.type.options.component}
                     </SelectItem>
                   </SelectContent>
                 </Select>
@@ -181,11 +181,11 @@ export function SubmitProjectForm() {
             name="categorySlug"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{content.fields.category.label.value}</FormLabel>
+                <FormLabel>{content.fields.category.label}</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
                     <SelectTrigger className="rounded-xl">
-                      <SelectValue placeholder={content.fields.category.placeholder.value} />
+                      <SelectValue placeholder={content.fields.category.placeholder} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent className="rounded-xl">
@@ -208,7 +208,7 @@ export function SubmitProjectForm() {
             name="logo"
             render={({ field: { value: _value, onChange, ...fieldProps } }) => (
               <FormItem>
-                <FormLabel>{content.fields.logo.label.value}</FormLabel>
+                <FormLabel>{content.fields.logo.label}</FormLabel>
                 <FormControl>
                   <Input
                     {...fieldProps}
@@ -228,7 +228,7 @@ export function SubmitProjectForm() {
             name="screenshot"
             render={({ field: { value: _value, onChange, ...fieldProps } }) => (
               <FormItem>
-                <FormLabel>{content.fields.screenshot.label.value}</FormLabel>
+                <FormLabel>{content.fields.screenshot.label}</FormLabel>
                 <FormControl>
                   <Input
                     {...fieldProps}
@@ -245,7 +245,7 @@ export function SubmitProjectForm() {
         </div>
 
         <Button type="submit" disabled={form.formState.isSubmitting} className="w-full rounded-xl">
-          {form.formState.isSubmitting ? content.submitting.value : content.submit.value}
+          {form.formState.isSubmitting ? content.submitting : content.submit}
         </Button>
       </form>
     </Form>
