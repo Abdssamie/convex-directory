@@ -55,6 +55,34 @@ const projectValidator = v.object({
   screenshotKey: v.optional(v.string()),
 });
 
+const adminOwnershipProjectValidator = v.object({
+  _id: v.id("projects"),
+  _creationTime: v.number(),
+  title: v.string(),
+  description: v.string(),
+  url: v.string(),
+  type: v.union(
+    v.literal("saas"),
+    v.literal("tool"),
+    v.literal("open-source"),
+    v.literal("component"),
+  ),
+  categorySlug: categorySlugValidator,
+  ownerId: v.optional(v.string()),
+  createdBy: v.string(),
+  status: v.union(v.literal("pending"), v.literal("approved"), v.literal("rejected")),
+  createdAt: v.number(),
+  updatedAt: v.number(),
+  productLogoUrl: v.optional(v.string()),
+  productLogoKey: v.optional(v.string()),
+  screenshotUrl: v.optional(v.string()),
+  screenshotKey: v.optional(v.string()),
+  claimState: v.union(v.literal("unclaimed"), v.literal("pending"), v.literal("claimed")),
+  pendingClaimsCount: v.number(),
+  approvedClaimsCount: v.number(),
+  rejectedClaimsCount: v.number(),
+});
+
 type StoredProject = {
   _id: Id<"projects">;
   _creationTime: number;
@@ -249,7 +277,6 @@ export const bulkCreateProjectsByAdmin = mutation({
       const createdId = await ctx.db.insert("projects", {
         ...project,
         createdBy: user._id,
-        ownerId: user._id,
         status: "approved",
         createdAt: now,
         updatedAt: now,
@@ -337,5 +364,51 @@ export const isAdminQuery = query({
       return false;
     }
     return await isAdmin(authUser);
+  },
+});
+
+export const getApprovedProjectsOwnershipStatus = query({
+  args: {},
+  returns: v.array(adminOwnershipProjectValidator),
+  handler: async (ctx) => {
+    const authUser = await authComponent.safeGetAuthUser(ctx);
+    if (!authUser || !(await isAdmin(authUser))) {
+      throw new ConvexError("Unauthorized");
+    }
+
+    const projects = await ctx.db
+      .query("projects")
+      .withIndex("by_status", (q) => q.eq("status", "approved"))
+      .collect();
+
+    const normalizedProjects = await Promise.all(
+      projects.map((project) => normalizeProject(ctx, project as StoredProject)),
+    );
+
+    return await Promise.all(
+      normalizedProjects.map(async (project) => {
+        const claims = await ctx.db
+          .query("claims")
+          .withIndex("by_projectId", (q) => q.eq("projectId", project._id))
+          .collect();
+
+        const pendingClaimsCount = claims.filter((claim) => claim.status === "pending").length;
+        const approvedClaimsCount = claims.filter((claim) => claim.status === "approved").length;
+        const rejectedClaimsCount = claims.filter((claim) => claim.status === "rejected").length;
+        const hasVerifiedOwner =
+          approvedClaimsCount > 0 ||
+          (project.ownerId !== undefined && project.ownerId !== project.createdBy);
+        const claimState: "pending" | "claimed" | "unclaimed" =
+          pendingClaimsCount > 0 ? "pending" : hasVerifiedOwner ? "claimed" : "unclaimed";
+
+        return {
+          ...project,
+          claimState,
+          pendingClaimsCount,
+          approvedClaimsCount,
+          rejectedClaimsCount,
+        };
+      }),
+    );
   },
 });

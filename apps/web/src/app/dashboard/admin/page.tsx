@@ -3,6 +3,7 @@ import { api } from "@convex-directory/backend/convex/_generated/api";
 import { BaseLayout } from "@/components/layouts/base-layout";
 import { Card, CardHeader, CardTitle, CardContent } from "@convex-directory/ui/components/card";
 import { Button } from "@convex-directory/ui/components/button";
+import { Badge } from "@convex-directory/ui/components/badge";
 import { toast } from "sonner";
 import type { Id } from "@convex-directory/backend/convex/_generated/dataModel";
 import type { FunctionReturnType } from "convex/server";
@@ -10,6 +11,9 @@ import { FastProjectUploader } from "@/app/dashboard/components/fast-project-upl
 
 type PendingProject = FunctionReturnType<typeof api.projects.getProjects>[number];
 type PendingClaim = FunctionReturnType<typeof api.claims.getPendingClaims>[number];
+type OwnershipProject = FunctionReturnType<
+  typeof api.projects.getApprovedProjectsOwnershipStatus
+>[number];
 
 export default function AdminDashboard() {
   const isAdmin = useQuery(api.projects.isAdminQuery);
@@ -18,6 +22,10 @@ export default function AdminDashboard() {
     isAdmin ? { status: "pending" } : "skip",
   );
   const pendingClaims = useQuery(api.claims.getPendingClaims, isAdmin ? {} : "skip");
+  const ownershipProjects = useQuery(
+    api.projects.getApprovedProjectsOwnershipStatus,
+    isAdmin ? {} : "skip",
+  );
 
   const approveProject = useMutation(api.projects.approveProject);
   const rejectProject = useMutation(api.projects.rejectProject);
@@ -131,6 +139,53 @@ export default function AdminDashboard() {
             ))}
             {pendingClaims?.length === 0 && (
               <p className="text-muted-foreground">No pending claims.</p>
+            )}
+          </div>
+        </section>
+
+        <section>
+          <h2 className="text-3xl font-bold mb-6">Ownership Tracking</h2>
+          <div className="grid gap-4">
+            {ownershipProjects?.map((project: OwnershipProject) => (
+              <Card key={project._id} className="rounded-2xl">
+                <CardHeader className="flex flex-row items-start justify-between gap-4">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <CardTitle>{project.title}</CardTitle>
+                      <Badge
+                        variant={
+                          project.claimState === "claimed"
+                            ? "default"
+                            : project.claimState === "pending"
+                              ? "secondary"
+                              : "outline"
+                        }
+                        className="capitalize"
+                      >
+                        {project.claimState}
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground">{project.url}</p>
+                  </div>
+                  <div className="text-right text-sm text-muted-foreground">
+                    <p>Pending claims: {project.pendingClaimsCount}</p>
+                    <p>Approved claims: {project.approvedClaimsCount}</p>
+                    <p>Rejected claims: {project.rejectedClaimsCount}</p>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">
+                    {project.claimState === "claimed"
+                      ? "This project already has an owner."
+                      : project.claimState === "pending"
+                        ? "This project has claim requests waiting for review."
+                        : "This project is approved but still unclaimed."}
+                  </p>
+                </CardContent>
+              </Card>
+            ))}
+            {ownershipProjects?.length === 0 && (
+              <p className="text-muted-foreground">No approved projects found.</p>
             )}
           </div>
         </section>

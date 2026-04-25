@@ -226,7 +226,7 @@ export function FastProjectUploader() {
         <div className="flex items-center gap-2">
           <Badge className="rounded-full">Admin Only</Badge>
           <Badge variant="outline" className="rounded-full">
-            Auto-approve
+            Approved, unclaimed
           </Badge>
         </div>
         <CardTitle className="flex items-center gap-2 text-2xl">
@@ -235,7 +235,8 @@ export function FastProjectUploader() {
         </CardTitle>
         <CardDescription>
           Paste one project per line with <code>title | url | description | optional category</code>
-          . Then attach logo and screenshot files per row and publish the batch.
+          . Then attach logo and screenshot files per row and publish the batch. Imported projects
+          go live approved, but ownership stays unclaimed until a real user claims them.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
