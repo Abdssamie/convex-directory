@@ -162,6 +162,25 @@ export function SubmitProjectForm() {
           />
         </div>
 
+        <FormField
+          control={form.control}
+          name="image"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Image URL</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="https://example.com/preview.png"
+                  {...field}
+                  value={field.value ?? ""}
+                  className="rounded-xl"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         <Button type="submit" className="w-full rounded-xl">
           Submit for Review
         </Button>

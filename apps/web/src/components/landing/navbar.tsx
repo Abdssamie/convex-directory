@@ -1,15 +1,6 @@
 import { useState } from "react";
-import { Menu, LayoutDashboard, ChevronDown, X, Moon, Sun } from "lucide-react";
-import { useIntlayer } from "react-intlayer";
+import { Menu, X, LayoutDashboard, Search } from "lucide-react";
 import { Button } from "@convex-directory/ui/components/button";
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from "@convex-directory/ui/components/navigation-menu";
 import {
   Sheet,
   SheetContent,
@@ -17,122 +8,77 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@convex-directory/ui/components/sheet";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@convex-directory/ui/components/collapsible";
 import { Logo } from "@/components/logo";
-import { MegaMenu } from "@/components/landing/mega-menu";
 import { ModeToggle } from "@/components/mode-toggle";
 import { LocaleSwitcher } from "@/components/locale-switcher";
-import { useTheme } from "@/hooks/use-theme";
 import { authClient } from "@/lib/auth-client";
 import { LocalizedLink } from "@/components/localized-link";
+import { useIntlayer } from "react-intlayer";
 
-const getNavigationItems = (content: any) => [
-  { name: content.navbar.home, href: "#hero" },
-  { name: "Directory", href: "#directory" },
-  { name: content.navbar.features, href: "#features" },
-  { name: content.navbar.solutions, href: "#features", hasMegaMenu: true },
-  { name: content.navbar.team, href: "#team" },
-  { name: content.navbar.pricing, href: "#pricing" },
-  { name: content.navbar.faq, href: "#faq" },
-  { name: content.navbar.contact, href: "#contact" },
-];
+// TODO: wire up to a real project search query
+function SearchBox({ className = "", placeholder }: { className?: string; placeholder: string }) {
+  const [query, setQuery] = useState("");
 
-// Solutions menu items for mobile
-const getSolutionsItems = (content: any) => [
-  { title: content.navbar.browseProducts },
-  { name: content.navbar.freeBlocks, href: "#free-blocks" },
-  { name: content.navbar.premiumTemplates, href: "#premium-templates" },
-  { name: content.navbar.adminDashboards, href: "#admin-dashboards" },
-  { name: content.navbar.landingPages, href: "#landing-pages" },
-  { title: content.navbar.categories },
-  { name: content.navbar.ecommerce, href: "#ecommerce" },
-  { name: content.navbar.saasDashboards, href: "#saas-dashboards" },
-  { name: content.navbar.analytics, href: "#analytics" },
-  { name: content.navbar.authentication, href: "#authentication" },
-  { title: content.navbar.resources },
-  { name: content.navbar.documentation, href: "#docs" },
-  { name: content.navbar.componentShowcase, href: "#showcase" },
-  { name: content.navbar.githubRepo, href: "#github" },
-  { name: content.navbar.designSystem, href: "#design-system" },
-];
-
-// Smooth scroll function
-const smoothScrollTo = (targetId: string) => {
-  if (targetId.startsWith("#")) {
-    const element = document.querySelector(targetId);
-    if (element) {
-      element.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }
-  }
-};
+  return (
+    <div className={`relative flex items-center ${className}`}>
+      <Search className="pointer-events-none absolute left-3 h-4 w-4 text-muted-foreground" />
+      <input
+        type="search"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder={placeholder}
+        className="h-9 w-full rounded-lg border border-input bg-background pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-colors"
+        aria-label={placeholder}
+      />
+    </div>
+  );
+}
 
 export function LandingNavbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [solutionsOpen, setSolutionsOpen] = useState(false);
-  const { setTheme, resolvedTheme } = useTheme();
   const session = authClient.useSession();
   const content = useIntlayer("landing");
   const isAuthenticated = !!session.data;
+
+  const navItems = [
+    { name: content.navbar.directory.value, href: "#directory" },
+    { name: content.navbar.submit.value, href: "/sign-up" },
+  ];
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex h-16 items-center justify-between">
         {/* Logo */}
-        <div className="flex items-center space-x-2">
-          <LocalizedLink to="/" className="flex items-center space-x-2 cursor-pointer">
-            <Logo size={32} />
-            <span className="font-bold">ConvexZen</span>
-          </LocalizedLink>
-        </div>
+        <LocalizedLink to="/" className="flex items-center gap-2 cursor-pointer">
+          <Logo size={28} />
+          <span className="font-bold text-base">{content.navbar.title}</span>
+        </LocalizedLink>
 
-        {/* Desktop Navigation */}
-        <NavigationMenu className="hidden xl:flex">
-          <NavigationMenuList>
-            {getNavigationItems(content).map((item) => (
-              <NavigationMenuItem key={item.name}>
-                {item.hasMegaMenu ? (
-                  <>
-                    <NavigationMenuTrigger className="bg-transparent hover:bg-transparent focus:bg-transparent data-[active]:bg-transparent data-[state=open]:bg-transparent px-4 py-2 text-sm font-medium transition-colors hover:text-primary focus:text-primary cursor-pointer">
-                      {item.name}
-                    </NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                      <MegaMenu />
-                    </NavigationMenuContent>
-                  </>
-                ) : (
-                  <NavigationMenuLink
-                    className="group inline-flex h-10 w-max items-center justify-center px-4 py-2 text-sm font-medium transition-colors hover:text-primary focus:text-primary focus:outline-none cursor-pointer"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      if (item.href.startsWith("#")) {
-                        smoothScrollTo(item.href);
-                      } else {
-                        window.location.href = item.href;
-                      }
-                    }}
-                  >
-                    {item.name}
-                  </NavigationMenuLink>
-                )}
-              </NavigationMenuItem>
-            ))}
-          </NavigationMenuList>
-        </NavigationMenu>
+        {/* Desktop nav */}
+        <nav className="hidden md:flex items-center gap-1">
+          {navItems.map((item) => (
+            <a
+              key={item.name}
+              href={item.href}
+              className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-accent"
+            >
+              {item.name}
+            </a>
+          ))}
+        </nav>
+
+        {/* Desktop search */}
+        <SearchBox
+          className="hidden md:flex w-56 lg:w-72"
+          placeholder={content.navbar.searchPlaceholder.value}
+        />
 
         {/* Desktop CTA */}
-        <div className="hidden xl:flex items-center space-x-2">
+        <div className="hidden md:flex items-center gap-2">
           <LocaleSwitcher />
           <ModeToggle variant="ghost" />
-
           {isAuthenticated ? (
-            <Button variant="outline" asChild className="cursor-pointer">
+            <Button variant="outline" size="sm" asChild className="cursor-pointer">
               <LocalizedLink to="/dashboard">
                 <LayoutDashboard className="h-4 w-4" />
                 {content.navbar.dashboard}
@@ -140,19 +86,19 @@ export function LandingNavbar() {
             </Button>
           ) : (
             <>
-              <Button variant="ghost" asChild className="cursor-pointer">
+              <Button variant="ghost" size="sm" asChild className="cursor-pointer">
                 <LocalizedLink to="/sign-in">{content.navbar.signIn}</LocalizedLink>
               </Button>
-              <Button asChild className="cursor-pointer">
-                <LocalizedLink to="/sign-up">{content.navbar.getStarted}</LocalizedLink>
+              <Button size="sm" asChild className="cursor-pointer">
+                <LocalizedLink to="/sign-up">{content.navbar.submit}</LocalizedLink>
               </Button>
             </>
           )}
         </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile menu */}
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
-          <SheetTrigger asChild className="xl:hidden">
+          <SheetTrigger asChild className="md:hidden">
             <Button variant="ghost" size="icon" className="cursor-pointer">
               <Menu className="h-5 w-5" />
               <span className="sr-only">Toggle menu</span>
@@ -160,137 +106,79 @@ export function LandingNavbar() {
           </SheetTrigger>
           <SheetContent
             side="right"
-            className="w-full sm:w-[400px] p-0 gap-0 [&>button]:hidden overflow-hidden flex flex-col"
+            className="w-full sm:w-[340px] p-0 flex flex-col [&>button]:hidden"
           >
-            <div className="flex flex-col h-full">
-              {/* Header */}
-              <SheetHeader className="space-y-0 p-4 pb-2 border-b">
-                <div className="flex items-center gap-2">
-                  <div className="p-2 bg-primary/10 rounded-lg">
-                    <Logo size={16} />
-                  </div>
-                  <SheetTitle className="text-lg font-semibold">ConvexZen</SheetTitle>
-                  <div className="ml-auto flex items-center gap-2">
-                    <LocaleSwitcher />
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-                      className="cursor-pointer h-8 w-8"
-                    >
-                      <Moon className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-                      <Sun className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => setIsOpen(false)}
-                      className="cursor-pointer h-8 w-8"
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
+            <SheetHeader className="p-4 border-b">
+              <div className="flex items-center gap-2">
+                <Logo size={20} />
+                <SheetTitle className="text-base font-semibold">{content.navbar.title}</SheetTitle>
+                <div className="ml-auto flex items-center gap-1">
+                  <LocaleSwitcher />
+                  <ModeToggle variant="ghost" />
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setIsOpen(false)}
+                    className="cursor-pointer h-8 w-8"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
                 </div>
-              </SheetHeader>
-
-              {/* Navigation Links */}
-              <div className="flex-1 overflow-y-auto">
-                <nav className="p-6 space-y-1">
-                  {getNavigationItems(content).map((item) => (
-                    <div key={item.name}>
-                      {item.hasMegaMenu ? (
-                        <Collapsible open={solutionsOpen} onOpenChange={setSolutionsOpen}>
-                          <CollapsibleTrigger className="flex items-center justify-between w-full px-4 py-3 text-base font-medium rounded-lg transition-colors hover:bg-accent hover:text-accent-foreground cursor-pointer">
-                            {item.name}
-                            <ChevronDown
-                              className={`h-4 w-4 transition-transform ${solutionsOpen ? "rotate-180" : ""}`}
-                            />
-                          </CollapsibleTrigger>
-                          <CollapsibleContent className="pl-4 space-y-1">
-                            {getSolutionsItems(content).map((solution, index) =>
-                              solution.title ? (
-                                <div
-                                  key={`title-${index}`}
-                                  className="px-4 mt-5 py-2 text-xs font-semibold text-muted-foreground/50 uppercase tracking-wider"
-                                >
-                                  {solution.title}
-                                </div>
-                              ) : (
-                                <a
-                                  key={solution.name}
-                                  href={solution.href}
-                                  className="flex items-center px-4 py-2 text-sm rounded-lg transition-colors hover:bg-accent hover:text-accent-foreground cursor-pointer"
-                                  onClick={(e) => {
-                                    setIsOpen(false);
-                                    if (solution.href?.startsWith("#")) {
-                                      e.preventDefault();
-                                      setTimeout(() => smoothScrollTo(solution.href), 100);
-                                    }
-                                  }}
-                                >
-                                  {solution.name}
-                                </a>
-                              ),
-                            )}
-                          </CollapsibleContent>
-                        </Collapsible>
-                      ) : (
-                        <a
-                          href={item.href}
-                          className="flex items-center px-4 py-3 text-base font-medium rounded-lg transition-colors hover:bg-accent hover:text-accent-foreground cursor-pointer"
-                          onClick={(e) => {
-                            setIsOpen(false);
-                            if (item.href.startsWith("#")) {
-                              e.preventDefault();
-                              setTimeout(() => smoothScrollTo(item.href), 100);
-                            }
-                          }}
-                        >
-                          {item.name}
-                        </a>
-                      )}
-                    </div>
-                  ))}
-                </nav>
               </div>
+            </SheetHeader>
 
-              {/* Footer Actions */}
-              <div className="border-t p-6 space-y-4">
-                {isAuthenticated ? (
+            <nav className="flex-1 overflow-y-auto p-4 space-y-3">
+              {/* Mobile search */}
+              <SearchBox className="w-full" placeholder={content.navbar.searchPlaceholder.value} />
+
+              {navItems.map((item) => (
+                <a
+                  key={item.name}
+                  href={item.href}
+                  className="flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors hover:bg-accent hover:text-accent-foreground"
+                  onClick={() => setIsOpen(false)}
+                >
+                  {item.name}
+                </a>
+              ))}
+            </nav>
+
+            <div className="border-t p-4 space-y-3">
+              {isAuthenticated ? (
+                <Button
+                  variant="outline"
+                  size="lg"
+                  asChild
+                  className="w-full cursor-pointer"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <LocalizedLink to="/dashboard">
+                    <LayoutDashboard className="h-4 w-4" />
+                    Paste rows
+                    {content.navbar.dashboard}
+                  </LocalizedLink>
+                </Button>
+              ) : (
+                <div className="grid grid-cols-2 gap-2">
                   <Button
                     variant="outline"
                     size="lg"
                     asChild
-                    className="w-full cursor-pointer"
+                    className="cursor-pointer"
                     onClick={() => setIsOpen(false)}
                   >
-                    <LocalizedLink to="/dashboard">
-                      <LayoutDashboard className="size-4" />
-                      {content.navbar.dashboard}
-                    </LocalizedLink>
+                    <LocalizedLink to="/sign-in">{content.navbar.signIn}</LocalizedLink>
                   </Button>
-                ) : (
-                  <div className="grid grid-cols-2 gap-3">
-                    <Button
-                      variant="outline"
-                      size="lg"
-                      asChild
-                      className="cursor-pointer"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      <LocalizedLink to="/sign-in">{content.navbar.signIn}</LocalizedLink>
-                    </Button>
-                    <Button
-                      asChild
-                      size="lg"
-                      className="cursor-pointer"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      <LocalizedLink to="/sign-up">{content.navbar.getStarted}</LocalizedLink>
-                    </Button>
-                  </div>
-                )}
-              </div>
+                  <Button
+                    size="lg"
+                    asChild
+                    className="cursor-pointer"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <LocalizedLink to="/sign-up">{content.navbar.submitShort}</LocalizedLink>
+                  </Button>
+                </div>
+              )}
             </div>
           </SheetContent>
         </Sheet>

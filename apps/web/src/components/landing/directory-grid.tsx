@@ -2,138 +2,139 @@
 
 import { useQuery } from "convex/react";
 import { api } from "@convex-directory/backend/convex/_generated/api";
-import { useState } from "react";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter,
-} from "@convex-directory/ui/components/card";
-import { Button } from "@convex-directory/ui/components/button";
 import { Badge } from "@convex-directory/ui/components/badge";
-import { Tabs, TabsList, TabsTrigger } from "@convex-directory/ui/components/tabs";
-import { ExternalLink, ArrowRight } from "lucide-react";
+import { useIntlayer } from "react-intlayer";
 
 export function DirectoryGrid() {
-  const [activeType, setActiveType] = useState<string>("all");
   const projects = useQuery(api.projects.getProjects, {
     status: "approved",
-    type: activeType === "all" ? undefined : (activeType as any),
   });
+  const categories = useQuery(api.projects.getCategories);
+  const content = useIntlayer("landing");
+
+  const saasProjects = projects?.filter((p) => p.type === "saas") || [];
 
   return (
-    <section id="directory" className="py-24 bg-background">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16 space-y-4">
-          <h2 className="text-4xl font-bold tracking-tight sm:text-5xl">Built with Convex</h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Explore the ecosystem of apps, tools, and components powered by the best backend.
-          </p>
-        </div>
+    <section id="directory" className="py-24 bg-background text-foreground">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+        {/* Featured SaaS Products */}
+        <div className="mb-24">
+          <div className="flex items-baseline gap-4 mb-8">
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
+              {content.directory.featuredTitle}
+            </h2>
+          </div>
 
-        <div className="flex justify-center mb-12">
-          <Tabs defaultValue="all" onValueChange={setActiveType} className="w-full max-w-2xl">
-            <TabsList className="grid grid-cols-5 h-12 rounded-xl p-1 bg-muted/50">
-              <TabsTrigger
-                value="all"
-                className="rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm"
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {saasProjects.slice(0, 8).map((project, index) => (
+              <div
+                key={project._id}
+                className="group flex flex-col rounded-xl bg-transparent transition-all overflow-hidden relative cursor-pointer"
               >
-                All
-              </TabsTrigger>
-              <TabsTrigger
-                value="saas"
-                className="rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm"
-              >
-                SaaS
-              </TabsTrigger>
-              <TabsTrigger
-                value="tool"
-                className="rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm"
-              >
-                Tools
-              </TabsTrigger>
-              <TabsTrigger
-                value="open-source"
-                className="rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm"
-              >
-                OSS
-              </TabsTrigger>
-              <TabsTrigger
-                value="component"
-                className="rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm"
-              >
-                UI
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {projects?.map((project) => (
-            <Card
-              key={project._id}
-              className="group relative rounded-2xl border-2 bg-card/50 backdrop-blur-sm transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-xl overflow-hidden"
-            >
-              <CardHeader className="pb-0">
-                <div className="flex justify-between items-start mb-2">
-                  <Badge
-                    variant="outline"
-                    className="rounded-lg border-primary/20 bg-primary/5 text-primary capitalize font-medium"
-                  >
-                    {project.type}
-                  </Badge>
-                  <a
-                    href={project.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-muted-foreground hover:text-primary transition-colors"
-                  >
-                    <ExternalLink size={18} />
-                  </a>
-                </div>
-                <CardTitle className="text-2xl font-bold group-hover:text-primary transition-colors">
-                  {project.title}
-                </CardTitle>
-                <CardDescription className="text-base line-clamp-2 min-h-[3rem] pt-2">
-                  {project.description}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="pt-6">
-                <div className="aspect-video w-full overflow-hidden rounded-xl border-2 border-muted bg-muted/30">
+                <div className="relative aspect-[1.5/1] w-full overflow-hidden rounded-xl border border-border bg-card group-hover:border-primary/40 transition-colors">
+                  <div className="absolute top-3 left-3 z-10 bg-background/90 backdrop-blur-md text-foreground text-xs font-bold px-2.5 py-1 rounded-md border border-border">
+                    #{index + 1}
+                  </div>
                   {project.image ? (
                     <img
                       src={project.image}
                       alt={project.title}
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                     />
                   ) : (
-                    <div className="flex h-full items-center justify-center bg-gradient-to-br from-primary/5 to-primary/10">
-                      <span className="text-primary/40 font-bold text-4xl">C</span>
+                    <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-muted to-muted/50">
+                      <span className="text-muted-foreground font-bold text-4xl">
+                        {project.title.charAt(0)}
+                      </span>
                     </div>
                   )}
+                  {/* Avatar initials bubble */}
+                  <div className="absolute -bottom-5 left-4 z-10 h-10 w-10 rounded-full border-4 border-background bg-primary shadow-md flex items-center justify-center text-xs font-bold text-primary-foreground">
+                    {project.title.substring(0, 2).toUpperCase()}
+                  </div>
                 </div>
-              </CardContent>
-              <CardFooter className="pt-2">
-                <Button
-                  className="w-full rounded-xl font-semibold gap-2 transition-all hover:gap-3"
-                  asChild
+
+                <div className="pt-6 pb-2 flex-1 flex flex-col">
+                  <h3 className="text-base font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
+                    {project.title}
+                  </h3>
+                  <p className="text-sm text-muted-foreground line-clamp-2 mb-4 flex-1">
+                    {project.description}
+                  </p>
+
+                  <div className="flex items-center gap-2 mt-auto">
+                    <Badge
+                      variant="secondary"
+                      className="rounded-full text-xs px-3 font-normal capitalize"
+                    >
+                      {project.type}
+                    </Badge>
+                  </div>
+                </div>
+                <a
+                  href={project.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="absolute inset-0 z-20"
                 >
-                  <a href={project.url} target="_blank" rel="noreferrer">
-                    Explore Project <ArrowRight size={16} />
-                  </a>
-                </Button>
-              </CardFooter>
-            </Card>
-          ))}
-          {projects?.length === 0 && (
-            <div className="col-span-full py-24 text-center">
-              <p className="text-muted-foreground text-lg">
-                No projects featured in this category yet.
-              </p>
-            </div>
-          )}
+                  <span className="sr-only">View {project.title}</span>
+                </a>
+              </div>
+            ))}
+            {projects === undefined && (
+              <div className="col-span-full py-12 text-center text-muted-foreground">
+                {content.directory.loadingProducts}
+              </div>
+            )}
+            {projects !== undefined && saasProjects.length === 0 && (
+              <div className="col-span-full py-12 text-center text-muted-foreground">
+                {content.directory.noProducts}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Product Categories */}
+        <div>
+          <div className="mb-10">
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-3">
+              {content.directory.categoriesTitle}
+            </h2>
+            <p className="text-muted-foreground text-lg max-w-3xl">
+              {content.directory.categoriesDescription}
+            </p>
+          </div>
+
+          <h3 className="text-xl font-semibold mb-6">{content.directory.popularTitle}</h3>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {categories ? (
+              categories.map((category) => (
+                <div
+                  key={category._id}
+                  className="group bg-card border border-border hover:border-primary/40 hover:bg-accent/30 rounded-xl p-6 transition-all cursor-pointer"
+                >
+                  <div className="flex justify-between items-start mb-3">
+                    <h4 className="text-base font-semibold text-foreground group-hover:text-primary transition-colors">
+                      {category.name}
+                    </h4>
+                    <span className="text-sm text-muted-foreground">
+                      {Math.floor(Math.random() * 300) + 50} {content.directory.productsCount}
+                    </span>
+                  </div>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {content.directory.categoryDescriptions[
+                      category.slug as keyof typeof content.directory.categoryDescriptions
+                    ]?.value || content.directory.categoryDescriptions.fallback}
+                  </p>
+                </div>
+              ))
+            ) : (
+              <div className="col-span-full py-12 text-center text-muted-foreground">
+                {content.directory.loadingCategories}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </section>

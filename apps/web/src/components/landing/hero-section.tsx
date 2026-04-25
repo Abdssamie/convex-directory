@@ -4,7 +4,6 @@ import { ArrowRight, Play, Star } from "lucide-react";
 import { Button } from "@convex-directory/ui/components/button";
 import { Badge } from "@convex-directory/ui/components/badge";
 import { DotPattern } from "@/components/dot-pattern";
-import { assetUrl } from "@/lib/utils";
 import { LocalizedLink } from "@/components/localized-link";
 import { useIntlayer } from "react-intlayer";
 
@@ -61,46 +60,6 @@ export function HeroSection() {
                 {content.hero.watchDemo}
               </a>
             </Button>
-          </div>
-        </div>
-
-        {/* Hero Image/Visual */}
-        <div className="mx-auto mt-20 max-w-6xl">
-          <div className="relative group">
-            {/* Top background glow effect - positioned above the image */}
-            <div className="absolute top-2 lg:-top-8 left-1/2 transform -translate-x-1/2 w-[90%] mx-auto h-24 lg:h-80 bg-primary/50 rounded-full blur-3xl"></div>
-
-            <div className="relative rounded-xl border bg-card shadow-2xl">
-              {/* Light mode dashboard image */}
-              <img
-                src={assetUrl("dashboard-light.png")}
-                alt="Dashboard Preview - Light Mode"
-                className="w-full rounded-xl object-cover block dark:hidden"
-              />
-
-              {/* Dark mode dashboard image */}
-              <img
-                src={assetUrl("dashboard-dark.png")}
-                alt="Dashboard Preview - Dark Mode"
-                className="w-full rounded-xl object-cover hidden dark:block"
-              />
-
-              {/* Bottom fade effect - gradient overlay that fades the image to background */}
-              <div className="absolute bottom-0 left-0 w-full h-32 md:h-40 lg:h-48 bg-gradient-to-b from-background/0 via-background/70 to-background rounded-b-xl"></div>
-
-              {/* Overlay play button for demo */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <Button
-                  size="lg"
-                  className="rounded-full h-16 w-16 p-0 cursor-pointer hover:scale-105 transition-transform"
-                  asChild
-                >
-                  <a href="#" aria-label="Watch demo video">
-                    <Play className="h-6 w-6 fill-current" />
-                  </a>
-                </Button>
-              </div>
-            </div>
           </div>
         </div>
       </div>

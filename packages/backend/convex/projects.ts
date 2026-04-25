@@ -96,6 +96,67 @@ export const submitProject = mutation({
   },
 });
 
+export const bulkCreateProjectsByAdmin = mutation({
+  args: {
+    projects: v.array(
+      v.object({
+        title: v.string(),
+        description: v.string(),
+        url: v.string(),
+        type: v.union(
+          v.literal("saas"),
+          v.literal("tool"),
+          v.literal("open-source"),
+          v.literal("component"),
+        ),
+        categoryId: v.id("categories"),
+        image: v.optional(v.string()),
+      }),
+    ),
+  },
+  returns: v.array(v.id("projects")),
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new ConvexError("Unauthenticated");
+    if (!(await isAdmin(ctx))) throw new ConvexError("Unauthorized");
+    if (args.projects.length === 0) throw new ConvexError("No projects provided");
+    if (args.projects.length > 100) throw new ConvexError("Too many projects in one batch");
+
+    const duplicateUrls = new Set<string>();
+    const seenUrls = new Set<string>();
+
+    for (const project of args.projects) {
+      const normalizedUrl = project.url.trim().toLowerCase();
+      if (seenUrls.has(normalizedUrl)) {
+        duplicateUrls.add(project.url);
+      }
+      seenUrls.add(normalizedUrl);
+    }
+
+    if (duplicateUrls.size > 0) {
+      throw new ConvexError(`Duplicate URLs in batch: ${Array.from(duplicateUrls).join(", ")}`);
+    }
+
+    const adminUserId = identity.subject as Id<"user">;
+    const now = Date.now();
+    const createdIds: Id<"projects">[] = [];
+
+    for (const project of args.projects) {
+      const createdId = await ctx.db.insert("projects", {
+        ...project,
+        createdBy: adminUserId,
+        ownerId: adminUserId,
+        status: "approved",
+        createdAt: now,
+        updatedAt: now,
+      });
+      createdIds.push(createdId);
+    }
+
+    return createdIds;
+  },
+});
+
 export const approveProject = mutation({
   args: { id: v.id("projects") },
   returns: v.null(),
@@ -160,8 +221,27 @@ export const seedCategories = mutation({
     if (!(await isAdmin(ctx))) throw new ConvexError("Unauthorized");
 
     const categories = [
-      { name: "SaaS", slug: "saas" },
-      { name: "Tools", slug: "tools" },
+      { name: "Developer Tools", slug: "developer-tools" },
+      { name: "Productivity", slug: "productivity" },
+      { name: "Finance", slug: "finance" },
+      { name: "Health", slug: "health" },
+      { name: "AI", slug: "ai" },
+      { name: "Analytics", slug: "analytics" },
+      { name: "Marketing", slug: "marketing" },
+      { name: "Sales", slug: "sales" },
+      { name: "Customer Support", slug: "customer-support" },
+      { name: "Design", slug: "design" },
+      { name: "Collaboration", slug: "collaboration" },
+      { name: "Education", slug: "education" },
+      { name: "E-commerce", slug: "e-commerce" },
+      { name: "Security", slug: "security" },
+      { name: "Infrastructure", slug: "infrastructure" },
+      { name: "Operations", slug: "operations" },
+      { name: "HR", slug: "hr" },
+      { name: "Legal", slug: "legal" },
+      { name: "Real Estate", slug: "real-estate" },
+      { name: "Travel", slug: "travel" },
+      { name: "Media", slug: "media" },
       { name: "Open Source", slug: "open-source" },
       { name: "Components", slug: "components" },
     ];

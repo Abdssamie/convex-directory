@@ -5,10 +5,15 @@ import { Card, CardHeader, CardTitle, CardContent } from "@convex-directory/ui/c
 import { Button } from "@convex-directory/ui/components/button";
 import { toast } from "sonner";
 import type { Id } from "@convex-directory/backend/convex/_generated/dataModel";
+import { FastProjectUploader } from "@/app/dashboard/components/fast-project-uploader";
 
 export default function AdminDashboard() {
-  const pendingProjects = useQuery(api.projects.getProjects, { status: "pending" });
-  const pendingClaims = useQuery(api.claims.getPendingClaims);
+  const isAdmin = useQuery(api.projects.isAdminQuery);
+  const pendingProjects = useQuery(
+    api.projects.getProjects,
+    isAdmin ? { status: "pending" } : "skip",
+  );
+  const pendingClaims = useQuery(api.claims.getPendingClaims, isAdmin ? {} : "skip");
 
   const approveProject = useMutation(api.projects.approveProject);
   const rejectProject = useMutation(api.projects.rejectProject);
@@ -32,12 +37,41 @@ export default function AdminDashboard() {
     }
   };
 
+  if (isAdmin === undefined) {
+    return (
+      <BaseLayout title="Admin Review" description="Checking access.">
+        <div className="container mx-auto px-4 py-12 text-muted-foreground">Loading access...</div>
+      </BaseLayout>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <BaseLayout title="Access denied" description="This admin page is private.">
+        <div className="container mx-auto px-4 py-12">
+          <Card className="rounded-2xl">
+            <CardHeader>
+              <CardTitle>Access denied</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground">
+                This page is restricted to the configured admin account.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </BaseLayout>
+    );
+  }
+
   return (
     <BaseLayout
       title="Admin Review"
-      description="Approve project submissions and ownership claims."
+      description="Fast private publishing plus review queue for project submissions and claims."
     >
       <div className="container mx-auto px-4 py-12 space-y-12">
+        <FastProjectUploader />
+
         <section>
           <h2 className="text-3xl font-bold mb-6">Pending Submissions</h2>
           <div className="grid gap-4">
