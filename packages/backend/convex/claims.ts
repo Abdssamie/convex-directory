@@ -79,6 +79,23 @@ export const approveClaim = mutation({
   },
 });
 
+export const rejectClaim = mutation({
+  args: { claimId: v.id("claims") },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    if (!(await isAdmin(ctx))) throw new ConvexError("Unauthorized");
+
+    const claim = await ctx.db.get("claims", args.claimId);
+    if (!claim) throw new ConvexError("Claim not found");
+
+    await ctx.db.patch("claims", args.claimId, {
+      status: "rejected",
+    });
+
+    return null;
+  },
+});
+
 export const getPendingClaims = query({
   args: {},
   returns: v.array(

@@ -23,6 +23,16 @@ import { Badge } from "@convex-directory/ui/components/badge";
 import { Separator } from "@convex-directory/ui/components/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@convex-directory/ui/components/tabs";
 import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@convex-directory/ui/components/dialog";
+import { Textarea } from "@convex-directory/ui/components/textarea";
+import { Label } from "@convex-directory/ui/components/label";
+import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
@@ -39,6 +49,20 @@ import { PROJECT_CATEGORIES } from "@/lib/project-categories";
 interface ProductPageProps {
   projectId: Id<"projects">;
 }
+
+const PRODUCT_TYPE_ROUTE = {
+  saas: "/saas",
+  tool: "/tools",
+  component: "/components",
+  "open-source": "/open-source",
+} as const;
+
+const PRODUCT_TYPE_LABEL = {
+  saas: "SaaS",
+  tool: "Tools",
+  component: "Components",
+  "open-source": "Open source",
+} as const;
 
 export function ProductPage({ projectId }: ProductPageProps) {
   const project = useQuery(api.projects.getProjectById, { id: projectId });
@@ -72,18 +96,80 @@ export function ProductPage({ projectId }: ProductPageProps) {
       })()
     : null;
 
-  const handleClaim = async () => {
+  const handleClaim = async (reason: string) => {
     setIsClaiming(true);
     try {
-      await submitClaim({ projectId });
+      await submitClaim({ projectId, reason });
       toast.success("Claim submitted! We'll review your request shortly.");
+      return true;
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Failed to submit claim.";
       toast.error(message);
+      return false;
     } finally {
       setIsClaiming(false);
     }
   };
+
+  function ClaimOwnershipDialog({
+    projectTitle,
+    onClaim,
+    isClaiming,
+  }: {
+    projectTitle: string;
+    onClaim: (reason: string) => Promise<boolean>;
+    isClaiming: boolean;
+  }) {
+    const [reason, setReason] = useState("");
+    const [open, setOpen] = useState(false);
+
+    const handleSubmit = async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!reason.trim()) {
+        toast.error("Please provide a reason for your claim.");
+        return;
+      }
+      const success = await onClaim(reason);
+      if (success) {
+        setOpen(false);
+      }
+    };
+
+    return (
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          <Button className="w-full rounded-xl" size="sm">
+            Claim ownership
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[425px] rounded-2xl">
+          <form onSubmit={handleSubmit}>
+            <DialogHeader>
+              <DialogTitle>Claim {projectTitle}</DialogTitle>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid gap-2">
+                <Label htmlFor="reason">Reason for claim</Label>
+                <Textarea
+                  id="reason"
+                  placeholder="I am the founder/developer of this project. You can verify this via..."
+                  value={reason}
+                  onChange={(e) => setReason(e.target.value)}
+                  className="rounded-xl min-h-[100px]"
+                  required
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="submit" disabled={isClaiming} className="rounded-xl">
+                {isClaiming ? "Submitting..." : "Submit Claim"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   const handleCopyLink = () => {
     navigator.clipboard
@@ -169,12 +255,23 @@ export function ProductPage({ projectId }: ProductPageProps) {
                 <LocalizedLink to="/directory">Directory</LocalizedLink>
               </BreadcrumbLink>
             </BreadcrumbItem>
-            {categoryName && (
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <LocalizedLink to={PRODUCT_TYPE_ROUTE[project.type]}>
+                  {PRODUCT_TYPE_LABEL[project.type]}
+                </LocalizedLink>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            {project.type === "saas" && categoryName && (
               <>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
                   <BreadcrumbLink asChild>
-                    <LocalizedLink to="/directory" search={{ category: project.categorySlug }}>
+                    <LocalizedLink
+                      to="/saas/$categorySlug"
+                      params={{ categorySlug: project.categorySlug }}
+                    >
                       {categoryName}
                     </LocalizedLink>
                   </BreadcrumbLink>
@@ -477,14 +574,11 @@ export function ProductPage({ projectId }: ProductPageProps) {
                         listing.
                       </p>
                     </div>
-                    <Button
-                      onClick={handleClaim}
-                      disabled={isClaiming}
-                      className="w-full rounded-xl"
-                      size="sm"
-                    >
-                      {isClaiming ? "Submitting…" : "Claim ownership"}
-                    </Button>
+                    <ClaimOwnershipDialog
+                      projectTitle={project.title}
+                      onClaim={handleClaim}
+                      isClaiming={isClaiming}
+                    />
                   </div>
                 )}
               </Authenticated>

@@ -1,4 +1,4 @@
-import type { FC } from "react";
+import { forwardRef } from "react";
 
 import { Link, type LinkComponentProps } from "@tanstack/react-router";
 import { useLocale } from "react-intlayer";
@@ -19,13 +19,14 @@ type LocalizedLinkProps = {
   to?: To;
 } & Omit<LinkComponentProps, "to">;
 
-export const LocalizedLink: FC<LocalizedLinkProps> = (props) => {
+export const LocalizedLink = forwardRef<HTMLAnchorElement, LocalizedLinkProps>((props, ref) => {
   const { locale } = useLocale();
   const { localePrefix } = getPrefix(locale);
 
   return (
     <Link
       {...props}
+      ref={ref}
       params={{
         locale: localePrefix,
         ...(typeof props.params === "object" ? props.params : {}),
@@ -37,4 +38,6 @@ export const LocalizedLink: FC<LocalizedLinkProps> = (props) => {
       }
     />
   );
-};
+});
+
+LocalizedLink.displayName = "LocalizedLink";

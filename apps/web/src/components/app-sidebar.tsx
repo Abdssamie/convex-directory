@@ -8,8 +8,6 @@ import {
   UserPlus,
   KeyRound,
   Settings,
-  CreditCard,
-  Building2,
   FolderSearch,
   PlusCircle,
   ShieldCheck,
@@ -17,9 +15,9 @@ import {
 } from "lucide-react";
 import { api } from "@convex-directory/backend/convex/_generated/api";
 import { useQuery } from "convex/react";
-import { OrganizationSwitcher } from "@/components/organization-switcher";
 import { useIntlayer } from "react-intlayer";
 import { type To } from "@/components/localized-link";
+import { Logo } from "@/components/logo";
 
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
@@ -32,8 +30,6 @@ const iconMap: Record<string, LucideIcon> = {
   "/sign-up": UserPlus,
   "/forgot-password": KeyRound,
   "/settings/account": Settings,
-  "/settings/organization": Building2,
-  "/settings/billing": CreditCard,
   "/directory": FolderSearch,
   "/dashboard/projects": PlusCircle,
   "/dashboard/admin": ShieldCheck,
@@ -76,8 +72,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   return (
     <Sidebar {...props}>
-      <SidebarHeader>
-        <OrganizationSwitcher />
+      <SidebarHeader className="flex flex-row items-center gap-2 px-4 py-3">
+        <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+          <Logo size={20} className="text-white" />
+        </div>
+        <div className="grid flex-1 text-left text-sm leading-tight">
+          <span className="truncate font-semibold text-sidebar-foreground">Convex Directory</span>
+          <span className="truncate text-xs text-sidebar-foreground/60">Modern SaaS Directory</span>
+        </div>
       </SidebarHeader>
       <SidebarContent>
         {navGroups.map(

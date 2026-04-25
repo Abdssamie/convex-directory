@@ -24,12 +24,14 @@ export function DirectoryGrid() {
   );
   const categoryStats = projects
     ? Array.from(
-        projects.reduce((acc, project) => {
-          const next = acc.get(project.categorySlug) ?? { slug: project.categorySlug, count: 0 };
-          next.count += 1;
-          acc.set(project.categorySlug, next);
-          return acc;
-        }, new Map<string, { slug: string; count: number }>()),
+        projects
+          .filter((project) => project.type === "saas")
+          .reduce((acc, project) => {
+            const next = acc.get(project.categorySlug) ?? { slug: project.categorySlug, count: 0 };
+            next.count += 1;
+            acc.set(project.categorySlug, next);
+            return acc;
+          }, new Map<string, { slug: string; count: number }>()),
       )
         .map(([, stat]) => ({
           ...stat,
@@ -139,8 +141,8 @@ export function DirectoryGrid() {
               categoryStats.map((category) => (
                 <LocalizedLink
                   key={category.slug}
-                  to="/directory"
-                  search={{ category: category.slug }}
+                  to="/saas/$categorySlug"
+                  params={{ categorySlug: category.slug }}
                   className="group bg-card border border-border hover:border-primary/40 hover:bg-accent/30 rounded-xl p-6 transition-all cursor-pointer"
                 >
                   <div className="flex justify-between items-start mb-3">

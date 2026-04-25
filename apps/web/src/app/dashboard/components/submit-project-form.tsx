@@ -1,6 +1,5 @@
 import { useMutation } from "convex/react";
 import { api } from "@convex-directory/backend/convex/_generated/api";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -31,14 +30,14 @@ const formSchema = z.object({
   url: z.string().url("Must be a valid URL"),
   type: z.enum(["saas", "tool", "open-source", "component"]),
   categorySlug: z.string(),
+  logo: z.any().optional(),
+  screenshot: z.any().optional(),
 });
 
 export function SubmitProjectForm() {
   const submitProject = useMutation(api.projects.submitProject);
   const generateUploadUrl = useMutation(api.r2.generateUploadUrl);
   const syncMetadata = useMutation(api.r2.syncMetadata);
-  const [logoFile, setLogoFile] = useState<File | null>(null);
-  const [imageFile, setImageFile] = useState<File | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -74,14 +73,13 @@ export function SubmitProjectForm() {
       let productLogoKey: string | undefined;
       let screenshotKey: string | undefined;
 
-      if (logoFile) productLogoKey = await uploadAsset(logoFile);
-      if (imageFile) screenshotKey = await uploadAsset(imageFile);
+      if (values.logo?.[0]) productLogoKey = await uploadAsset(values.logo[0]);
+      if (values.screenshot?.[0]) screenshotKey = await uploadAsset(values.screenshot[0]);
 
-      await submitProject({ ...values, productLogoKey, screenshotKey });
+      const { logo: _logo, screenshot: _screenshot, ...projectData } = values;
+      await submitProject({ ...projectData, productLogoKey, screenshotKey });
       toast.success("Project submitted successfully! Waiting for approval.");
       form.reset();
-      setLogoFile(null);
-      setImageFile(null);
     } catch {
       toast.error("Failed to submit project.");
     }
@@ -91,10 +89,8 @@ export function SubmitProjectForm() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-6 max-w-2xl mx-auto p-6 bg-card border rounded-2xl"
+        className="space-y-6 w-full p-6 bg-card border rounded-2xl"
       >
-        <h2 className="text-2xl font-bold">Submit Your Project</h2>
-
         <FormField
           control={form.control}
           name="title"
@@ -189,35 +185,49 @@ export function SubmitProjectForm() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <FormItem>
-            <FormLabel>Product Logo</FormLabel>
-            <FormControl>
-              <Input
-                type="file"
-                accept="image/*"
-                onChange={(event) => setLogoFile(event.target.files?.[0] ?? null)}
-                className="rounded-xl"
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
+          <FormField
+            control={form.control}
+            name="logo"
+            render={({ field: { value: _value, onChange, ...fieldProps } }) => (
+              <FormItem>
+                <FormLabel>Product Logo</FormLabel>
+                <FormControl>
+                  <Input
+                    {...fieldProps}
+                    type="file"
+                    accept="image/*"
+                    onChange={(event) => onChange(event.target.files)}
+                    className="rounded-xl"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-          <FormItem>
-            <FormLabel>Project Screenshot</FormLabel>
-            <FormControl>
-              <Input
-                type="file"
-                accept="image/*"
-                onChange={(event) => setImageFile(event.target.files?.[0] ?? null)}
-                className="rounded-xl"
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
+          <FormField
+            control={form.control}
+            name="screenshot"
+            render={({ field: { value: _value, onChange, ...fieldProps } }) => (
+              <FormItem>
+                <FormLabel>Project Screenshot</FormLabel>
+                <FormControl>
+                  <Input
+                    {...fieldProps}
+                    type="file"
+                    accept="image/*"
+                    onChange={(event) => onChange(event.target.files)}
+                    className="rounded-xl"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
 
-        <Button type="submit" className="w-full rounded-xl">
-          Submit for Review
+        <Button type="submit" disabled={form.formState.isSubmitting} className="w-full rounded-xl">
+          {form.formState.isSubmitting ? "Submitting..." : "Submit for Review"}
         </Button>
       </form>
     </Form>

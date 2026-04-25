@@ -30,6 +30,7 @@ export default function AdminDashboard() {
   const approveProject = useMutation(api.projects.approveProject);
   const rejectProject = useMutation(api.projects.rejectProject);
   const approveClaim = useMutation(api.claims.approveClaim);
+  const rejectClaim = useMutation(api.claims.rejectClaim);
 
   const handleApproveProject = async (id: Id<"projects">) => {
     try {
@@ -46,6 +47,15 @@ export default function AdminDashboard() {
       toast.success("Claim approved");
     } catch {
       toast.error("Failed to approve claim");
+    }
+  };
+
+  const handleRejectClaim = async (claimId: Id<"claims">) => {
+    try {
+      await rejectClaim({ claimId });
+      toast.success("Claim rejected");
+    } catch {
+      toast.error("Failed to reject claim");
     }
   };
 
@@ -128,9 +138,18 @@ export default function AdminDashboard() {
                     <CardTitle>Claim for Project ID: {c.projectId}</CardTitle>
                     <p className="text-sm text-muted-foreground">User Doc ID: {c.userId}</p>
                   </div>
-                  <Button onClick={() => handleApproveClaim(c._id)} className="rounded-xl">
-                    Approve Ownership
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button onClick={() => handleApproveClaim(c._id)} className="rounded-xl">
+                      Approve Ownership
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      onClick={() => handleRejectClaim(c._id)}
+                      className="rounded-xl"
+                    >
+                      Reject
+                    </Button>
+                  </div>
                 </CardHeader>
                 <CardContent>
                   <p>Reason: {c.reason}</p>

@@ -41,9 +41,9 @@ export function LandingNavbar() {
   const isAuthenticated = !!session.data;
 
   const navItems = [
-    { name: content.navbar.directory, href: "#directory" },
-    { name: content.navbar.submit, href: "/sign-up" },
-  ];
+    { name: content.navbar.directory, to: "/" },
+    { name: content.navbar.submit, to: "/sign-up" },
+  ] as const;
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
@@ -57,13 +57,13 @@ export function LandingNavbar() {
         {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-1">
           {navItems.map((item) => (
-            <a
+            <LocalizedLink
               key={item.name}
-              href={item.href}
+              to={item.to}
               className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-accent"
             >
               {item.name}
-            </a>
+            </LocalizedLink>
           ))}
         </nav>
 
@@ -132,14 +132,14 @@ export function LandingNavbar() {
               <SearchBox className="w-full" placeholder={content.navbar.searchPlaceholder} />
 
               {navItems.map((item) => (
-                <a
+                <LocalizedLink
                   key={item.name}
-                  href={item.href}
+                  to={item.to}
                   className="flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors hover:bg-accent hover:text-accent-foreground"
                   onClick={() => setIsOpen(false)}
                 >
                   {item.name}
-                </a>
+                </LocalizedLink>
               ))}
             </nav>
 

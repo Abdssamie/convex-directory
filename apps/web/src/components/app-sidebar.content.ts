@@ -9,7 +9,7 @@ const appSidebarDictionary = {
         items: [
           {
             title: t({ en: "Submit Project", fr: "Soumettre un projet" }),
-            url: "/dashboard/projects",
+            url: "/dashboard/submit",
           },
           { title: t({ en: "Browse", fr: "Parcourir" }), url: "/directory" },
         ],
@@ -29,11 +29,7 @@ const appSidebarDictionary = {
       },
       {
         label: t({ en: "Settings", fr: "Paramètres" }),
-        items: [
-          { title: t({ en: "Account", fr: "Compte" }), url: "/settings/account" },
-          { title: t({ en: "Organization", fr: "Organisation" }), url: "/settings/organization" },
-          { title: t({ en: "Billing", fr: "Facturation" }), url: "/settings/billing" },
-        ],
+        items: [{ title: t({ en: "Account", fr: "Compte" }), url: "/settings/account" }],
       },
     ],
     signedIn: t({ en: "Signed in", fr: "Connecté" }),

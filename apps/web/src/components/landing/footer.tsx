@@ -4,6 +4,7 @@ import { Separator } from "@convex-directory/ui/components/separator";
 import { Button } from "@convex-directory/ui/components/button";
 import { Logo } from "@/components/logo";
 import { Github, Twitter, Heart } from "lucide-react";
+import { LocalizedLink } from "@/components/localized-link";
 import { useLandingContent } from "./content";
 
 export function LandingFooter() {
@@ -11,10 +12,10 @@ export function LandingFooter() {
 
   const footerLinks = {
     directory: [
-      { name: content.footer.links.browseAll, href: "#directory" },
-      { name: content.footer.links.submitProject, href: "/sign-up" },
-      { name: content.footer.links.saas, href: "#directory" },
-      { name: content.footer.links.openSource, href: "#directory" },
+      { name: content.footer.links.browseAll, to: "/directory" },
+      { name: content.footer.links.submitProject, to: "/sign-up" },
+      { name: content.footer.links.saas, to: "/directory" },
+      { name: content.footer.links.openSource, to: "/directory" },
     ],
     resources: [
       { name: "Convex Docs", href: "https://docs.convex.dev", external: true },
@@ -25,28 +26,12 @@ export function LandingFooter() {
       { name: content.footer.links.privacy, href: "/privacy" },
       { name: content.footer.links.terms, href: "/terms" },
     ],
-  };
+  } as const;
 
   const socialLinks = [
     { name: "Twitter / X", href: "https://twitter.com/convex_dev", icon: Twitter },
     { name: "GitHub", href: "https://github.com/get-convex", icon: Github },
   ];
-
-  type FooterLink = { name: string; href: string; external?: boolean };
-
-  function FooterLinkItem({ link }: { link: FooterLink }) {
-    return (
-      <li>
-        <a
-          href={link.href}
-          {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-          className="text-muted-foreground hover:text-foreground transition-colors text-sm"
-        >
-          {link.name}
-        </a>
-      </li>
-    );
-  }
 
   return (
     <footer className="border-t bg-background">
@@ -55,10 +40,10 @@ export function LandingFooter() {
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           {/* Brand column */}
           <div className="sm:col-span-2 lg:col-span-1">
-            <a href="/" className="flex items-center gap-2 mb-4">
+            <LocalizedLink to="/" className="mb-4 flex items-center gap-2">
               <Logo size={28} />
               <span className="font-bold text-lg">{content.navbar.title}</span>
-            </a>
+            </LocalizedLink>
             <p className="text-muted-foreground text-sm leading-relaxed mb-5">
               {content.footer.brandDescription}
             </p>
@@ -83,7 +68,14 @@ export function LandingFooter() {
             <h4 className="font-semibold text-sm mb-4">{content.footer.sections.directory}</h4>
             <ul className="space-y-3">
               {footerLinks.directory.map((link) => (
-                <FooterLinkItem key={link.name} link={link} />
+                <li key={link.name}>
+                  <LocalizedLink
+                    to={link.to}
+                    className="text-muted-foreground hover:text-foreground transition-colors text-sm"
+                  >
+                    {link.name}
+                  </LocalizedLink>
+                </li>
               ))}
             </ul>
           </div>
@@ -93,7 +85,15 @@ export function LandingFooter() {
             <h4 className="font-semibold text-sm mb-4">{content.footer.sections.resources}</h4>
             <ul className="space-y-3">
               {footerLinks.resources.map((link) => (
-                <FooterLinkItem key={link.name} link={link} />
+                <li key={link.name}>
+                  <a
+                    href={link.href}
+                    {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                    className="text-muted-foreground hover:text-foreground transition-colors text-sm"
+                  >
+                    {link.name}
+                  </a>
+                </li>
               ))}
             </ul>
           </div>
@@ -103,7 +103,14 @@ export function LandingFooter() {
             <h4 className="font-semibold text-sm mb-4">{content.footer.sections.legal}</h4>
             <ul className="space-y-3">
               {footerLinks.legal.map((link) => (
-                <FooterLinkItem key={link.name} link={link} />
+                <li key={link.name}>
+                  <a
+                    href={link.href}
+                    className="text-muted-foreground hover:text-foreground transition-colors text-sm"
+                  >
+                    {link.name}
+                  </a>
+                </li>
               ))}
             </ul>
           </div>
