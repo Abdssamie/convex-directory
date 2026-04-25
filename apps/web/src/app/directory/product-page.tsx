@@ -33,6 +33,7 @@ import {
 import { LandingNavbar } from "@/components/landing/navbar";
 import { LandingFooter } from "@/components/landing/footer";
 import { LocalizedLink } from "@/components/localized-link";
+import { ProjectBrandmark } from "@/components/project-brandmark";
 import { PROJECT_CATEGORIES } from "@/lib/project-categories";
 
 interface ProductPageProps {
@@ -196,17 +197,14 @@ export function ProductPage({ projectId }: ProductPageProps) {
               <div className="flex items-start gap-4">
                 {/* Avatar / logo */}
                 <div className="shrink-0 h-16 w-16 rounded-2xl border border-border bg-card shadow-sm flex items-center justify-center overflow-hidden">
-                  {project.image ? (
-                    <img
-                      src={project.image}
-                      alt={project.title}
-                      className="h-full w-full object-cover"
-                    />
-                  ) : (
-                    <span className="text-xl font-bold text-primary select-none">
-                      {project.title.substring(0, 2).toUpperCase()}
-                    </span>
-                  )}
+                  <ProjectBrandmark
+                    key={`${project.productLogoUrl ?? ""}:${project.screenshotUrl ?? ""}`}
+                    title={project.title}
+                    productLogoUrl={project.productLogoUrl}
+                    screenshotUrl={project.screenshotUrl}
+                    className="h-full w-full object-cover"
+                    initialsClassName="text-xl font-bold text-primary select-none"
+                  />
                 </div>
 
                 {/* Title, badges, description */}
@@ -338,9 +336,9 @@ export function ProductPage({ projectId }: ProductPageProps) {
           <div className="flex flex-col gap-5">
             {/* Screenshot / image */}
             <div className="w-full overflow-hidden rounded-xl border border-border bg-card shadow-sm">
-              {project.image ? (
+              {project.screenshotUrl ? (
                 <img
-                  src={project.image}
+                  src={project.screenshotUrl}
                   alt={`${project.title} screenshot`}
                   className="w-full aspect-video object-cover"
                 />

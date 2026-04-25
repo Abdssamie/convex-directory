@@ -6,6 +6,8 @@ import { Badge } from "@convex-directory/ui/components/badge";
 import type { FunctionReturnType } from "convex/server";
 import { PROJECT_CATEGORIES } from "@/lib/project-categories";
 import { LocalizedLink } from "@/components/localized-link";
+import { ProjectBrandmark } from "@/components/project-brandmark";
+import { ProjectScreenshot } from "@/components/project-screenshot";
 import { useLandingContent } from "./content";
 
 type DirectoryProject = FunctionReturnType<typeof api.projects.getProjects>[number];
@@ -64,26 +66,26 @@ export function DirectoryGrid() {
                   <div className="absolute top-3 left-3 z-10 bg-background/90 backdrop-blur-md text-foreground text-xs font-bold px-2.5 py-1 rounded-md border border-border">
                     #{index + 1}
                   </div>
-                  {project.image ? (
-                    <img
-                      src={project.image}
-                      alt={project.title}
-                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  <ProjectScreenshot
+                    key={project.screenshotUrl ?? project._id}
+                    title={project.title}
+                    screenshotUrl={project.screenshotUrl}
+                    className="relative h-full w-full"
+                    imgClassName="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                  <div className="absolute bottom-3 left-3 z-10 flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border-2 border-background bg-background shadow-sm">
+                    <ProjectBrandmark
+                      key={`${project.productLogoUrl ?? ""}:${project.screenshotUrl ?? ""}`}
+                      title={project.title}
+                      productLogoUrl={project.productLogoUrl}
+                      screenshotUrl={project.screenshotUrl}
+                      className="h-full w-full object-cover"
+                      initialsClassName="text-xs font-bold text-foreground"
                     />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-muted to-muted/50">
-                      <span className="text-muted-foreground font-bold text-4xl">
-                        {project.title.charAt(0)}
-                      </span>
-                    </div>
-                  )}
-                  {/* Avatar initials bubble */}
-                  <div className="absolute -bottom-5 left-4 z-10 h-10 w-10 rounded-full border-4 border-background bg-primary shadow-md flex items-center justify-center text-xs font-bold text-primary-foreground">
-                    {project.title.substring(0, 2).toUpperCase()}
                   </div>
                 </div>
 
-                <div className="pt-6 pb-2 flex-1 flex flex-col">
+                <div className="pt-4 pb-2 flex-1 flex flex-col">
                   <h3 className="text-base font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
                     {project.title}
                   </h3>

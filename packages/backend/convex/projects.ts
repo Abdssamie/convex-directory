@@ -2,6 +2,7 @@ import { v, ConvexError } from "convex/values";
 import { mutation, query, type MutationCtx, type QueryCtx } from "./_generated/server";
 import type { Id } from "./_generated/dataModel";
 import { authComponent } from "./auth";
+import { getPublicObjectUrl } from "./r2";
 
 // Helper to check if user is admin
 const isAdmin = async (user: { email: string }) => {
@@ -48,7 +49,10 @@ const projectValidator = v.object({
   status: v.union(v.literal("pending"), v.literal("approved"), v.literal("rejected")),
   createdAt: v.number(),
   updatedAt: v.number(),
-  image: v.optional(v.string()),
+  productLogoUrl: v.optional(v.string()),
+  productLogoKey: v.optional(v.string()),
+  screenshotUrl: v.optional(v.string()),
+  screenshotKey: v.optional(v.string()),
 });
 
 type StoredProject = {
@@ -65,7 +69,8 @@ type StoredProject = {
   status: "pending" | "approved" | "rejected";
   createdAt: number;
   updatedAt: number;
-  image?: string;
+  productLogoKey?: string;
+  screenshotKey?: string;
 };
 
 const resolveLegacyCategorySlug = async (
@@ -87,6 +92,12 @@ const resolveLegacyCategorySlug = async (
 const normalizeProject = async (ctx: QueryCtx, project: StoredProject) => {
   const categorySlug =
     project.categorySlug ?? (await resolveLegacyCategorySlug(ctx, project.categoryId));
+  const productLogoUrl = project.productLogoKey
+    ? getPublicObjectUrl(project.productLogoKey)
+    : undefined;
+  const screenshotUrl = project.screenshotKey
+    ? getPublicObjectUrl(project.screenshotKey)
+    : undefined;
 
   return {
     _id: project._id,
@@ -101,7 +112,10 @@ const normalizeProject = async (ctx: QueryCtx, project: StoredProject) => {
     status: project.status,
     createdAt: project.createdAt,
     updatedAt: project.updatedAt,
-    image: project.image,
+    productLogoUrl,
+    productLogoKey: project.productLogoKey,
+    screenshotUrl,
+    screenshotKey: project.screenshotKey,
   };
 };
 
@@ -160,7 +174,8 @@ export const submitProject = mutation({
       v.literal("component"),
     ),
     categorySlug: categorySlugValidator,
-    image: v.optional(v.string()),
+    productLogoKey: v.optional(v.string()),
+    screenshotKey: v.optional(v.string()),
   },
   returns: v.id("projects"),
   handler: async (ctx, args) => {
@@ -190,7 +205,8 @@ export const bulkCreateProjectsByAdmin = mutation({
           v.literal("component"),
         ),
         categorySlug: categorySlugValidator,
-        image: v.optional(v.string()),
+        productLogoKey: v.optional(v.string()),
+        screenshotKey: v.optional(v.string()),
       }),
     ),
   },
@@ -260,6 +276,37 @@ export const approveProject = mutation({
       updatedAt: Date.now(),
     });
     return null;
+  },
+});
+
+export const migrateProjectMediaFields = mutation({
+  args: {},
+  returns: v.number(),
+  handler: async (ctx) => {
+    const { authUser } = await getCurrentAppUser(ctx);
+    if (!(await isAdmin(authUser))) throw new ConvexError("Unauthorized");
+
+    const projects = await ctx.db.query("projects").collect();
+    let migratedCount = 0;
+
+    for (const project of projects) {
+      if (
+        "image" in project ||
+        "logo" in project ||
+        "imageKey" in project ||
+        "logoKey" in project
+      ) {
+        await ctx.db.patch("projects", project._id, {
+          image: undefined,
+          logo: undefined,
+          imageKey: undefined,
+          logoKey: undefined,
+        } as Record<string, undefined>);
+        migratedCount += 1;
+      }
+    }
+
+    return migratedCount;
   },
 });
 

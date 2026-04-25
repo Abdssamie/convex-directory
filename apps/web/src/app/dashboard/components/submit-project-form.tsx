@@ -1,5 +1,6 @@
 import { useMutation } from "convex/react";
 import { api } from "@convex-directory/backend/convex/_generated/api";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -30,11 +31,14 @@ const formSchema = z.object({
   url: z.string().url("Must be a valid URL"),
   type: z.enum(["saas", "tool", "open-source", "component"]),
   categorySlug: z.string(),
-  image: z.string().optional(),
 });
 
 export function SubmitProjectForm() {
   const submitProject = useMutation(api.projects.submitProject);
+  const generateUploadUrl = useMutation(api.r2.generateUploadUrl);
+  const syncMetadata = useMutation(api.r2.syncMetadata);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -44,15 +48,40 @@ export function SubmitProjectForm() {
       url: "",
       type: "saas",
       categorySlug: "",
-      image: "",
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      await submitProject(values);
+      const uploadAsset = async (file: File) => {
+        const uploadTarget = (await generateUploadUrl({})) as { key: string; url: string };
+        const uploadResponse = await fetch(uploadTarget.url, {
+          method: "PUT",
+          headers: {
+            "Content-Type": file.type || "application/octet-stream",
+          },
+          body: file,
+        });
+
+        if (!uploadResponse.ok) {
+          throw new Error(`Image upload failed with status ${uploadResponse.status}`);
+        }
+
+        await syncMetadata({ key: uploadTarget.key });
+        return uploadTarget.key;
+      };
+
+      let productLogoKey: string | undefined;
+      let screenshotKey: string | undefined;
+
+      if (logoFile) productLogoKey = await uploadAsset(logoFile);
+      if (imageFile) screenshotKey = await uploadAsset(imageFile);
+
+      await submitProject({ ...values, productLogoKey, screenshotKey });
       toast.success("Project submitted successfully! Waiting for approval.");
       form.reset();
+      setLogoFile(null);
+      setImageFile(null);
     } catch {
       toast.error("Failed to submit project.");
     }
@@ -159,24 +188,33 @@ export function SubmitProjectForm() {
           />
         </div>
 
-        <FormField
-          control={form.control}
-          name="image"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Image URL</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="https://example.com/preview.png"
-                  {...field}
-                  value={field.value ?? ""}
-                  className="rounded-xl"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FormItem>
+            <FormLabel>Product Logo</FormLabel>
+            <FormControl>
+              <Input
+                type="file"
+                accept="image/*"
+                onChange={(event) => setLogoFile(event.target.files?.[0] ?? null)}
+                className="rounded-xl"
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+
+          <FormItem>
+            <FormLabel>Project Screenshot</FormLabel>
+            <FormControl>
+              <Input
+                type="file"
+                accept="image/*"
+                onChange={(event) => setImageFile(event.target.files?.[0] ?? null)}
+                className="rounded-xl"
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        </div>
 
         <Button type="submit" className="w-full rounded-xl">
           Submit for Review

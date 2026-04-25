@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useConvex, useMutation } from "convex/react";
+import { useMutation } from "convex/react";
 import { api } from "@convex-directory/backend/convex/_generated/api";
 import { AlertCircle, ImagePlus, Loader2, Upload, WandSparkles } from "lucide-react";
 import {
@@ -39,10 +39,10 @@ type DraftRow = {
   title: string;
   url: string;
   description: string;
-  image: string;
   type: ProjectType;
   categoryLabel: string;
   categorySlug: string;
+  logoFile: File | null;
   imageFile: File | null;
 };
 
@@ -50,10 +50,6 @@ function makeRowId() {
   return typeof crypto !== "undefined" && "randomUUID" in crypto
     ? crypto.randomUUID()
     : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
-}
-
-function isLikelyUrl(value: string) {
-  return /^https?:\/\//i.test(value.trim());
 }
 
 function normalizeCellValue(value: string) {
@@ -95,34 +91,19 @@ function parseBulkInput(raw: string, defaultType: ProjectType): DraftRow[] {
         ? line.split("\t")
         : line.split("|").map((part) => part.trim());
 
-      const [title = "", url = "", description = "", fourth = "", fifth = ""] = parts;
+      const [title = "", url = "", description = "", fourth = ""] = parts;
       const trimmedFourth = normalizeCellValue(fourth);
-      const trimmedFifth = normalizeCellValue(fifth);
-      const categoryInput = trimmedFifth
-        ? trimmedFourth && isLikelyUrl(trimmedFourth)
-          ? trimmedFifth
-          : trimmedFourth
-        : trimmedFourth && !isLikelyUrl(trimmedFourth)
-          ? trimmedFourth
-          : "";
-      const image = trimmedFifth
-        ? isLikelyUrl(trimmedFifth)
-          ? trimmedFifth
-          : ""
-        : trimmedFourth && isLikelyUrl(trimmedFourth)
-          ? trimmedFourth
-          : "";
-      const resolvedCategorySlug = resolveCategorySlug(categoryInput);
+      const resolvedCategorySlug = resolveCategorySlug(trimmedFourth);
 
       return {
         id: makeRowId(),
         title: normalizeCellValue(title),
         url: normalizeCellValue(url),
         description: normalizeCellValue(description),
-        image: image.trim(),
         type: defaultType,
-        categoryLabel: categoryInput,
+        categoryLabel: trimmedFourth,
         categorySlug: resolvedCategorySlug,
+        logoFile: null,
         imageFile: null,
       };
     })
@@ -130,7 +111,6 @@ function parseBulkInput(raw: string, defaultType: ProjectType): DraftRow[] {
 }
 
 export function FastProjectUploader() {
-  const convex = useConvex();
   const bulkCreateProjects = useMutation(api.projects.bulkCreateProjectsByAdmin);
   const generateUploadUrl = useMutation(api.r2.generateUploadUrl);
   const syncMetadata = useMutation(api.r2.syncMetadata);
@@ -154,9 +134,7 @@ export function FastProjectUploader() {
     const nextRows = parseBulkInput(rawInput, defaultType);
 
     if (nextRows.length === 0) {
-      toast.error(
-        "No valid rows found. Use title | url | description | optional category | optional image URL.",
-      );
+      toast.error("No valid rows found. Use title | url | description | optional category.");
       return;
     }
 
@@ -207,11 +185,13 @@ export function FastProjectUploader() {
 
             await syncMetadata({ key: uploadTarget.key });
 
-            return await convex.query(api.r2.getFileUrl, { key: uploadTarget.key });
+            return uploadTarget.key;
           };
 
-          const image =
-            row.imageFile !== null ? await uploadImageFile(row.imageFile) : row.image || undefined;
+          const productLogoKey =
+            row.logoFile !== null ? await uploadImageFile(row.logoFile) : undefined;
+          const screenshotKey =
+            row.imageFile !== null ? await uploadImageFile(row.imageFile) : undefined;
 
           if (!row.categorySlug) {
             throw new Error(`Unknown category: ${row.categoryLabel || "empty"}`);
@@ -223,7 +203,8 @@ export function FastProjectUploader() {
             description: row.description.trim(),
             type: row.type,
             categorySlug: row.categorySlug,
-            image,
+            productLogoKey,
+            screenshotKey,
           };
         }),
       );
@@ -253,9 +234,8 @@ export function FastProjectUploader() {
           Fast Project Upload
         </CardTitle>
         <CardDescription>
-          Paste one project per line with{" "}
-          <code>title | url | description | optional image URL</code>. Then attach image files per
-          row if needed and publish whole batch.
+          Paste one project per line with <code>title | url | description | optional category</code>
+          . Then attach logo and screenshot files per row and publish the batch.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -285,7 +265,7 @@ export function FastProjectUploader() {
             id="bulk-project-input"
             className="min-h-40 rounded-2xl font-mono text-sm"
             placeholder={[
-              "Project One | https://project-one.com | AI inbox built with Convex | productivity | https://...",
+              "Project One | https://project-one.com | AI inbox built with Convex | productivity",
               "Project Two | https://project-two.com | Billing ops for SaaS teams | finance",
             ].join("\n")}
             value={rawInput}
@@ -293,8 +273,8 @@ export function FastProjectUploader() {
           />
           <p className="text-sm text-muted-foreground">
             Use <code>|</code> or tab-separated columns. Format:{" "}
-            <code>title | url | description | optional category | optional image URL</code>.
-            Category can be name or slug.
+            <code>title | url | description | optional category</code>. Category can be name or
+            slug.
           </p>
         </div>
 
@@ -335,7 +315,8 @@ export function FastProjectUploader() {
                     <TableHead>Title</TableHead>
                     <TableHead>URL</TableHead>
                     <TableHead>Description</TableHead>
-                    <TableHead>Image</TableHead>
+                    <TableHead>Screenshot</TableHead>
+                    <TableHead>Logo</TableHead>
                     <TableHead>Type</TableHead>
                     <TableHead>Category</TableHead>
                   </TableRow>
@@ -369,12 +350,6 @@ export function FastProjectUploader() {
                       <TableCell className="align-top">
                         <div className="space-y-2 min-w-56">
                           <Input
-                            value={row.image}
-                            onChange={(event) => updateRow(row.id, { image: event.target.value })}
-                            placeholder="Image URL"
-                            className="rounded-xl"
-                          />
-                          <Input
                             type="file"
                             accept="image/*"
                             onChange={(event) =>
@@ -384,9 +359,28 @@ export function FastProjectUploader() {
                             }
                             className="rounded-xl"
                           />
-                          {(row.image || row.imageFile) && (
+                          {row.imageFile && (
                             <p className="text-xs text-muted-foreground">
-                              {row.imageFile ? `File: ${row.imageFile.name}` : "Using image URL"}
+                              File: {row.imageFile.name}
+                            </p>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell className="align-top">
+                        <div className="space-y-2 min-w-56">
+                          <Input
+                            type="file"
+                            accept="image/*"
+                            onChange={(event) =>
+                              updateRow(row.id, {
+                                logoFile: event.target.files?.[0] ?? null,
+                              })
+                            }
+                            className="rounded-xl"
+                          />
+                          {row.logoFile && (
+                            <p className="text-xs text-muted-foreground">
+                              File: {row.logoFile.name}
                             </p>
                           )}
                         </div>
@@ -465,8 +459,8 @@ export function FastProjectUploader() {
               <div className="flex items-start gap-2 text-sm text-muted-foreground">
                 <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
                 <span>
-                  Image file wins over image URL. Batch creates approved projects immediately and
-                  sets ownership to admin account.
+                  Storage is keys-only. Missing or broken logos fall back to screenshots. Batch
+                  creates approved projects immediately and sets ownership to admin account.
                 </span>
               </div>
               <Button

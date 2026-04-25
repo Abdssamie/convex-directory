@@ -51,7 +51,7 @@ export function LandingNavbar() {
         {/* Logo */}
         <LocalizedLink to="/" className="flex items-center gap-2 cursor-pointer">
           <Logo size={28} />
-          <span className="font-bold text-base">{content.navbar.title}</span>
+          <span className="whitespace-nowrap font-bold text-base">{content.navbar.title}</span>
         </LocalizedLink>
 
         {/* Desktop nav */}

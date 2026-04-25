@@ -37,8 +37,8 @@ export default {
       watchDemo: t({ en: "Submit Project", fr: "Soumettre un projet" }),
     },
     navbar: {
-      directory: t({ en: "Directory", fr: "Répertoire" }),
-      submit: t({ en: "Submit a project", fr: "Soumettre un projet" }),
+      directory: t({ en: "Home", fr: "Accueil" }),
+      submit: t({ en: "Submit", fr: "Soumettre" }),
       searchPlaceholder: t({ en: "Search projects...", fr: "Rechercher des projets..." }),
       title: "Convex Directory",
       dashboard: t({ en: "Dashboard", fr: "Tableau de bord" }),

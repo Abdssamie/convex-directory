@@ -44,7 +44,8 @@ export const tables = {
     status: v.union(v.literal("pending"), v.literal("approved"), v.literal("rejected")),
     createdAt: v.number(),
     updatedAt: v.number(),
-    image: v.optional(v.string()),
+    productLogoKey: v.optional(v.string()),
+    screenshotKey: v.optional(v.string()),
   })
     .index("by_status", ["status"])
     .index("by_type", ["type"])

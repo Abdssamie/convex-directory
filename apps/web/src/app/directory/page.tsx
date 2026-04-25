@@ -17,6 +17,8 @@ import { Search, X } from "lucide-react";
 import { Button } from "@convex-directory/ui/components/button";
 import { BaseLayout } from "@/components/layouts/base-layout";
 import { LocalizedLink } from "@/components/localized-link";
+import { ProjectBrandmark } from "@/components/project-brandmark";
+import { ProjectScreenshot } from "@/components/project-screenshot";
 import { useSearch, useNavigate } from "@tanstack/react-router";
 import { PROJECT_CATEGORIES } from "@/lib/project-categories";
 
@@ -113,7 +115,21 @@ export function DirectoryPage() {
               <Card className="rounded-2xl border-2 hover:border-primary/50 transition-colors cursor-pointer h-full">
                 <CardHeader>
                   <div className="flex justify-between items-start">
-                    <CardTitle className="text-xl font-semibold">{project.title}</CardTitle>
+                    <div className="flex min-w-0 items-start gap-3">
+                      <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-border bg-card">
+                        <ProjectBrandmark
+                          key={`${project.productLogoUrl ?? ""}:${project.screenshotUrl ?? ""}`}
+                          title={project.title}
+                          productLogoUrl={project.productLogoUrl}
+                          screenshotUrl={project.screenshotUrl}
+                          className="h-full w-full object-cover"
+                          initialsClassName="text-xs font-semibold text-foreground"
+                        />
+                      </div>
+                      <CardTitle className="min-w-0 text-xl font-semibold">
+                        {project.title}
+                      </CardTitle>
+                    </div>
                     <Badge variant="secondary" className="rounded-lg capitalize">
                       {project.type}
                     </Badge>
@@ -121,17 +137,15 @@ export function DirectoryPage() {
                   <CardDescription className="line-clamp-2">{project.description}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  {project.image ? (
-                    <img
-                      src={project.image}
-                      alt={project.title}
-                      className="w-full h-48 object-cover rounded-xl"
-                    />
-                  ) : (
-                    <div className="w-full h-48 bg-muted rounded-xl flex items-center justify-center">
-                      <span className="text-muted-foreground">No Preview</span>
-                    </div>
-                  )}
+                  <ProjectScreenshot
+                    key={project.screenshotUrl ?? project._id}
+                    title={project.title}
+                    screenshotUrl={project.screenshotUrl}
+                    className="relative h-48 w-full overflow-hidden rounded-xl"
+                    placeholderClassName="flex h-full w-full items-center justify-center bg-muted"
+                    fallbackLabelClassName="text-muted-foreground"
+                    imgClassName="h-full w-full object-cover"
+                  />
                 </CardContent>
                 {!project.ownerId && (
                   <CardFooter>
