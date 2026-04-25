@@ -22,38 +22,50 @@ function AccountPage() {
   const content = useIntlayer("account-settings");
 
   return (
-    <BaseLayout title={content.title.value} description={content.description.value}>
+    <BaseLayout title={content.title.toString()} description={content.description.toString()}>
       <div className="container mx-auto px-4 py-8 space-y-6">
         <Card className="rounded-2xl">
           <CardHeader>
-            <CardTitle>{content.profile.title.value}</CardTitle>
-            <CardDescription>{content.profile.description.value}</CardDescription>
+            <CardTitle>
+              <content.profile.title />
+            </CardTitle>
+            <CardDescription>
+              <content.profile.description />
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex flex-col space-y-1">
-              <p className="text-sm text-muted-foreground">{content.profile.name.value}</p>
+              <p className="text-sm text-muted-foreground">
+                <content.profile.name />
+              </p>
               <p className="font-medium">{user?.name}</p>
             </div>
             <div className="flex flex-col space-y-1">
-              <p className="text-sm text-muted-foreground">{content.profile.email.value}</p>
+              <p className="text-sm text-muted-foreground">
+                <content.profile.email />
+              </p>
               <p className="font-medium">{user?.email}</p>
             </div>
             <div className="flex flex-col space-y-1">
-              <p className="text-sm text-muted-foreground">{content.profile.verification.value}</p>
+              <p className="text-sm text-muted-foreground">
+                <content.profile.verification />
+              </p>
               <div>
                 {user?.emailVerified ? (
                   <Badge variant="default" className="rounded-lg">
-                    {content.profile.verified.value}
+                    <content.profile.verified />
                   </Badge>
                 ) : (
                   <Badge variant="destructive" className="rounded-lg">
-                    {content.profile.notVerified.value}
+                    <content.profile.notVerified />
                   </Badge>
                 )}
               </div>
             </div>
             <div className="flex flex-col space-y-1">
-              <p className="text-sm text-muted-foreground">{content.profile.userId.value}</p>
+              <p className="text-sm text-muted-foreground">
+                <content.profile.userId />
+              </p>
               <p className="font-mono text-xs text-muted-foreground">{user?._id}</p>
             </div>
           </CardContent>
@@ -61,29 +73,35 @@ function AccountPage() {
 
         <Card className="rounded-2xl border-destructive/20">
           <CardHeader>
-            <CardTitle>{content.security.title.value}</CardTitle>
+            <CardTitle>
+              <content.security.title />
+            </CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
             <div className="flex items-center justify-between py-2">
               <div className="space-y-0.5">
-                <p className="text-sm font-medium">{content.security.resetPassword.value}</p>
+                <p className="text-sm font-medium">
+                  <content.security.resetPassword />
+                </p>
               </div>
               <LocalizedLink
                 to="/forgot-password"
                 className="text-sm font-medium text-primary hover:underline"
               >
-                {content.security.resetPassword.value}
+                <content.security.resetPassword />
               </LocalizedLink>
             </div>
             <div className="flex items-center justify-between py-2 border-t">
               <div className="space-y-0.5">
-                <p className="text-sm font-medium">{content.security.openBilling.value}</p>
+                <p className="text-sm font-medium">
+                  <content.security.openBilling />
+                </p>
               </div>
               <LocalizedLink
                 to="/settings/billing"
                 className="text-sm font-medium text-primary hover:underline"
               >
-                {content.security.openBilling.value}
+                <content.security.openBilling />
               </LocalizedLink>
             </div>
           </CardContent>

@@ -11,8 +11,8 @@ function SubmitProjectPage() {
   const content = useIntlayer("submit-project-form");
   return (
     <BaseLayout
-      title={content.title.value}
-      description={content.fields.description.placeholder.value}
+      title={content.title.toString()}
+      description={content.fields.description.placeholder.toString()}
     >
       <div className="px-4 lg:px-6 py-8">
         <SubmitProjectForm />

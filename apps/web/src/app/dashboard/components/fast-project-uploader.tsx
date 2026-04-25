@@ -226,17 +226,19 @@ export function FastProjectUploader() {
     <Card className="rounded-3xl border-primary/20">
       <CardHeader className="space-y-3">
         <div className="flex items-center gap-2">
-          <Badge className="rounded-full">{content.admin.bulkUploader.adminOnly.value}</Badge>
+          <Badge className="rounded-full">
+            <content.admin.bulkUploader.adminOnly />
+          </Badge>
           <Badge variant="outline" className="rounded-full">
-            {content.admin.bulkUploader.approvedUnclaimed.value}
+            <content.admin.bulkUploader.approvedUnclaimed />
           </Badge>
         </div>
         <CardTitle className="flex items-center gap-2 text-2xl">
           <WandSparkles className="h-5 w-5" />
-          {content.admin.bulkUploader.title.value}
+          <content.admin.bulkUploader.title />
         </CardTitle>
         <CardDescription>
-          {content.admin.bulkUploader.description.value} Imported projects go live approved, but
+          <content.admin.bulkUploader.description /> Imported projects go live approved, but
           ownership stays unclaimed until a real user claims them.
         </CardDescription>
       </CardHeader>
@@ -244,14 +246,14 @@ export function FastProjectUploader() {
         <div className="grid gap-4 md:grid-cols-1">
           <div className="space-y-2">
             <Label htmlFor="bulk-project-type">
-              {content.admin.bulkUploader.defaultType.value}
+              <content.admin.bulkUploader.defaultType />
             </Label>
             <Select
               value={defaultType}
               onValueChange={(value) => setDefaultType(value as ProjectType)}
             >
               <SelectTrigger id="bulk-project-type" className="rounded-xl">
-                <SelectValue placeholder={content.admin.bulkUploader.chooseType.value} />
+                <SelectValue placeholder={content.admin.bulkUploader.chooseType.toString()} />
               </SelectTrigger>
               <SelectContent className="rounded-xl">
                 <SelectItem value="saas">SaaS</SelectItem>
@@ -264,7 +266,9 @@ export function FastProjectUploader() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="bulk-project-input">{content.admin.bulkUploader.pasteRows.value}</Label>
+          <Label htmlFor="bulk-project-input">
+            <content.admin.bulkUploader.pasteRows />
+          </Label>
           <Textarea
             id="bulk-project-input"
             className="min-h-40 rounded-2xl font-mono text-sm"
@@ -285,7 +289,7 @@ export function FastProjectUploader() {
         <div className="flex flex-wrap gap-3">
           <Button onClick={handleParse} disabled={!canParse} className="rounded-xl">
             <Upload className="mr-2 h-4 w-4" />
-            {content.admin.bulkUploader.parseRows.value}
+            <content.admin.bulkUploader.parseRows />
           </Button>
           <Button
             variant="outline"
@@ -296,7 +300,7 @@ export function FastProjectUploader() {
             disabled={!rawInput && rows.length === 0}
             className="rounded-xl"
           >
-            {content.admin.bulkUploader.clear.value}
+            <content.admin.bulkUploader.clear />
           </Button>
           <div className="flex items-center text-sm text-muted-foreground">
             {rows.length} parsed · {readyRows.length} ready · {PROJECT_CATEGORIES.length} categories
@@ -475,15 +479,14 @@ export function FastProjectUploader() {
                 {isSubmitting ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {content.admin.bulkUploader.publishing.value}
+                    <content.admin.bulkUploader.publishing />
                   </>
                 ) : (
                   <>
                     <ImagePlus className="mr-2 h-4 w-4" />
-                    {content.admin.bulkUploader.publish.value.replace(
-                      "{count}",
-                      String(readyRows.length),
-                    )}
+                    {content.admin.bulkUploader.publish
+                      .toString()
+                      .replace("{count}", String(readyRows.length))}
                   </>
                 )}
               </Button>
