@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "convex/react";
+import { useMutation } from "convex/react";
 import { api } from "@convex-directory/backend/convex/_generated/api";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from "@convex-directory/ui/components/select";
 import { Button } from "@convex-directory/ui/components/button";
+import { PROJECT_CATEGORIES } from "@/lib/project-categories";
 import { toast } from "sonner";
 
 const formSchema = z.object({
@@ -28,13 +29,12 @@ const formSchema = z.object({
   description: z.string().min(10, "Description must be at least 10 characters"),
   url: z.string().url("Must be a valid URL"),
   type: z.enum(["saas", "tool", "open-source", "component"]),
-  categoryId: z.string(),
+  categorySlug: z.string(),
   image: z.string().optional(),
 });
 
 export function SubmitProjectForm() {
   const submitProject = useMutation(api.projects.submitProject);
-  const categories = useQuery(api.projects.getCategories);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -43,17 +43,14 @@ export function SubmitProjectForm() {
       description: "",
       url: "",
       type: "saas",
-      categoryId: "",
+      categorySlug: "",
       image: "",
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      await submitProject({
-        ...values,
-        categoryId: values.categoryId as any,
-      });
+      await submitProject(values);
       toast.success("Project submitted successfully! Waiting for approval.");
       form.reset();
     } catch {
@@ -138,7 +135,7 @@ export function SubmitProjectForm() {
 
           <FormField
             control={form.control}
-            name="categoryId"
+            name="categorySlug"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Category</FormLabel>
@@ -149,9 +146,9 @@ export function SubmitProjectForm() {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent className="rounded-xl">
-                    {categories?.map((cat) => (
-                      <SelectItem key={cat._id} value={cat._id}>
-                        {cat.name}
+                    {PROJECT_CATEGORIES.map((category) => (
+                      <SelectItem key={category.slug} value={category.slug}>
+                        {category.name}
                       </SelectItem>
                     ))}
                   </SelectContent>

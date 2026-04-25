@@ -12,14 +12,6 @@ Copy `.env.convex.example` to the Convex Dashboard (Settings > Environment Varia
 | `BETTER_AUTH_SECRET` | Secret for Better Auth session signing.                                               |
 | `SITE_URL`           | The URL of your web frontend (e.g., http://localhost:3001).                           |
 
-## Database Seeding
-
-Seed categories to start the project:
-
-```bash
-npx convex run projects:seedCategories
-```
-
 ## Storage (R2)
 
 Set R2 credentials in Convex dashboard for project image uploads.

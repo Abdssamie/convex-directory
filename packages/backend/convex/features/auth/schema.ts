@@ -19,15 +19,13 @@ export const tables = {
     image: v.optional(v.union(v.null(), v.string())),
     createdAt: v.number(),
     updatedAt: v.number(),
-    userId: v.optional(v.union(v.null(), v.string())),
     bio: v.optional(v.union(v.null(), v.string())),
     description: v.optional(v.union(v.null(), v.string())),
     preferences: v.optional(v.union(v.null(), v.string())),
     hasCompletedOnboarding: v.optional(v.union(v.null(), v.boolean())),
   })
     .index("email_name", ["email", "name"])
-    .index("name", ["name"])
-    .index("userId", ["userId"]),
+    .index("name", ["name"]),
   session: defineTable({
     expiresAt: v.number(),
     token: v.string(),

@@ -15,7 +15,7 @@ type BillingPlanInterval = (typeof PLAN_INTERVALS)[number];
 type ProrationBehavior = (typeof PRORATION_BEHAVIORS)[number];
 
 type PolarUserInfo = {
-  userId: string;
+  userKey: string;
   email: string;
 };
 
@@ -55,7 +55,7 @@ async function getAuthUserInfo(ctx: QueryCtx | ActionCtx): Promise<PolarUserInfo
   }
 
   return {
-    userId: authUser._id,
+    userKey: authUser._id,
     email: authUser.email,
   };
 }
@@ -67,7 +67,10 @@ export const polar: Polar = new Polar(components.polar, {
       throw new Error("Not authenticated");
     }
 
-    return authUser;
+    return {
+      userId: authUser.userKey,
+      email: authUser.email,
+    };
   },
 });
 
@@ -94,7 +97,7 @@ export const getCurrentSubscription = query({
       return null;
     }
 
-    return await polar.getCurrentSubscription(ctx, { userId: authUser.userId });
+    return await polar.getCurrentSubscription(ctx, { userId: authUser.userKey });
   },
 });
 
@@ -139,7 +142,7 @@ export const switchCurrentSubscription = action({
     }
 
     const subscription = await polar.getCurrentSubscription(ctx as never, {
-      userId: authUser.userId,
+      userId: authUser.userKey,
     });
     if (!subscription) {
       throw new Error("No active subscription to switch");

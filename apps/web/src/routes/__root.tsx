@@ -16,9 +16,6 @@ import { authClient } from "@/lib/auth-client";
 import { getToken } from "@/lib/auth-server";
 import { ThemeProvider } from "@/components/theme-provider";
 import { HeadProvider } from "@/lib/head-provider";
-import { defaultLocale, getHTMLTextDir } from "intlayer";
-import { IntlayerProvider } from "react-intlayer";
-import { Route as LocaleRoute } from "./{-$locale}/route";
 
 import appCss from "../index.css?url";
 
@@ -120,21 +117,16 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
 });
 
 function RootDocument({ children }: { children: React.ReactNode }) {
-  const params = LocaleRoute.useParams();
-  const locale = params?.locale ?? defaultLocale;
-
   return (
-    <html dir={getHTMLTextDir(locale)} lang={locale} suppressHydrationWarning>
+    <html suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>
       <body>
-        <IntlayerProvider locale={locale}>
-          {children}
-          <Toaster richColors />
-          <TanStackRouterDevtools position="bottom-left" />
-          <Scripts />
-        </IntlayerProvider>
+        {children}
+        <Toaster richColors />
+        <TanStackRouterDevtools position="bottom-left" />
+        <Scripts />
       </body>
     </html>
   );

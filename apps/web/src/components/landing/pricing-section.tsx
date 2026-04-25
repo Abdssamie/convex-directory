@@ -76,7 +76,7 @@ export function PricingSection() {
 
         <div className="mx-auto max-w-6xl rounded-xl border">
           <div className="grid lg:grid-cols-3">
-            {(plans ?? []).map((plan) => (
+            {(plans ?? []).map((plan: BillingPlan) => (
               <PlanCard
                 key={plan.id}
                 plan={plan}

@@ -3,32 +3,61 @@
 import { useQuery } from "convex/react";
 import { api } from "@convex-directory/backend/convex/_generated/api";
 import { Badge } from "@convex-directory/ui/components/badge";
-import { useIntlayer } from "react-intlayer";
+import type { FunctionReturnType } from "convex/server";
+import { PROJECT_CATEGORIES } from "@/lib/project-categories";
+import { LocalizedLink } from "@/components/localized-link";
+import { useLandingContent } from "./content";
+
+type DirectoryProject = FunctionReturnType<typeof api.projects.getProjects>[number];
 
 export function DirectoryGrid() {
   const projects = useQuery(api.projects.getProjects, {
     status: "approved",
   });
-  const categories = useQuery(api.projects.getCategories);
-  const content = useIntlayer("landing");
+  const content = useLandingContent();
 
-  const saasProjects = projects?.filter((p) => p.type === "saas") || [];
+  const saasProjects = projects?.filter((p: DirectoryProject) => p.type === "saas") || [];
+  const categoriesBySlug = new Map<string, { name: string; slug: string }>(
+    PROJECT_CATEGORIES.map((category) => [category.slug, category]),
+  );
+  const categoryStats = projects
+    ? Array.from(
+        projects.reduce((acc, project) => {
+          const next = acc.get(project.categorySlug) ?? { slug: project.categorySlug, count: 0 };
+          next.count += 1;
+          acc.set(project.categorySlug, next);
+          return acc;
+        }, new Map<string, { slug: string; count: number }>()),
+      )
+        .map(([, stat]) => ({
+          ...stat,
+          name:
+            categoriesBySlug.get(stat.slug)?.name ??
+            stat.slug
+              .split("-")
+              .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+              .join(" "),
+        }))
+        .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))
+    : [];
 
   return (
-    <section id="directory" className="py-24 bg-background text-foreground">
+    <section id="directory" className="pt-10 pb-24 bg-background text-foreground">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
         {/* Featured SaaS Products */}
         <div className="mb-24">
           <div className="flex items-baseline gap-4 mb-8">
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">
               {content.directory.featuredTitle}
             </h2>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {saasProjects.slice(0, 8).map((project, index) => (
-              <div
+            {saasProjects.slice(0, 8).map((project: DirectoryProject, index: number) => (
+              <LocalizedLink
                 key={project._id}
+                to="/products/$projectId"
+                params={{ projectId: project._id }}
                 className="group flex flex-col rounded-xl bg-transparent transition-all overflow-hidden relative cursor-pointer"
               >
                 <div className="relative aspect-[1.5/1] w-full overflow-hidden rounded-xl border border-border bg-card group-hover:border-primary/40 transition-colors">
@@ -71,15 +100,7 @@ export function DirectoryGrid() {
                     </Badge>
                   </div>
                 </div>
-                <a
-                  href={project.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="absolute inset-0 z-20"
-                >
-                  <span className="sr-only">View {project.title}</span>
-                </a>
-              </div>
+              </LocalizedLink>
             ))}
             {projects === undefined && (
               <div className="col-span-full py-12 text-center text-muted-foreground">
@@ -97,7 +118,7 @@ export function DirectoryGrid() {
         {/* Product Categories */}
         <div>
           <div className="mb-10">
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-3">
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight mb-3">
               {content.directory.categoriesTitle}
             </h2>
             <p className="text-muted-foreground text-lg max-w-3xl">
@@ -108,10 +129,16 @@ export function DirectoryGrid() {
           <h3 className="text-xl font-semibold mb-6">{content.directory.popularTitle}</h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {categories ? (
-              categories.map((category) => (
-                <div
-                  key={category._id}
+            {projects === undefined ? (
+              <div className="col-span-full py-12 text-center text-muted-foreground">
+                {content.directory.loadingCategories}
+              </div>
+            ) : categoryStats.length > 0 ? (
+              categoryStats.map((category) => (
+                <LocalizedLink
+                  key={category.slug}
+                  to="/directory"
+                  search={{ category: category.slug }}
                   className="group bg-card border border-border hover:border-primary/40 hover:bg-accent/30 rounded-xl p-6 transition-all cursor-pointer"
                 >
                   <div className="flex justify-between items-start mb-3">
@@ -119,19 +146,19 @@ export function DirectoryGrid() {
                       {category.name}
                     </h4>
                     <span className="text-sm text-muted-foreground">
-                      {Math.floor(Math.random() * 300) + 50} {content.directory.productsCount}
+                      {category.count} {content.directory.productsCount}
                     </span>
                   </div>
                   <p className="text-sm text-muted-foreground leading-relaxed">
                     {content.directory.categoryDescriptions[
                       category.slug as keyof typeof content.directory.categoryDescriptions
-                    ]?.value || content.directory.categoryDescriptions.fallback}
+                    ] ?? content.directory.categoryDescriptions.fallback}
                   </p>
-                </div>
+                </LocalizedLink>
               ))
             ) : (
               <div className="col-span-full py-12 text-center text-muted-foreground">
-                {content.directory.loadingCategories}
+                {content.directory.noProducts}
               </div>
             )}
           </div>

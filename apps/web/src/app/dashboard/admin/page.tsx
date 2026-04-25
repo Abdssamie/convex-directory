@@ -5,7 +5,11 @@ import { Card, CardHeader, CardTitle, CardContent } from "@convex-directory/ui/c
 import { Button } from "@convex-directory/ui/components/button";
 import { toast } from "sonner";
 import type { Id } from "@convex-directory/backend/convex/_generated/dataModel";
+import type { FunctionReturnType } from "convex/server";
 import { FastProjectUploader } from "@/app/dashboard/components/fast-project-uploader";
+
+type PendingProject = FunctionReturnType<typeof api.projects.getProjects>[number];
+type PendingClaim = FunctionReturnType<typeof api.claims.getPendingClaims>[number];
 
 export default function AdminDashboard() {
   const isAdmin = useQuery(api.projects.isAdminQuery);
@@ -75,7 +79,7 @@ export default function AdminDashboard() {
         <section>
           <h2 className="text-3xl font-bold mb-6">Pending Submissions</h2>
           <div className="grid gap-4">
-            {pendingProjects?.map((p) => (
+            {pendingProjects?.map((p: PendingProject) => (
               <Card key={p._id} className="rounded-2xl">
                 <CardHeader className="flex flex-row items-center justify-between">
                   <div>
@@ -109,12 +113,12 @@ export default function AdminDashboard() {
         <section>
           <h2 className="text-3xl font-bold mb-6">Pending Claims</h2>
           <div className="grid gap-4">
-            {pendingClaims?.map((c) => (
+            {pendingClaims?.map((c: PendingClaim) => (
               <Card key={c._id} className="rounded-2xl">
                 <CardHeader className="flex flex-row items-center justify-between">
                   <div>
                     <CardTitle>Claim for Project ID: {c.projectId}</CardTitle>
-                    <p className="text-sm text-muted-foreground">User ID: {c.userId}</p>
+                    <p className="text-sm text-muted-foreground">User Doc ID: {c.userId}</p>
                   </div>
                   <Button onClick={() => handleApproveClaim(c._id)} className="rounded-xl">
                     Approve Ownership

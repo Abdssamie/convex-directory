@@ -4,17 +4,17 @@ import { Separator } from "@convex-directory/ui/components/separator";
 import { Button } from "@convex-directory/ui/components/button";
 import { Logo } from "@/components/logo";
 import { Github, Twitter, Heart } from "lucide-react";
-import { useIntlayer } from "react-intlayer";
+import { useLandingContent } from "./content";
 
 export function LandingFooter() {
-  const content = useIntlayer("landing");
+  const content = useLandingContent();
 
   const footerLinks = {
     directory: [
-      { name: content.footer.links.browseAll.value, href: "#directory" },
-      { name: content.footer.links.submitProject.value, href: "/sign-up" },
-      { name: content.footer.links.saas.value, href: "#directory" },
-      { name: content.footer.links.openSource.value, href: "#directory" },
+      { name: content.footer.links.browseAll, href: "#directory" },
+      { name: content.footer.links.submitProject, href: "/sign-up" },
+      { name: content.footer.links.saas, href: "#directory" },
+      { name: content.footer.links.openSource, href: "#directory" },
     ],
     resources: [
       { name: "Convex Docs", href: "https://docs.convex.dev", external: true },
@@ -22,8 +22,8 @@ export function LandingFooter() {
       { name: "GitHub", href: "https://github.com/get-convex", external: true },
     ],
     legal: [
-      { name: content.footer.links.privacy.value, href: "/privacy" },
-      { name: content.footer.links.terms.value, href: "/terms" },
+      { name: content.footer.links.privacy, href: "/privacy" },
+      { name: content.footer.links.terms, href: "/terms" },
     ],
   };
 

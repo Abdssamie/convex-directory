@@ -12,6 +12,7 @@ export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
       defaultTheme="system"
       enableSystem
       disableTransitionOnChange
+      scriptProps={{ async: true }}
       {...props}
     >
       {children}

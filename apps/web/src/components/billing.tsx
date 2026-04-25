@@ -63,7 +63,7 @@ export default function Billing() {
       </div>
 
       <div className="grid gap-3 md:grid-cols-3">
-        {(plans ?? []).map((plan) => (
+        {(plans ?? []).map((plan: BillingPlan) => (
           <article key={plan.id} className="rounded-md border p-4">
             <div className="mb-3 flex items-start justify-between gap-3">
               <div>
@@ -102,7 +102,7 @@ export default function Billing() {
             />
 
             <ul className="mt-4 space-y-2 text-sm">
-              {plan.features.map((feature) => (
+              {plan.features.map((feature: string) => (
                 <li key={feature} className="flex items-center gap-2">
                   <Check className="size-4 flex-shrink-0 text-muted-foreground" strokeWidth={2.5} />
                   <span>{feature}</span>

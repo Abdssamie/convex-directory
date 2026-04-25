@@ -1,6 +1,7 @@
 import { useQuery } from "convex/react";
 import { api } from "@convex-directory/backend/convex/_generated/api";
 import { useState } from "react";
+import type { FunctionReturnType } from "convex/server";
 import {
   Card,
   CardHeader,
@@ -9,16 +10,27 @@ import {
   CardContent,
   CardFooter,
 } from "@convex-directory/ui/components/card";
-import { Button } from "@convex-directory/ui/components/button";
 import { Input } from "@convex-directory/ui/components/input";
 import { Tabs, TabsList, TabsTrigger } from "@convex-directory/ui/components/tabs";
 import { Badge } from "@convex-directory/ui/components/badge";
-import { ExternalLink, Search } from "lucide-react";
+import { Search, X } from "lucide-react";
+import { Button } from "@convex-directory/ui/components/button";
 import { BaseLayout } from "@/components/layouts/base-layout";
+import { LocalizedLink } from "@/components/localized-link";
+import { useSearch, useNavigate } from "@tanstack/react-router";
+import { PROJECT_CATEGORIES } from "@/lib/project-categories";
+
+type DirectoryProject = FunctionReturnType<typeof api.projects.getProjects>[number];
 
 export function DirectoryPage() {
   const [search, setSearch] = useState("");
   const [activeType, setActiveType] = useState<string>("all");
+  const { category: categoryFilter } = useSearch({ strict: false }) as { category?: string };
+  const navigate = useNavigate();
+
+  const activeCategoryName = categoryFilter
+    ? (PROJECT_CATEGORIES.find((c) => c.slug === categoryFilter)?.name ?? categoryFilter)
+    : null;
 
   const projects = useQuery(api.projects.getProjects, {
     status: "approved",
@@ -26,9 +38,10 @@ export function DirectoryPage() {
   });
 
   const filteredProjects = projects?.filter(
-    (p) =>
-      p.title.toLowerCase().includes(search.toLowerCase()) ||
-      p.description.toLowerCase().includes(search.toLowerCase()),
+    (p: DirectoryProject) =>
+      (categoryFilter ? p.categorySlug === categoryFilter : true) &&
+      (p.title.toLowerCase().includes(search.toLowerCase()) ||
+        p.description.toLowerCase().includes(search.toLowerCase())),
   );
 
   return (
@@ -38,7 +51,26 @@ export function DirectoryPage() {
     >
       <div className="container mx-auto px-4 py-12 space-y-8">
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-          <h1 className="text-4xl font-bold tracking-tight">Convex Directory</h1>
+          <div className="flex flex-wrap items-center gap-3">
+            <h1 className="text-4xl font-bold tracking-tight">Convex Directory</h1>
+            {activeCategoryName && (
+              <Badge
+                variant="secondary"
+                className="rounded-full px-3 py-1 gap-1.5 text-sm font-normal"
+              >
+                {activeCategoryName}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-4 w-4 p-0 ml-0.5 hover:bg-transparent hover:text-foreground"
+                  onClick={() => navigate({ search: {} as any })}
+                  aria-label="Clear category filter"
+                >
+                  <X className="h-3 w-3" />
+                </Button>
+              </Badge>
+            )}
+          </div>
           <div className="relative w-full md:w-96">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -71,46 +103,50 @@ export function DirectoryPage() {
         </Tabs>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredProjects?.map((project) => (
-            <Card
+          {filteredProjects?.map((project: DirectoryProject) => (
+            <LocalizedLink
               key={project._id}
-              className="rounded-2xl border-2 hover:border-primary/50 transition-colors"
+              to="/products/$projectId"
+              params={{ projectId: project._id }}
+              className="block"
             >
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                  <CardTitle className="text-xl font-semibold">{project.title}</CardTitle>
-                  <Badge variant="secondary" className="rounded-lg capitalize">
-                    {project.type}
-                  </Badge>
-                </div>
-                <CardDescription className="line-clamp-2">{project.description}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {project.image ? (
-                  <img
-                    src={project.image}
-                    alt={project.title}
-                    className="w-full h-48 object-cover rounded-xl"
-                  />
-                ) : (
-                  <div className="w-full h-48 bg-muted rounded-xl flex items-center justify-center">
-                    <span className="text-muted-foreground">No Preview</span>
+              <Card className="rounded-2xl border-2 hover:border-primary/50 transition-colors cursor-pointer h-full">
+                <CardHeader>
+                  <div className="flex justify-between items-start">
+                    <CardTitle className="text-xl font-semibold">{project.title}</CardTitle>
+                    <Badge variant="secondary" className="rounded-lg capitalize">
+                      {project.type}
+                    </Badge>
                   </div>
-                )}
-              </CardContent>
-              <CardFooter className="flex justify-between">
-                <Button variant="outline" className="rounded-xl" asChild>
-                  <a href={project.url} target="_blank" rel="noopener noreferrer">
-                    Visit <ExternalLink className="ml-2 h-4 w-4" />
-                  </a>
-                </Button>
+                  <CardDescription className="line-clamp-2">{project.description}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {project.image ? (
+                    <img
+                      src={project.image}
+                      alt={project.title}
+                      className="w-full h-48 object-cover rounded-xl"
+                    />
+                  ) : (
+                    <div className="w-full h-48 bg-muted rounded-xl flex items-center justify-center">
+                      <span className="text-muted-foreground">No Preview</span>
+                    </div>
+                  )}
+                </CardContent>
                 {!project.ownerId && (
-                  <Button variant="ghost" size="sm" className="rounded-xl">
-                    Claim
-                  </Button>
+                  <CardFooter>
+                    <LocalizedLink
+                      to="/products/$projectId"
+                      params={{ projectId: project._id }}
+                      className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      Claim this listing
+                    </LocalizedLink>
+                  </CardFooter>
                 )}
-              </CardFooter>
-            </Card>
+              </Card>
+            </LocalizedLink>
           ))}
           {filteredProjects?.length === 0 && (
             <div className="col-span-full py-20 text-center text-muted-foreground">

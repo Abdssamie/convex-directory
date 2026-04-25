@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { useConvex, useMutation, useQuery } from "convex/react";
+import { useConvex, useMutation } from "convex/react";
 import { api } from "@convex-directory/backend/convex/_generated/api";
-import type { FunctionReturnType } from "convex/server";
 import { AlertCircle, ImagePlus, Loader2, Upload, WandSparkles } from "lucide-react";
 import {
   Card,
@@ -30,11 +29,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { PROJECT_CATEGORIES } from "@/lib/project-categories";
 import { toast } from "sonner";
 
 type ProjectType = "saas" | "tool" | "open-source" | "component";
-
-type Category = FunctionReturnType<typeof api.projects.getCategories>[number];
 
 type DraftRow = {
   id: string;
@@ -44,7 +42,7 @@ type DraftRow = {
   image: string;
   type: ProjectType;
   categoryLabel: string;
-  categoryId: string;
+  categorySlug: string;
   imageFile: File | null;
 };
 
@@ -71,27 +69,23 @@ function normalizeCategoryValue(value: string) {
   return value.trim().toLowerCase();
 }
 
-function resolveCategoryId(categories: Category[] | undefined, value: string) {
+function resolveCategorySlug(value: string) {
   const normalizedValue = normalizeCategoryValue(value);
-  if (!normalizedValue || !categories) {
+  if (!normalizedValue) {
     return "";
   }
 
-  const matchedCategory = categories.find((category) => {
+  const matchedCategory = PROJECT_CATEGORIES.find((category) => {
     return (
       normalizeCategoryValue(category.name) === normalizedValue ||
       normalizeCategoryValue(category.slug) === normalizedValue
     );
   });
 
-  return matchedCategory?._id ?? "";
+  return matchedCategory?.slug ?? "";
 }
 
-function parseBulkInput(
-  raw: string,
-  defaultType: ProjectType,
-  categories: Category[] | undefined,
-): DraftRow[] {
+function parseBulkInput(raw: string, defaultType: ProjectType): DraftRow[] {
   return raw
     .split("\n")
     .map((line) => line.trim())
@@ -118,7 +112,7 @@ function parseBulkInput(
         : trimmedFourth && isLikelyUrl(trimmedFourth)
           ? trimmedFourth
           : "";
-      const resolvedCategoryId = resolveCategoryId(categories, categoryInput);
+      const resolvedCategorySlug = resolveCategorySlug(categoryInput);
 
       return {
         id: makeRowId(),
@@ -128,7 +122,7 @@ function parseBulkInput(
         image: image.trim(),
         type: defaultType,
         categoryLabel: categoryInput,
-        categoryId: resolvedCategoryId,
+        categorySlug: resolvedCategorySlug,
         imageFile: null,
       };
     })
@@ -137,7 +131,6 @@ function parseBulkInput(
 
 export function FastProjectUploader() {
   const convex = useConvex();
-  const categories = useQuery(api.projects.getCategories);
   const bulkCreateProjects = useMutation(api.projects.bulkCreateProjectsByAdmin);
   const generateUploadUrl = useMutation(api.r2.generateUploadUrl);
   const syncMetadata = useMutation(api.r2.syncMetadata);
@@ -149,13 +142,16 @@ export function FastProjectUploader() {
 
   const canParse = Boolean(rawInput.trim());
 
-  const readyRows = rows.filter((row) => row.title && row.url && row.description && row.categoryId);
+  const readyRows = rows.filter(
+    (row) => row.title && row.url && row.description && row.categorySlug,
+  );
   const unresolvedCategoryCount = rows.filter(
-    (row) => row.title && row.url && row.description && row.categoryLabel.trim() && !row.categoryId,
+    (row) =>
+      row.title && row.url && row.description && row.categoryLabel.trim() && !row.categorySlug,
   ).length;
 
   const handleParse = () => {
-    const nextRows = parseBulkInput(rawInput, defaultType, categories);
+    const nextRows = parseBulkInput(rawInput, defaultType);
 
     if (nextRows.length === 0) {
       toast.error(
@@ -165,7 +161,7 @@ export function FastProjectUploader() {
     }
 
     setRows(nextRows);
-    if (nextRows.some((row) => row.categoryLabel.trim() && !row.categoryId)) {
+    if (nextRows.some((row) => row.categoryLabel.trim() && !row.categorySlug)) {
       toast.warning("Some rows have unmatched categories. Fix them before publishing.");
     } else {
       toast.success(`${nextRows.length} projects ready.`);
@@ -217,7 +213,7 @@ export function FastProjectUploader() {
           const image =
             row.imageFile !== null ? await uploadImageFile(row.imageFile) : row.image || undefined;
 
-          if (!row.categoryId) {
+          if (!row.categorySlug) {
             throw new Error(`Unknown category: ${row.categoryLabel || "empty"}`);
           }
 
@@ -226,7 +222,7 @@ export function FastProjectUploader() {
             url: row.url.trim(),
             description: row.description.trim(),
             type: row.type,
-            categoryId: row.categoryId as Category["_id"],
+            categorySlug: row.categorySlug,
             image,
           };
         }),
@@ -319,7 +315,7 @@ export function FastProjectUploader() {
             Clear
           </Button>
           <div className="flex items-center text-sm text-muted-foreground">
-            {rows.length} parsed · {readyRows.length} ready
+            {rows.length} parsed · {readyRows.length} ready · {PROJECT_CATEGORIES.length} categories
           </div>
         </div>
 
@@ -420,22 +416,23 @@ export function FastProjectUploader() {
                             onChange={(event) =>
                               updateRow(row.id, {
                                 categoryLabel: event.target.value,
-                                categoryId: resolveCategoryId(categories, event.target.value),
+                                categorySlug: resolveCategorySlug(event.target.value),
                               })
                             }
                             placeholder="Developer Tools"
                             className="rounded-xl"
                           />
                           <Select
-                            value={row.categoryId || "__unresolved__"}
+                            value={row.categorySlug || "__unresolved__"}
                             onValueChange={(value) =>
                               updateRow(row.id, {
-                                categoryId: value === "__unresolved__" ? "" : value,
+                                categorySlug: value === "__unresolved__" ? "" : value,
                                 categoryLabel:
                                   value === "__unresolved__"
                                     ? row.categoryLabel
-                                    : (categories?.find((category) => category._id === value)
-                                        ?.name ?? row.categoryLabel),
+                                    : (PROJECT_CATEGORIES.find(
+                                        (category) => category.slug === value,
+                                      )?.name ?? row.categoryLabel),
                               })
                             }
                           >
@@ -444,15 +441,15 @@ export function FastProjectUploader() {
                             </SelectTrigger>
                             <SelectContent className="rounded-xl">
                               <SelectItem value="__unresolved__">Unmatched / choose one</SelectItem>
-                              {categories?.map((category) => (
-                                <SelectItem key={category._id} value={category._id}>
+                              {PROJECT_CATEGORIES.map((category) => (
+                                <SelectItem key={category.slug} value={category.slug}>
                                   {category.name}
                                 </SelectItem>
                               ))}
                             </SelectContent>
                           </Select>
                           <p className="text-xs text-muted-foreground">
-                            {row.categoryId
+                            {row.categorySlug
                               ? "Matched existing category"
                               : "Unmatched category. Pick existing category."}
                           </p>

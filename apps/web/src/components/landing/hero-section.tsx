@@ -5,10 +5,10 @@ import { Button } from "@convex-directory/ui/components/button";
 import { Badge } from "@convex-directory/ui/components/badge";
 import { DotPattern } from "@/components/dot-pattern";
 import { LocalizedLink } from "@/components/localized-link";
-import { useIntlayer } from "react-intlayer";
+import { useLandingContent } from "./content";
 
 export function HeroSection() {
-  const content = useIntlayer("landing");
+  const content = useLandingContent();
 
   return (
     <section

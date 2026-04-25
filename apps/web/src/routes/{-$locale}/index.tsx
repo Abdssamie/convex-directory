@@ -1,23 +1,22 @@
 import { useSeoMeta } from "@unhead/react";
 import { LandingNavbar } from "@/components/landing/navbar";
-import { HeroSection } from "@/components/landing/hero-section";
 import { DirectoryGrid } from "@/components/landing/directory-grid";
 import { LandingFooter } from "@/components/landing/footer";
 import { createFileRoute } from "@tanstack/react-router";
-import { useIntlayer } from "react-intlayer";
+import { useLandingContent } from "@/components/landing/content";
 
 export const Route = createFileRoute("/{-$locale}/")({
   component: LandingPage,
 });
 
 function LandingPage() {
-  const content = useIntlayer("landing");
+  const content = useLandingContent();
 
   useSeoMeta({
-    title: content.seo.title.value,
-    description: content.seo.description.value,
-    ogTitle: content.seo.ogTitle.value,
-    ogDescription: content.seo.ogDescription.value,
+    title: content.seo.title,
+    description: content.seo.description,
+    ogTitle: content.seo.ogTitle,
+    ogDescription: content.seo.ogDescription,
     ogImage: "/og-image.png",
     twitterCard: "summary_large_image",
   });
@@ -26,7 +25,6 @@ function LandingPage() {
     <div className="min-h-screen bg-background font-sans">
       <LandingNavbar />
       <main>
-        <HeroSection />
         <DirectoryGrid />
       </main>
       <LandingFooter />

@@ -1,12 +1,33 @@
 import { v, ConvexError } from "convex/values";
-import { mutation, query } from "./_generated/server";
-import { type Id } from "./_generated/dataModel";
+import { mutation, query, type MutationCtx, type QueryCtx } from "./_generated/server";
+import type { Id } from "./_generated/dataModel";
+import { authComponent } from "./auth";
 
 // Helper to check if user is admin
-const isAdmin = async (ctx: any) => {
-  const identity = await ctx.auth.getUserIdentity();
-  if (!identity) return false;
-  return identity.email === process.env.ADMIN_EMAIL;
+const isAdmin = async (user: { email: string }) => {
+  const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+  const userEmail = user.email?.trim().toLowerCase();
+  return Boolean(adminEmail && userEmail && userEmail === adminEmail);
+};
+
+const categorySlugValidator = v.string();
+
+const legacyCategorySlugByName: Record<string, string> = {
+  saas: "saas",
+  tools: "developer-tools",
+  "open source": "open-source",
+  components: "components",
+};
+
+const getCurrentAppUser = async (ctx: QueryCtx | MutationCtx) => {
+  const authUser = await authComponent.getAuthUser(ctx);
+  const user = await ctx.db
+    .query("users")
+    .withIndex("by_authId", (q) => q.eq("authId", authUser._id))
+    .unique();
+  if (!user) throw new ConvexError("Mirrored user not found");
+
+  return { authUser, user };
 };
 
 const projectValidator = v.object({
@@ -21,14 +42,68 @@ const projectValidator = v.object({
     v.literal("open-source"),
     v.literal("component"),
   ),
-  categoryId: v.id("categories"),
-  ownerId: v.optional(v.id("user")),
-  createdBy: v.id("user"),
+  categorySlug: categorySlugValidator,
+  ownerId: v.optional(v.string()),
+  createdBy: v.string(),
   status: v.union(v.literal("pending"), v.literal("approved"), v.literal("rejected")),
   createdAt: v.number(),
   updatedAt: v.number(),
   image: v.optional(v.string()),
 });
+
+type StoredProject = {
+  _id: Id<"projects">;
+  _creationTime: number;
+  title: string;
+  description: string;
+  url: string;
+  type: "saas" | "tool" | "open-source" | "component";
+  categorySlug?: string;
+  categoryId?: Id<"categories">;
+  ownerId?: string;
+  createdBy: string;
+  status: "pending" | "approved" | "rejected";
+  createdAt: number;
+  updatedAt: number;
+  image?: string;
+};
+
+const resolveLegacyCategorySlug = async (
+  ctx: QueryCtx,
+  categoryId: Id<"categories"> | undefined,
+) => {
+  if (!categoryId) {
+    return undefined;
+  }
+
+  const category = await ctx.db.get(categoryId);
+  if (!category) {
+    return undefined;
+  }
+
+  return legacyCategorySlugByName[category.name.trim().toLowerCase()] ?? category.slug;
+};
+
+const normalizeProject = async (ctx: QueryCtx, project: StoredProject) => {
+  const categorySlug =
+    project.categorySlug ?? (await resolveLegacyCategorySlug(ctx, project.categoryId));
+
+  return {
+    _id: project._id,
+    _creationTime: project._creationTime,
+    title: project.title,
+    description: project.description,
+    url: project.url,
+    type: project.type,
+    categorySlug: categorySlug ?? "uncategorized",
+    ownerId: project.ownerId,
+    createdBy: project.createdBy,
+    status: project.status,
+    createdAt: project.createdAt,
+    updatedAt: project.updatedAt,
+    image: project.image,
+  };
+};
 
 export const getProjects = query({
   args: {
@@ -48,12 +123,15 @@ export const getProjects = query({
     let q = ctx.db.query("projects").withIndex("by_status", (j) => j.eq("status", status));
 
     const projects = await q.collect();
+    const normalizedProjects = await Promise.all(
+      projects.map((project) => normalizeProject(ctx, project as StoredProject)),
+    );
 
     if (args.type) {
-      return projects.filter((p) => p.type === args.type);
+      return normalizedProjects.filter((p) => p.type === args.type);
     }
 
-    return projects;
+    return normalizedProjects;
   },
 });
 
@@ -61,7 +139,12 @@ export const getProjectById = query({
   args: { id: v.id("projects") },
   returns: v.union(projectValidator, v.null()),
   handler: async (ctx, args) => {
-    return await ctx.db.get("projects", args.id);
+    const project = await ctx.db.get("projects", args.id);
+    if (!project) {
+      return null;
+    }
+
+    return await normalizeProject(ctx, project as StoredProject);
   },
 });
 
@@ -76,19 +159,16 @@ export const submitProject = mutation({
       v.literal("open-source"),
       v.literal("component"),
     ),
-    categoryId: v.id("categories"),
+    categorySlug: categorySlugValidator,
     image: v.optional(v.string()),
   },
   returns: v.id("projects"),
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new ConvexError("Unauthenticated");
-
-    const userId = identity.subject as Id<"user">;
+    const { user } = await getCurrentAppUser(ctx);
 
     return await ctx.db.insert("projects", {
       ...args,
-      createdBy: userId,
+      createdBy: user._id,
       status: "pending",
       createdAt: Date.now(),
       updatedAt: Date.now(),
@@ -109,16 +189,25 @@ export const bulkCreateProjectsByAdmin = mutation({
           v.literal("open-source"),
           v.literal("component"),
         ),
-        categoryId: v.id("categories"),
+        categorySlug: categorySlugValidator,
         image: v.optional(v.string()),
       }),
     ),
   },
   returns: v.array(v.id("projects")),
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new ConvexError("Unauthenticated");
-    if (!(await isAdmin(ctx))) throw new ConvexError("Unauthorized");
+    const { authUser, user } = await getCurrentAppUser(ctx);
+
+    const isUserAdmin = await isAdmin(authUser);
+
+    if (!isUserAdmin) {
+      console.error("bulkCreateProjectsByAdmin unauthorized", {
+        userId: authUser._id ?? null,
+        userEmail: authUser.email?.trim().toLowerCase() ?? null,
+        adminEmail: process.env.ADMIN_EMAIL?.trim().toLowerCase() ?? null,
+      });
+      throw new ConvexError("Unauthorized");
+    }
     if (args.projects.length === 0) throw new ConvexError("No projects provided");
     if (args.projects.length > 100) throw new ConvexError("Too many projects in one batch");
 
@@ -137,15 +226,14 @@ export const bulkCreateProjectsByAdmin = mutation({
       throw new ConvexError(`Duplicate URLs in batch: ${Array.from(duplicateUrls).join(", ")}`);
     }
 
-    const adminUserId = identity.subject as Id<"user">;
     const now = Date.now();
     const createdIds: Id<"projects">[] = [];
 
     for (const project of args.projects) {
       const createdId = await ctx.db.insert("projects", {
         ...project,
-        createdBy: adminUserId,
-        ownerId: adminUserId,
+        createdBy: user._id,
+        ownerId: user._id,
         status: "approved",
         createdAt: now,
         updatedAt: now,
@@ -161,7 +249,8 @@ export const approveProject = mutation({
   args: { id: v.id("projects") },
   returns: v.null(),
   handler: async (ctx, args) => {
-    if (!(await isAdmin(ctx))) throw new ConvexError("Unauthorized");
+    const { authUser } = await getCurrentAppUser(ctx);
+    if (!(await isAdmin(authUser))) throw new ConvexError("Unauthorized");
 
     const project = await ctx.db.get("projects", args.id);
     if (!project) throw new ConvexError("Project not found");
@@ -178,7 +267,8 @@ export const rejectProject = mutation({
   args: { id: v.id("projects") },
   returns: v.null(),
   handler: async (ctx, args) => {
-    if (!(await isAdmin(ctx))) throw new ConvexError("Unauthorized");
+    const { authUser } = await getCurrentAppUser(ctx);
+    if (!(await isAdmin(authUser))) throw new ConvexError("Unauthorized");
 
     const project = await ctx.db.get("projects", args.id);
     if (!project) throw new ConvexError("Project not found");
@@ -195,66 +285,10 @@ export const isAdminQuery = query({
   args: {},
   returns: v.boolean(),
   handler: async (ctx) => {
-    return await isAdmin(ctx);
-  },
-});
-
-export const getCategories = query({
-  args: {},
-  returns: v.array(
-    v.object({
-      _id: v.id("categories"),
-      _creationTime: v.number(),
-      name: v.string(),
-      slug: v.string(),
-    }),
-  ),
-  handler: async (ctx) => {
-    return await ctx.db.query("categories").collect();
-  },
-});
-
-export const seedCategories = mutation({
-  args: {},
-  returns: v.null(),
-  handler: async (ctx) => {
-    if (!(await isAdmin(ctx))) throw new ConvexError("Unauthorized");
-
-    const categories = [
-      { name: "Developer Tools", slug: "developer-tools" },
-      { name: "Productivity", slug: "productivity" },
-      { name: "Finance", slug: "finance" },
-      { name: "Health", slug: "health" },
-      { name: "AI", slug: "ai" },
-      { name: "Analytics", slug: "analytics" },
-      { name: "Marketing", slug: "marketing" },
-      { name: "Sales", slug: "sales" },
-      { name: "Customer Support", slug: "customer-support" },
-      { name: "Design", slug: "design" },
-      { name: "Collaboration", slug: "collaboration" },
-      { name: "Education", slug: "education" },
-      { name: "E-commerce", slug: "e-commerce" },
-      { name: "Security", slug: "security" },
-      { name: "Infrastructure", slug: "infrastructure" },
-      { name: "Operations", slug: "operations" },
-      { name: "HR", slug: "hr" },
-      { name: "Legal", slug: "legal" },
-      { name: "Real Estate", slug: "real-estate" },
-      { name: "Travel", slug: "travel" },
-      { name: "Media", slug: "media" },
-      { name: "Open Source", slug: "open-source" },
-      { name: "Components", slug: "components" },
-    ];
-
-    for (const cat of categories) {
-      const existing = await ctx.db
-        .query("categories")
-        .withIndex("by_slug", (q) => q.eq("slug", cat.slug))
-        .unique();
-      if (!existing) {
-        await ctx.db.insert("categories", cat);
-      }
+    const authUser = await authComponent.safeGetAuthUser(ctx);
+    if (!authUser) {
+      return false;
     }
-    return null;
+    return await isAdmin(authUser);
   },
 });

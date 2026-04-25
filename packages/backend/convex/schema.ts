@@ -2,95 +2,6 @@ import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
 export const tables = {
-  user: defineTable({
-    name: v.string(),
-    email: v.string(),
-    emailVerified: v.boolean(),
-    image: v.optional(v.union(v.null(), v.string())),
-    createdAt: v.number(),
-    updatedAt: v.number(),
-  })
-    .index("email_name", ["email", "name"])
-    .index("email", ["email"]),
-  session: defineTable({
-    expiresAt: v.number(),
-    token: v.string(),
-    createdAt: v.number(),
-    updatedAt: v.number(),
-    ipAddress: v.optional(v.union(v.null(), v.string())),
-    userAgent: v.optional(v.union(v.null(), v.string())),
-    userId: v.string(),
-    activeOrganizationId: v.optional(v.union(v.null(), v.string())),
-  })
-    .index("expiresAt", ["expiresAt"])
-    .index("token", ["token"])
-    .index("userId", ["userId"]),
-  account: defineTable({
-    accountId: v.string(),
-    providerId: v.string(),
-    userId: v.string(),
-    accessToken: v.optional(v.union(v.null(), v.string())),
-    refreshToken: v.optional(v.union(v.null(), v.string())),
-    idToken: v.optional(v.union(v.null(), v.string())),
-    accessTokenExpiresAt: v.optional(v.union(v.null(), v.number())),
-    refreshTokenExpiresAt: v.optional(v.union(v.null(), v.number())),
-    scope: v.optional(v.union(v.null(), v.string())),
-    password: v.optional(v.union(v.null(), v.string())),
-    createdAt: v.number(),
-    updatedAt: v.number(),
-  })
-    .index("accountId", ["accountId"])
-    .index("providerId_userId", ["providerId", "userId"])
-    .index("userId", ["userId"]),
-  verification: defineTable({
-    identifier: v.string(),
-    value: v.string(),
-    expiresAt: v.number(),
-    createdAt: v.number(),
-    updatedAt: v.number(),
-  })
-    .index("expiresAt", ["expiresAt"])
-    .index("identifier", ["identifier"]),
-  jwks: defineTable({
-    publicKey: v.string(),
-    privateKey: v.string(),
-    createdAt: v.number(),
-    expiresAt: v.optional(v.union(v.null(), v.number())),
-  }),
-  organization: defineTable({
-    name: v.string(),
-    slug: v.string(),
-    logo: v.optional(v.union(v.null(), v.string())),
-    createdAt: v.number(),
-    metadata: v.optional(v.union(v.null(), v.string())),
-  })
-    .index("name", ["name"])
-    .index("slug", ["slug"]),
-  member: defineTable({
-    organizationId: v.string(),
-    userId: v.string(),
-    role: v.string(),
-    createdAt: v.number(),
-  })
-    .index("organizationId", ["organizationId"])
-    .index("userId", ["userId"])
-    .index("role", ["role"])
-    .index("organizationId_userId", ["organizationId", "userId"]),
-  invitation: defineTable({
-    organizationId: v.string(),
-    email: v.string(),
-    role: v.optional(v.union(v.null(), v.string())),
-    status: v.string(),
-    expiresAt: v.number(),
-    createdAt: v.number(),
-    inviterId: v.string(),
-  })
-    .index("organizationId", ["organizationId"])
-    .index("email", ["email"])
-    .index("role", ["role"])
-    .index("status", ["status"])
-    .index("inviterId", ["inviterId"])
-    .index("organizationId_status", ["organizationId", "status"]),
   emailEvents: defineTable({
     event: v.string(),
     email: v.string(),
@@ -107,6 +18,15 @@ export const tables = {
     .index("by_messageId", ["messageId"])
     .index("by_event", ["event"])
     .index("by_ts", ["ts"]),
+  users: defineTable({
+    authId: v.string(),
+    name: v.string(),
+    email: v.string(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_authId", ["authId"])
+    .index("by_email", ["email"]),
   projects: defineTable({
     title: v.string(),
     description: v.string(),
@@ -117,9 +37,10 @@ export const tables = {
       v.literal("open-source"),
       v.literal("component"),
     ),
-    categoryId: v.id("categories"),
-    ownerId: v.optional(v.id("user")), // Better typing
-    createdBy: v.id("user"), // Better typing
+    categorySlug: v.optional(v.string()),
+    categoryId: v.optional(v.id("categories")),
+    ownerId: v.optional(v.string()),
+    createdBy: v.string(),
     status: v.union(v.literal("pending"), v.literal("approved"), v.literal("rejected")),
     createdAt: v.number(),
     updatedAt: v.number(),
@@ -141,6 +62,7 @@ export const tables = {
     createdAt: v.number(),
   })
     .index("by_projectId", ["projectId"])
+    .index("by_projectId_and_userId", ["projectId", "userId"])
     .index("by_userId", ["userId"])
     .index("by_status", ["status"]),
 };

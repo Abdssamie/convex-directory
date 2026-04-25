@@ -13,7 +13,7 @@ import { ModeToggle } from "@/components/mode-toggle";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { authClient } from "@/lib/auth-client";
 import { LocalizedLink } from "@/components/localized-link";
-import { useIntlayer } from "react-intlayer";
+import { useLandingContent } from "./content";
 
 // TODO: wire up to a real project search query
 function SearchBox({ className = "", placeholder }: { className?: string; placeholder: string }) {
@@ -37,12 +37,12 @@ function SearchBox({ className = "", placeholder }: { className?: string; placeh
 export function LandingNavbar() {
   const [isOpen, setIsOpen] = useState(false);
   const session = authClient.useSession();
-  const content = useIntlayer("landing");
+  const content = useLandingContent();
   const isAuthenticated = !!session.data;
 
   const navItems = [
-    { name: content.navbar.directory.value, href: "#directory" },
-    { name: content.navbar.submit.value, href: "/sign-up" },
+    { name: content.navbar.directory, href: "#directory" },
+    { name: content.navbar.submit, href: "/sign-up" },
   ];
 
   return (
@@ -70,7 +70,7 @@ export function LandingNavbar() {
         {/* Desktop search */}
         <SearchBox
           className="hidden md:flex w-56 lg:w-72"
-          placeholder={content.navbar.searchPlaceholder.value}
+          placeholder={content.navbar.searchPlaceholder}
         />
 
         {/* Desktop CTA */}
@@ -129,7 +129,7 @@ export function LandingNavbar() {
 
             <nav className="flex-1 overflow-y-auto p-4 space-y-3">
               {/* Mobile search */}
-              <SearchBox className="w-full" placeholder={content.navbar.searchPlaceholder.value} />
+              <SearchBox className="w-full" placeholder={content.navbar.searchPlaceholder} />
 
               {navItems.map((item) => (
                 <a
@@ -154,7 +154,6 @@ export function LandingNavbar() {
                 >
                   <LocalizedLink to="/dashboard">
                     <LayoutDashboard className="h-4 w-4" />
-                    Paste rows
                     {content.navbar.dashboard}
                   </LocalizedLink>
                 </Button>
