@@ -7,6 +7,7 @@ const appSidebarDictionary = {
       {
         label: t({ en: "Directory", fr: "Répertoire" }),
         items: [
+          { title: t({ en: "Dashboard", fr: "Tableau de bord" }), url: "/dashboard" },
           {
             title: t({ en: "Submit Project", fr: "Soumettre un projet" }),
             url: "/dashboard/submit",
@@ -18,13 +19,6 @@ const appSidebarDictionary = {
         label: t({ en: "Admin", fr: "Admin" }),
         items: [
           { title: t({ en: "Review Queue", fr: "File de révision" }), url: "/dashboard/admin" },
-        ],
-      },
-      {
-        label: t({ en: "Dashboards", fr: "Tableaux de bord" }),
-        items: [
-          { title: t({ en: "Dashboard", fr: "Tableau de bord" }), url: "/dashboard" },
-          { title: t({ en: "Home", fr: "Accueil" }), url: "/" },
         ],
       },
       {

@@ -1,5 +1,8 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
+import { useIntlayer } from "react-intlayer";
+
 import SignUpForm from "@/components/sign-up-form";
+import AuthLayout from "@/components/auth-layout";
 
 export const Route = createFileRoute("/{-$locale}/sign-up")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -18,10 +21,11 @@ export const Route = createFileRoute("/{-$locale}/sign-up")({
 
 function SignUpPage() {
   const { redirectTo } = Route.useSearch();
+  const content = useIntlayer("sign-up-form");
 
   return (
-    <div className="flex min-h-svh items-center justify-center">
+    <AuthLayout title={content.title.value} description={content.description.value}>
       <SignUpForm redirectTo={redirectTo ?? "/dashboard"} />
-    </div>
+    </AuthLayout>
   );
 }

@@ -66,9 +66,7 @@ export default function SignUpForm({
   });
 
   return (
-    <div className="mx-auto w-full mt-10 max-w-md p-6">
-      <h1 className="mb-6 text-center text-3xl font-bold">{content.title}</h1>
-
+    <div className="w-full">
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -90,7 +88,7 @@ export default function SignUpForm({
                   onChange={(e) => field.handleChange(e.target.value)}
                 />
                 {field.state.meta.errors.map((error) => (
-                  <p key={error?.message} className="text-red-500">
+                  <p key={error?.message} className="text-destructive text-sm">
                     {error?.message}
                   </p>
                 ))}
@@ -113,7 +111,7 @@ export default function SignUpForm({
                   onChange={(e) => field.handleChange(e.target.value)}
                 />
                 {field.state.meta.errors.map((error) => (
-                  <p key={error?.message} className="text-red-500">
+                  <p key={error?.message} className="text-destructive text-sm">
                     {error?.message}
                   </p>
                 ))}
@@ -136,7 +134,7 @@ export default function SignUpForm({
                   onChange={(e) => field.handleChange(e.target.value)}
                 />
                 {field.state.meta.errors.map((error) => (
-                  <p key={error?.message} className="text-red-500">
+                  <p key={error?.message} className="text-destructive text-sm">
                     {error?.message}
                   </p>
                 ))}
@@ -156,13 +154,16 @@ export default function SignUpForm({
         </form.Subscribe>
       </form>
 
-      <div className="mt-4 text-center text-sm">
+      <div className="mt-6 text-center text-sm">
         {onSwitchToSignIn ? (
-          <Button variant="link" onClick={onSwitchToSignIn} className="text-primary">
+          <Button variant="link" onClick={onSwitchToSignIn} className="text-primary p-0 h-auto">
             {content.alreadyHaveAccount}
           </Button>
         ) : (
-          <LocalizedLink to="/sign-in" className="text-primary underline-offset-4 hover:underline">
+          <LocalizedLink
+            to="/sign-in"
+            className="text-primary font-medium underline-offset-4 hover:underline"
+          >
             {content.alreadyHaveAccount}
           </LocalizedLink>
         )}

@@ -7,6 +7,10 @@ const signUpFormDictionary = {
       en: "Create Account",
       fr: "Créer un compte",
     }),
+    description: t({
+      en: "Enter your details to create a new account.",
+      fr: "Entrez vos coordonnées pour créer un nouveau compte.",
+    }),
     fields: {
       name: {
         label: t({ en: "Name", fr: "Nom" }),

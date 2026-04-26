@@ -1,4 +1,5 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
+import { useIntlayer } from "react-intlayer";
 
 import AuthLayout from "@/components/auth-layout";
 import SignInForm from "@/components/sign-in-form";
@@ -21,9 +22,10 @@ export const Route = createFileRoute("/{-$locale}/sign-in")({
 
 function RouteComponent() {
   const { redirectTo } = Route.useSearch();
+  const content = useIntlayer("sign-in-form");
 
   return (
-    <AuthLayout title="Sign in" description="Use your password to access your account.">
+    <AuthLayout title={content.title.value} description={content.description?.value}>
       <SignInForm redirectTo={redirectTo ?? "/dashboard"} />
     </AuthLayout>
   );

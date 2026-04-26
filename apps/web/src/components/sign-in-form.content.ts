@@ -4,6 +4,10 @@ const signInFormDictionary = {
   key: "sign-in-form",
   content: {
     title: t({ en: "Welcome Back", fr: "Bon retour" }),
+    description: t({
+      en: "Use your email and password to access your account.",
+      fr: "Utilisez votre e-mail et votre mot de passe pour accéder à votre compte.",
+    }),
     email: t({ en: "Email", fr: "Email" }),
     password: t({ en: "Password", fr: "Mot de passe" }),
     signIn: t({ en: "Sign in", fr: "Se connecter" }),

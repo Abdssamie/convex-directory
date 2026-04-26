@@ -31,6 +31,7 @@ const iconMap: Record<string, LucideIcon> = {
   "/forgot-password": KeyRound,
   "/settings/account": Settings,
   "/directory": FolderSearch,
+  "/dashboard/submit": PlusCircle,
   "/dashboard/projects": PlusCircle,
   "/dashboard/admin": ShieldCheck,
 };
@@ -73,8 +74,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar {...props}>
       <SidebarHeader className="flex flex-row items-center gap-2 px-4 py-3">
-        <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-          <Logo size={20} className="text-white" />
+        <div className="flex aspect-square size-9 items-center justify-center rounded-xl bg-primary shadow-sm">
+          <Logo size={24} white />
         </div>
         <div className="grid flex-1 text-left text-sm leading-tight">
           <span className="truncate font-semibold text-sidebar-foreground">Convex Directory</span>

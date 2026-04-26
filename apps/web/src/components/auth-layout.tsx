@@ -17,7 +17,7 @@ export default function AuthLayout({
   children: ReactNode;
 }) {
   return (
-    <div className="container mx-auto flex min-h-full max-w-md items-center px-4 py-10">
+    <div className="container mx-auto flex min-h-svh max-w-md items-center px-4 py-10">
       <Card className="w-full">
         <CardHeader>
           <CardTitle className="text-xl">{title}</CardTitle>

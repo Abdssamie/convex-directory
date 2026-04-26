@@ -5,7 +5,7 @@ import { magicLink, organization } from "better-auth/plugins";
 
 import { components, internal } from "./_generated/api";
 import type { DataModel } from "./_generated/dataModel";
-import { type ActionCtx } from "./_generated/server";
+import { type ActionCtx, query } from "./_generated/server";
 import authConfig from "./auth.config";
 import authSchema from "./features/auth/schema";
 import {
@@ -84,7 +84,13 @@ export const authComponent = createClient<DataModel, typeof authSchema>(componen
   },
 });
 
-export const { getAuthUser: getCurrentUser } = authComponent.clientApi();
+export const getCurrentUser = query({
+  args: {},
+  handler: async (ctx) => {
+    return await authComponent.safeGetAuthUser(ctx);
+  },
+});
+
 export const { onCreate, onUpdate, onDelete } = authComponent.triggersApi();
 
 function normalizeOrganizationInput<T extends { name?: string; slug?: string; logo?: string }>(

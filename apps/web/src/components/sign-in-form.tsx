@@ -65,8 +65,7 @@ export default function SignInForm({
   }
 
   return (
-    <div className="mx-auto max-w-md p-6 bg-card border rounded-2xl shadow-sm">
-      <h1 className="mb-6 text-center text-3xl font-bold">{content.title}</h1>
+    <div className="w-full">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField
@@ -76,7 +75,7 @@ export default function SignInForm({
               <FormItem>
                 <FormLabel>{content.email}</FormLabel>
                 <FormControl>
-                  <Input placeholder="name@example.com" {...field} className="rounded-xl" />
+                  <Input placeholder="name@example.com" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -89,30 +88,41 @@ export default function SignInForm({
               <FormItem>
                 <FormLabel>{content.password}</FormLabel>
                 <FormControl>
-                  <Input type="password" {...field} className="rounded-xl" />
+                  <Input type="password" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
           <div className="flex justify-end">
-            <LocalizedLink to="/forgot-password" className="text-sm text-primary hover:underline">
+            <LocalizedLink
+              to="/forgot-password"
+              className="text-sm text-muted-foreground hover:text-primary underline-offset-4 hover:underline"
+            >
               {content.forgotPassword}
             </LocalizedLink>
           </div>
-          <Button type="submit" className="w-full rounded-xl" disabled={isLoading}>
+          <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading ? content.signingIn : content.signIn}
           </Button>
         </form>
       </Form>
-      {onSwitchToSignUp && (
-        <div className="mt-6 text-center text-sm">
-          <span className="text-muted-foreground">{content.noAccount} </span>
+
+      <div className="mt-6 text-center text-sm">
+        <span className="text-muted-foreground">{content.noAccount} </span>
+        {onSwitchToSignUp ? (
           <button onClick={onSwitchToSignUp} className="font-medium text-primary hover:underline">
             {content.signUp}
           </button>
-        </div>
-      )}
+        ) : (
+          <LocalizedLink
+            to="/sign-up"
+            className="font-medium text-primary underline-offset-4 hover:underline"
+          >
+            {content.signUp}
+          </LocalizedLink>
+        )}
+      </div>
     </div>
   );
 }

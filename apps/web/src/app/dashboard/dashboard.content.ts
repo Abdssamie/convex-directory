@@ -57,9 +57,32 @@ const dashboardDictionary = {
     welcome: {
       title: t({ en: "Welcome back!", fr: "Bon retour !" }),
       description: t({
-        en: "Manage your projects and submissions from the sidebar.",
-        fr: "Gérez vos projets et soumissions depuis la barre latérale.",
+        en: "Manage your projects and submissions.",
+        fr: "Gérez vos projets et soumissions.",
       }),
+    },
+    submissions: {
+      title: t({ en: "Your Submissions", fr: "Vos soumissions" }),
+      description: t({
+        en: "All projects you've submitted.",
+        fr: "Tous les projets que vous avez soumis.",
+      }),
+      submitNew: t({ en: "Submit New Project", fr: "Soumettre un nouveau projet" }),
+      noSubmissions: t({
+        en: "You haven't submitted any projects yet.",
+        fr: "Vous n'avez encore soumis aucun projet.",
+      }),
+      table: {
+        title: t({ en: "Title", fr: "Titre" }),
+        status: t({ en: "Status", fr: "Statut" }),
+        date: t({ en: "Date", fr: "Date" }),
+        actions: t({ en: "Actions", fr: "Actions" }),
+      },
+      status: {
+        pending: t({ en: "Pending", fr: "En attente" }),
+        approved: t({ en: "Approved", fr: "Approuvé" }),
+        rejected: t({ en: "Rejected", fr: "Rejeté" }),
+      },
     },
   },
 } satisfies Dictionary;

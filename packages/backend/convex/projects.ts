@@ -177,6 +177,35 @@ export const getProjects = query({
   },
 });
 
+export const getUserProjects = query({
+  args: {},
+  returns: v.array(projectValidator),
+  handler: async (ctx) => {
+    const authUser = await authComponent.safeGetAuthUser(ctx);
+    if (!authUser) {
+      return [];
+    }
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_authId", (q) => q.eq("authId", authUser._id))
+      .unique();
+
+    if (!user) {
+      return [];
+    }
+
+    const projects = await ctx.db
+      .query("projects")
+      .withIndex("by_createdBy", (q) => q.eq("createdBy", user._id))
+      .collect();
+
+    return await Promise.all(
+      projects.map((project) => normalizeProject(ctx, project as StoredProject)),
+    );
+  },
+});
+
 export const getProjectById = query({
   args: { id: v.id("projects") },
   returns: v.union(projectValidator, v.null()),
