@@ -4,20 +4,12 @@ import * as React from "react";
 import { useLocalizedNavigate } from "@/hooks/useLocalizedNavigate";
 import type { LocalizedTo } from "@/hooks/useLocalizedNavigate";
 import { Command as CommandPrimitive } from "cmdk";
-import {
-  Search,
-  LayoutDashboard,
-  House,
-  LogIn,
-  UserPlus,
-  KeyRound,
-  Settings,
-  CreditCard,
-  type LucideIcon,
-} from "lucide-react";
+import { Search, Loader2, Folder, X as XIcon } from "lucide-react";
 
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import { useQuery } from "convex/react";
+import { api } from "@convex-directory/backend/convex/_generated/api";
 
 const Command = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive>,
@@ -36,16 +28,29 @@ Command.displayName = CommandPrimitive.displayName;
 
 const CommandInput = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.Input>,
-  React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input>
->(({ className, ...props }, ref) => (
-  <CommandPrimitive.Input
-    ref={ref}
-    className={cn(
-      "flex h-12 w-full border-none bg-transparent px-4 py-3 text-[17px] outline-none placeholder:text-zinc-500 dark:placeholder:text-zinc-400 border-b border-zinc-200 dark:border-zinc-800 mb-4",
-      className,
+  React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input> & {
+    onClear?: () => void;
+  }
+>(({ className, onClear, ...props }, ref) => (
+  <div className="flex items-center border-b border-zinc-200 dark:border-zinc-800 px-4 mb-2">
+    <Search className="mr-3 h-4 w-4 shrink-0 text-zinc-500" />
+    <CommandPrimitive.Input
+      ref={ref}
+      className={cn(
+        "flex h-12 w-full bg-transparent py-3 text-[17px] outline-none placeholder:text-zinc-500 dark:placeholder:text-zinc-400",
+        className,
+      )}
+      {...props}
+    />
+    {props.value && (
+      <button
+        onClick={onClear}
+        className="ml-2 text-zinc-500 hover:text-zinc-700 transition-colors"
+      >
+        <XIcon className="h-4 w-4" />
+      </button>
     )}
-    {...props}
-  />
+  </div>
 ));
 CommandInput.displayName = CommandPrimitive.Input.displayName;
 
@@ -103,13 +108,6 @@ const CommandItem = React.forwardRef<
 ));
 CommandItem.displayName = CommandPrimitive.Item.displayName;
 
-interface SearchItem {
-  title: string;
-  url: string;
-  group: string;
-  icon?: LucideIcon;
-}
-
 interface CommandSearchProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -118,31 +116,17 @@ interface CommandSearchProps {
 export function CommandSearch({ open, onOpenChange }: CommandSearchProps) {
   const navigate = useLocalizedNavigate();
   const commandRef = React.useRef<HTMLDivElement>(null);
+  const [search, setSearch] = React.useState("");
 
-  const searchItems: SearchItem[] = [
-    { title: "Dashboard", url: "/dashboard", group: "Dashboards", icon: LayoutDashboard },
-    { title: "Home", url: "/", group: "Pages", icon: House },
-    { title: "Sign In", url: "/sign-in", group: "Auth", icon: LogIn },
-    { title: "Sign Up", url: "/sign-up", group: "Auth", icon: UserPlus },
-    { title: "Forgot Password", url: "/forgot-password", group: "Auth", icon: KeyRound },
-    { title: "Account", url: "/settings/account", group: "Settings", icon: Settings },
-    { title: "Billing", url: "/settings/billing", group: "Settings", icon: CreditCard },
-  ];
-
-  const groupedItems = searchItems.reduce(
-    (acc, item) => {
-      if (!acc[item.group]) {
-        acc[item.group] = [];
-      }
-      acc[item.group].push(item);
-      return acc;
-    },
-    {} as Record<string, SearchItem[]>,
+  const projectResults = useQuery(
+    api.projects.searchProjects,
+    search.length >= 2 ? { query: search, limit: 5 } : "skip",
   );
 
   const handleSelect = (url: string) => {
     navigate({ to: url as LocalizedTo });
     onOpenChange(false);
+    setSearch("");
     // Bounce effect like Vercel
     if (commandRef.current) {
       commandRef.current.style.transform = "scale(0.96)";
@@ -156,29 +140,67 @@ export function CommandSearch({ open, onOpenChange }: CommandSearchProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="overflow-hidden p-0 shadow-2xl border border-zinc-200 dark:border-zinc-800 max-w-[640px]">
+      <DialogContent
+        className="overflow-hidden p-0 shadow-2xl border border-zinc-200 dark:border-zinc-800 max-w-[640px]"
+        showCloseButton={false}
+      >
         <DialogTitle className="sr-only">Command Search</DialogTitle>
-        <Command ref={commandRef} className="transition-transform duration-100 ease-out">
-          <CommandInput placeholder="What do you need?" autoFocus />
+        <Command
+          ref={commandRef}
+          className="transition-transform duration-100 ease-out"
+          shouldFilter={false}
+        >
+          <CommandInput
+            placeholder="Search projects..."
+            autoFocus
+            value={search}
+            onValueChange={setSearch}
+            onClear={() => setSearch("")}
+          />
           <CommandList>
-            <CommandEmpty>No results found.</CommandEmpty>
-            {Object.entries(groupedItems).map(([group, items]) => (
-              <CommandGroup key={group} heading={group}>
-                {items.map((item) => {
-                  const Icon = item.icon;
-                  return (
-                    <CommandItem
-                      key={item.url}
-                      value={item.title}
-                      onSelect={() => handleSelect(item.url)}
-                    >
-                      {Icon && <Icon className="mr-2 h-4 w-4" />}
-                      {item.title}
-                    </CommandItem>
-                  );
-                })}
+            <CommandEmpty>
+              {projectResults === undefined && search.length >= 2 ? (
+                <div className="flex items-center justify-center py-6 text-sm text-zinc-500">
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Searching projects...
+                </div>
+              ) : (
+                "No results found."
+              )}
+            </CommandEmpty>
+
+            {projectResults && projectResults.length > 0 && (
+              <CommandGroup heading="Projects">
+                {projectResults.map((project) => (
+                  <CommandItem
+                    key={project._id}
+                    value={project.title}
+                    onSelect={() =>
+                      handleSelect(`/directory/${project.categorySlug}/${project._id}`)
+                    }
+                    className="flex items-center gap-3 py-3"
+                  >
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-zinc-100 dark:bg-zinc-800">
+                      {project.productLogoUrl ? (
+                        <img
+                          src={project.productLogoUrl}
+                          alt={project.title}
+                          className="h-6 w-6 rounded-md object-contain"
+                        />
+                      ) : (
+                        <Folder className="h-5 w-5 text-zinc-500" />
+                      )}
+                    </div>
+                    <div className="flex flex-col gap-0.5 overflow-hidden">
+                      <span className="font-medium text-sm leading-tight">{project.title}</span>
+                      <span className="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-1">
+                        {project.description}
+                      </span>
+                    </div>
+                  </CommandItem>
+                ))}
               </CommandGroup>
-            ))}
+            )}
           </CommandList>
         </Command>
       </DialogContent>

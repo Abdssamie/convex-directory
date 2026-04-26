@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Menu, X, LayoutDashboard, Search } from "lucide-react";
 import { Button } from "@convex-directory/ui/components/button";
 import {
@@ -14,31 +14,50 @@ import { LocaleSwitcher } from "@/components/locale-switcher";
 import { authClient } from "@/lib/auth-client";
 import { LocalizedLink } from "@/components/localized-link";
 import { useLandingContent } from "./content";
+import { CommandSearch } from "@/components/command-search";
 
-// TODO: wire up to a real project search query
-function SearchBox({ className = "", placeholder }: { className?: string; placeholder: string }) {
-  const [query, setQuery] = useState("");
-
+function SearchTrigger({
+  className = "",
+  placeholder,
+  onClick,
+}: {
+  className?: string;
+  placeholder: string;
+  onClick: () => void;
+}) {
   return (
-    <div className={`relative flex items-center ${className}`}>
-      <Search className="pointer-events-none absolute left-3 h-4 w-4 text-muted-foreground" />
-      <input
-        type="search"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        placeholder={placeholder}
-        className="h-9 w-full rounded-lg border border-input bg-background pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-colors"
-        aria-label={placeholder}
-      />
-    </div>
+    <button
+      onClick={onClick}
+      className={`relative flex items-center group cursor-text ${className}`}
+    >
+      <Search className="absolute left-3 h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+      <div className="h-9 w-full rounded-lg border border-input bg-background pl-9 pr-3 text-sm text-muted-foreground flex items-center justify-between hover:bg-accent/50 transition-colors text-left">
+        <span>{placeholder}</span>
+        <kbd className="pointer-events-none hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
+          <span className="text-xs">⌘</span>K
+        </kbd>
+      </div>
+    </button>
   );
 }
 
 export function LandingNavbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const session = authClient.useSession();
   const content = useLandingContent();
   const isAuthenticated = !!session.data;
+
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        setSearchOpen((open) => !open);
+      }
+    };
+    document.addEventListener("keydown", down);
+    return () => document.removeEventListener("keydown", down);
+  }, []);
 
   const navItems = [
     { name: content.navbar.directory, to: "/" },
@@ -68,9 +87,10 @@ export function LandingNavbar() {
         </nav>
 
         {/* Desktop search */}
-        <SearchBox
+        <SearchTrigger
           className="hidden md:flex w-56 lg:w-72"
           placeholder={content.navbar.searchPlaceholder}
+          onClick={() => setSearchOpen(true)}
         />
 
         {/* Desktop CTA */}
@@ -129,7 +149,14 @@ export function LandingNavbar() {
 
             <nav className="flex-1 overflow-y-auto p-4 space-y-3">
               {/* Mobile search */}
-              <SearchBox className="w-full" placeholder={content.navbar.searchPlaceholder} />
+              <SearchTrigger
+                className="w-full"
+                placeholder={content.navbar.searchPlaceholder}
+                onClick={() => {
+                  setIsOpen(false);
+                  setSearchOpen(true);
+                }}
+              />
 
               {navItems.map((item) => (
                 <LocalizedLink
@@ -184,6 +211,7 @@ export function LandingNavbar() {
           </SheetContent>
         </Sheet>
       </div>
+      <CommandSearch open={searchOpen} onOpenChange={setSearchOpen} />
     </header>
   );
 }

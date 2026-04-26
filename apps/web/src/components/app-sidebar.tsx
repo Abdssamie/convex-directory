@@ -15,8 +15,8 @@ import {
 } from "lucide-react";
 import { api } from "@convex-directory/backend/convex/_generated/api";
 import { useQuery } from "convex/react";
-import { useIntlayer } from "react-intlayer";
 import { type To } from "@/components/localized-link";
+import { useIntlayer } from "react-intlayer";
 import { Logo } from "@/components/logo";
 
 import { NavMain } from "@/components/nav-main";

@@ -20,7 +20,6 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-
 import { useIntlayer } from "react-intlayer";
 
 export function NavUser({
@@ -76,7 +75,7 @@ export function NavUser({
               <DropdownMenuItem asChild className="cursor-pointer">
                 <LocalizedLink to="/settings/account">
                   <CircleUser />
-                  {content.profile.title.value}
+                  {content.profile.title}
                 </LocalizedLink>
               </DropdownMenuItem>
             </DropdownMenuGroup>

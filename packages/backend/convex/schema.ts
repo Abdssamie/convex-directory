@@ -46,11 +46,24 @@ export const tables = {
     updatedAt: v.number(),
     productLogoKey: v.optional(v.string()),
     screenshotKey: v.optional(v.string()),
+    searchableText: v.optional(v.string()),
   })
     .index("by_status", ["status"])
     .index("by_type", ["type"])
     .index("by_ownerId", ["ownerId"])
-    .index("by_createdBy", ["createdBy"]),
+    .index("by_createdBy", ["createdBy"])
+    .searchIndex("search_all", {
+      searchField: "searchableText",
+      filterFields: ["status"],
+    })
+    .searchIndex("search_title", {
+      searchField: "title",
+      filterFields: ["status"],
+    })
+    .searchIndex("search_description", {
+      searchField: "description",
+      filterFields: ["status"],
+    }),
   categories: defineTable({
     name: v.string(),
     slug: v.string(),

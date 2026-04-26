@@ -24,7 +24,6 @@ const accountSettingsDictionary = {
     security: {
       title: t({ en: "Security", fr: "Sécurité" }),
       resetPassword: t({ en: "Reset password", fr: "Réinitialiser le mot de passe" }),
-      openBilling: t({ en: "Open billing", fr: "Ouvrir la facturation" }),
     },
   },
 } satisfies Dictionary;

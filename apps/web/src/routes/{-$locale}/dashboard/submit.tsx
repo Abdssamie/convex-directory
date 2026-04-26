@@ -10,10 +10,7 @@ export const Route = createFileRoute("/{-$locale}/dashboard/submit")({
 function SubmitProjectPage() {
   const content = useIntlayer("submit-project-form");
   return (
-    <BaseLayout
-      title={content.title.toString()}
-      description={content.fields.description.placeholder.toString()}
-    >
+    <BaseLayout title={content.title} description={content.fields.description.placeholder}>
       <div className="px-4 lg:px-6 py-8">
         <SubmitProjectForm />
       </div>

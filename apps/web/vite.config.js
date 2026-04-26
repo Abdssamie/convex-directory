@@ -6,7 +6,6 @@ import viteReact from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 import { intlayer } from "vite-intlayer";
 import tsconfigPaths from "vite-tsconfig-paths";
-
 export default defineConfig({
   plugins: [
     cloudflare({ viteEnvironment: { name: "ssr" } }),
@@ -37,7 +36,6 @@ export default defineConfig({
   ssr: {
     noExternal: [
       "@convex-dev/better-auth",
-      "@convex-dev/react-query",
       "@tanstack/react-query",
       "@tanstack/react-router",
       "@tanstack/react-router-ssr-query",

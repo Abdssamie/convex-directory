@@ -211,6 +211,7 @@ export const submitProject = mutation({
 
     return await ctx.db.insert("projects", {
       ...args,
+      searchableText: `${args.title} ${args.description}`.toLowerCase(),
       createdBy: user._id,
       status: "pending",
       createdAt: Date.now(),
@@ -276,6 +277,7 @@ export const bulkCreateProjectsByAdmin = mutation({
     for (const project of args.projects) {
       const createdId = await ctx.db.insert("projects", {
         ...project,
+        searchableText: `${project.title} ${project.description}`.toLowerCase(),
         createdBy: user._id,
         status: "approved",
         createdAt: now,
@@ -410,5 +412,75 @@ export const getApprovedProjectsOwnershipStatus = query({
         };
       }),
     );
+  },
+});
+
+export const searchProjects = query({
+  args: {
+    query: v.string(),
+    limit: v.optional(v.number()),
+  },
+  returns: v.array(projectValidator),
+  handler: async (ctx, args) => {
+    if (!args.query) {
+      return [];
+    }
+
+    const limit = args.limit ?? 10;
+
+    // Search by combined searchableText index for best results
+    const matches = await ctx.db
+      .query("projects")
+      .withSearchIndex("search_all", (q) =>
+        q.search("searchableText", args.query).eq("status", "approved"),
+      )
+      .take(limit);
+
+    // Fallback or additional search by title if needed
+    let finalMatches = matches;
+    if (finalMatches.length < limit) {
+      const titleMatches = await ctx.db
+        .query("projects")
+        .withSearchIndex("search_title", (q) =>
+          q.search("title", args.query).eq("status", "approved"),
+        )
+        .take(limit);
+
+      // Deduplicate
+      const seen = new Set(finalMatches.map((m) => m._id));
+      for (const m of titleMatches) {
+        if (!seen.has(m._id)) {
+          finalMatches.push(m);
+          seen.add(m._id);
+        }
+      }
+    }
+
+    // Normalize and return
+    return await Promise.all(
+      finalMatches
+        .slice(0, limit)
+        .map((project) => normalizeProject(ctx, project as StoredProject)),
+    );
+  },
+});
+
+export const backfillSearchableText = mutation({
+  args: {},
+  returns: v.number(),
+  handler: async (ctx) => {
+    const { authUser } = await getCurrentAppUser(ctx);
+    if (!(await isAdmin(authUser))) throw new ConvexError("Unauthorized");
+
+    const projects = await ctx.db.query("projects").collect();
+    let updatedCount = 0;
+
+    for (const project of projects) {
+      const searchableText = `${project.title} ${project.description}`.toLowerCase();
+      await ctx.db.patch(project._id, { searchableText });
+      updatedCount += 1;
+    }
+
+    return updatedCount;
   },
 });
