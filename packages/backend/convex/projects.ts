@@ -254,14 +254,14 @@ export const updateProject = mutation({
     const { id, ...patch } = args;
 
     // If title or description is being updated, we must update searchableText
-    if (patch.title !== undefined || patch.description !== undefined) {
-      const newTitle = patch.title ?? project.title;
-      const newDescription = patch.description ?? project.description;
-      (patch as any).searchableText = `${newTitle} ${newDescription}`.toLowerCase();
-    }
+    const searchableText =
+      patch.title !== undefined || patch.description !== undefined
+        ? `${patch.title ?? project.title} ${patch.description ?? project.description}`.toLowerCase()
+        : undefined;
 
     await ctx.db.patch(id, {
       ...patch,
+      ...(searchableText ? { searchableText } : {}),
       updatedAt: Date.now(),
     });
 
