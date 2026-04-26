@@ -55,14 +55,6 @@ export const tables = {
     .searchIndex("search_all", {
       searchField: "searchableText",
       filterFields: ["status"],
-    })
-    .searchIndex("search_title", {
-      searchField: "title",
-      filterFields: ["status"],
-    })
-    .searchIndex("search_description", {
-      searchField: "description",
-      filterFields: ["status"],
     }),
   categories: defineTable({
     name: v.string(),

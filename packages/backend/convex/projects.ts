@@ -220,6 +220,55 @@ export const submitProject = mutation({
   },
 });
 
+export const updateProject = mutation({
+  args: {
+    id: v.id("projects"),
+    title: v.optional(v.string()),
+    description: v.optional(v.string()),
+    url: v.optional(v.string()),
+    type: v.optional(
+      v.union(
+        v.literal("saas"),
+        v.literal("tool"),
+        v.literal("open-source"),
+        v.literal("component"),
+      ),
+    ),
+    categorySlug: v.optional(categorySlugValidator),
+    productLogoKey: v.optional(v.string()),
+    screenshotKey: v.optional(v.string()),
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const { user, authUser } = await getCurrentAppUser(ctx);
+    const project = await ctx.db.get(args.id);
+    if (!project) throw new ConvexError("Project not found");
+
+    const isUserAdmin = await isAdmin(authUser);
+    const isOwner = project.ownerId === user._id || project.createdBy === user._id;
+
+    if (!isUserAdmin && !isOwner) {
+      throw new ConvexError("Unauthorized");
+    }
+
+    const { id, ...patch } = args;
+
+    // If title or description is being updated, we must update searchableText
+    if (patch.title !== undefined || patch.description !== undefined) {
+      const newTitle = patch.title ?? project.title;
+      const newDescription = patch.description ?? project.description;
+      (patch as any).searchableText = `${newTitle} ${newDescription}`.toLowerCase();
+    }
+
+    await ctx.db.patch(id, {
+      ...patch,
+      updatedAt: Date.now(),
+    });
+
+    return null;
+  },
+});
+
 export const bulkCreateProjectsByAdmin = mutation({
   args: {
     projects: v.array(
@@ -436,51 +485,9 @@ export const searchProjects = query({
       )
       .take(limit);
 
-    // Fallback or additional search by title if needed
-    let finalMatches = matches;
-    if (finalMatches.length < limit) {
-      const titleMatches = await ctx.db
-        .query("projects")
-        .withSearchIndex("search_title", (q) =>
-          q.search("title", args.query).eq("status", "approved"),
-        )
-        .take(limit);
-
-      // Deduplicate
-      const seen = new Set(finalMatches.map((m) => m._id));
-      for (const m of titleMatches) {
-        if (!seen.has(m._id)) {
-          finalMatches.push(m);
-          seen.add(m._id);
-        }
-      }
-    }
-
     // Normalize and return
     return await Promise.all(
-      finalMatches
-        .slice(0, limit)
-        .map((project) => normalizeProject(ctx, project as StoredProject)),
+      matches.map((project) => normalizeProject(ctx, project as StoredProject)),
     );
-  },
-});
-
-export const backfillSearchableText = mutation({
-  args: {},
-  returns: v.number(),
-  handler: async (ctx) => {
-    const { authUser } = await getCurrentAppUser(ctx);
-    if (!(await isAdmin(authUser))) throw new ConvexError("Unauthorized");
-
-    const projects = await ctx.db.query("projects").collect();
-    let updatedCount = 0;
-
-    for (const project of projects) {
-      const searchableText = `${project.title} ${project.description}`.toLowerCase();
-      await ctx.db.patch(project._id, { searchableText });
-      updatedCount += 1;
-    }
-
-    return updatedCount;
   },
 });
