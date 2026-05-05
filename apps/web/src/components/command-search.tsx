@@ -175,9 +175,7 @@ export function CommandSearch({ open, onOpenChange }: CommandSearchProps) {
                   <CommandItem
                     key={project._id}
                     value={project.title}
-                    onSelect={() =>
-                      handleSelect(`/directory/${project.categorySlug}/${project._id}`)
-                    }
+                    onSelect={() => handleSelect(`/products/${project._id}`)}
                     className="flex items-center gap-3 py-3"
                   >
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-zinc-100 dark:bg-zinc-800">
