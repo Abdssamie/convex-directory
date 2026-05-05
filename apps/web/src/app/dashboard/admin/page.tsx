@@ -20,18 +20,37 @@ export default function AdminDashboard() {
     api.projects.getProjectsForAdmin,
     isAdmin ? { status: "pending" } : "skip",
   );
+  const approvedProjects = useQuery(
+    api.projects.getProjectsForAdmin,
+    isAdmin ? { status: "approved" } : "skip",
+  );
   const pendingClaims = useQuery(api.claims.getPendingClaims, isAdmin ? {} : "skip");
+  const openReports = useQuery(api.reports.getOpenProjectReports, isAdmin ? {} : "skip");
   const content = useIntlayer("dashboard");
 
   const approveProject = useMutation(api.projects.approveProject);
   const rejectProject = useMutation(api.projects.rejectProject);
   const approveClaim = useMutation(api.claims.approveClaim);
   const rejectClaim = useMutation(api.claims.rejectClaim);
+  const resolveProjectReport = useMutation(api.reports.resolveProjectReport);
+  const setProjectCuration = useMutation(api.projects.setProjectCuration);
 
   const handleApproveProject = async (id: Id<"projects">) => {
     try {
       await approveProject({ id });
       toast.success(content.admin.toast.projectApproved);
+    } catch {
+      toast.error(content.admin.toast.error);
+    }
+  };
+
+  const handleResolveReport = async (
+    reportId: Id<"projectReports">,
+    status: "resolved" | "dismissed",
+  ) => {
+    try {
+      await resolveProjectReport({ reportId, status });
+      toast.success("Report updated");
     } catch {
       toast.error(content.admin.toast.error);
     }
@@ -123,6 +142,42 @@ export default function AdminDashboard() {
         </section>
 
         <section>
+          <h2 className="text-2xl font-bold mb-4">Curation</h2>
+          <div className="grid gap-4">
+            {approvedProjects?.slice(0, 12).map((project) => (
+              <Card key={project._id} className="rounded-2xl">
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <div>
+                    <CardTitle>{project.title}</CardTitle>
+                    <CardDescription>{project.url}</CardDescription>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant={project.featured ? "default" : "outline"}
+                      onClick={() =>
+                        setProjectCuration({ id: project._id, featured: !project.featured })
+                      }
+                      className="rounded-xl"
+                    >
+                      Featured
+                    </Button>
+                    <Button
+                      variant={project.staffPick ? "default" : "outline"}
+                      onClick={() =>
+                        setProjectCuration({ id: project._id, staffPick: !project.staffPick })
+                      }
+                      className="rounded-xl"
+                    >
+                      Staff pick
+                    </Button>
+                  </div>
+                </CardHeader>
+              </Card>
+            ))}
+          </div>
+        </section>
+
+        <section>
           <h2 className="text-2xl font-bold mb-4">{content.admin.claims.title}</h2>
           <div className="grid gap-4">
             {pendingClaims?.length === 0 && (
@@ -155,7 +210,53 @@ export default function AdminDashboard() {
                   <p>
                     {content.admin.claims.reason}: {c.reason}
                   </p>
+                  {c.evidenceUrl && (
+                    <p className="text-sm">
+                      Evidence URL:{" "}
+                      <a href={c.evidenceUrl} target="_blank" rel="noopener noreferrer">
+                        {c.evidenceUrl}
+                      </a>
+                    </p>
+                  )}
+                  {c.evidenceText && <p className="text-sm">Evidence: {c.evidenceText}</p>}
                 </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+
+        <section>
+          <h2 className="text-2xl font-bold mb-4">Open Reports</h2>
+          <div className="grid gap-4">
+            {openReports?.length === 0 && <p className="text-muted-foreground">No open reports.</p>}
+            {openReports?.map((report) => (
+              <Card key={report._id} className="rounded-2xl">
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <div>
+                    <CardTitle>{report.projectTitle}</CardTitle>
+                    <CardDescription>{report.reason}</CardDescription>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={() => handleResolveReport(report._id, "resolved")}
+                      className="rounded-xl"
+                    >
+                      Resolve
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => handleResolveReport(report._id, "dismissed")}
+                      className="rounded-xl"
+                    >
+                      Dismiss
+                    </Button>
+                  </div>
+                </CardHeader>
+                {report.details && (
+                  <CardContent>
+                    <p className="text-sm">{report.details}</p>
+                  </CardContent>
+                )}
               </Card>
             ))}
           </div>

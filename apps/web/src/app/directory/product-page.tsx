@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "convex/react";
 import { Authenticated, Unauthenticated } from "convex/react";
 import { api } from "@convex-directory/backend/convex/_generated/api";
@@ -16,6 +16,7 @@ import {
   Clock,
   ShieldCheck,
   Link2,
+  Flag,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@convex-directory/ui/components/button";
@@ -32,6 +33,7 @@ import {
 } from "@convex-directory/ui/components/dialog";
 import { Textarea } from "@convex-directory/ui/components/textarea";
 import { Label } from "@convex-directory/ui/components/label";
+import { Input } from "@convex-directory/ui/components/input";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -69,7 +71,15 @@ export function ProductPage({ projectId }: ProductPageProps) {
   const claimStatus = useQuery(api.claims.getProjectClaimStatus, { projectId });
   const isAdmin = useQuery(api.projects.isAdminQuery);
   const submitClaim = useMutation(api.claims.submitClaim);
+  const submitReport = useMutation(api.reports.submitProjectReport);
+  const trackProjectEvent = useMutation(api.projects.trackProjectEvent);
   const [isClaiming, setIsClaiming] = useState(false);
+
+  useEffect(() => {
+    if (project?._id) {
+      void trackProjectEvent({ projectId: project._id, event: "view" });
+    }
+  }, [project?._id, trackProjectEvent]);
 
   const categoryName =
     PROJECT_CATEGORIES.find((c) => c.slug === project?.categorySlug)?.name ??
@@ -96,10 +106,10 @@ export function ProductPage({ projectId }: ProductPageProps) {
       })()
     : null;
 
-  const handleClaim = async (reason: string) => {
+  const handleClaim = async (reason: string, evidenceUrl?: string, evidenceText?: string) => {
     setIsClaiming(true);
     try {
-      await submitClaim({ projectId, reason });
+      await submitClaim({ projectId, reason, evidenceUrl, evidenceText });
       toast.success("Claim submitted! We'll review your request shortly.");
       return true;
     } catch (err: unknown) {
@@ -111,16 +121,22 @@ export function ProductPage({ projectId }: ProductPageProps) {
     }
   };
 
+  const handleVisitWebsite = () => {
+    void trackProjectEvent({ projectId, event: "outbound_click" });
+  };
+
   function ClaimOwnershipDialog({
     projectTitle,
     onClaim,
     isClaiming,
   }: {
     projectTitle: string;
-    onClaim: (reason: string) => Promise<boolean>;
+    onClaim: (reason: string, evidenceUrl?: string, evidenceText?: string) => Promise<boolean>;
     isClaiming: boolean;
   }) {
     const [reason, setReason] = useState("");
+    const [evidenceUrl, setEvidenceUrl] = useState("");
+    const [evidenceText, setEvidenceText] = useState("");
     const [open, setOpen] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -129,7 +145,7 @@ export function ProductPage({ projectId }: ProductPageProps) {
         toast.error("Please provide a reason for your claim.");
         return;
       }
-      const success = await onClaim(reason);
+      const success = await onClaim(reason, evidenceUrl || undefined, evidenceText || undefined);
       if (success) {
         setOpen(false);
       }
@@ -159,6 +175,26 @@ export function ProductPage({ projectId }: ProductPageProps) {
                   required
                 />
               </div>
+              <div className="grid gap-2">
+                <Label htmlFor="evidenceUrl">Evidence URL</Label>
+                <Input
+                  id="evidenceUrl"
+                  placeholder="https://github.com/owner/repo or https://yourdomain.com"
+                  value={evidenceUrl}
+                  onChange={(e) => setEvidenceUrl(e.target.value)}
+                  className="rounded-xl"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="evidenceText">Verification notes</Label>
+                <Textarea
+                  id="evidenceText"
+                  placeholder="Email domain, repository access, launch post, or other proof."
+                  value={evidenceText}
+                  onChange={(e) => setEvidenceText(e.target.value)}
+                  className="rounded-xl min-h-[80px]"
+                />
+              </div>
             </div>
             <DialogFooter>
               <Button type="submit" disabled={isClaiming} className="rounded-xl">
@@ -177,6 +213,70 @@ export function ProductPage({ projectId }: ProductPageProps) {
       .then(() => toast.success("Link copied to clipboard!"))
       .catch(() => toast.error("Failed to copy link."));
   };
+
+  function ReportProjectDialog({ projectTitle }: { projectTitle: string }) {
+    const [open, setOpen] = useState(false);
+    const [reason, setReason] = useState("");
+    const [details, setDetails] = useState("");
+
+    const handleSubmit = async (event: React.FormEvent) => {
+      event.preventDefault();
+      try {
+        await submitReport({ projectId, reason, details: details || undefined });
+        toast.success("Report submitted.");
+        setReason("");
+        setDetails("");
+        setOpen(false);
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : "Failed to submit report.");
+      }
+    };
+
+    return (
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          <Button variant="outline" size="sm" className="w-full rounded-xl gap-2">
+            <Flag className="h-3.5 w-3.5" />
+            Report listing
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[425px] rounded-2xl">
+          <form onSubmit={handleSubmit}>
+            <DialogHeader>
+              <DialogTitle>Report {projectTitle}</DialogTitle>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid gap-2">
+                <Label htmlFor="reportReason">Reason</Label>
+                <Input
+                  id="reportReason"
+                  value={reason}
+                  onChange={(event) => setReason(event.target.value)}
+                  placeholder="Broken link, spam, wrong owner..."
+                  className="rounded-xl"
+                  required
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="reportDetails">Details</Label>
+                <Textarea
+                  id="reportDetails"
+                  value={details}
+                  onChange={(event) => setDetails(event.target.value)}
+                  className="rounded-xl min-h-[100px]"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="submit" className="rounded-xl">
+                Submit report
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   // ── Loading skeleton ────────────────────────────────────────────────────────
   if (project === undefined) {
@@ -334,7 +434,12 @@ export function ProductPage({ projectId }: ProductPageProps) {
 
               {/* Visit website CTA */}
               <Button variant="outline" asChild className="gap-2 rounded-xl w-fit">
-                <a href={project.url} target="_blank" rel="noopener noreferrer">
+                <a
+                  href={project.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={handleVisitWebsite}
+                >
                   <ExternalLink className="h-4 w-4" />
                   Visit website
                 </a>
@@ -491,6 +596,15 @@ export function ProductPage({ projectId }: ProductPageProps) {
                     {project.ownerId ? "Claimed" : "Unclaimed"}
                   </span>
                 </div>
+                {project.ownerId && (
+                  <div className="flex items-center justify-between gap-3 text-sm">
+                    <span className="text-muted-foreground flex items-center gap-1.5 shrink-0">
+                      <ShieldCheck className="h-3.5 w-3.5" />
+                      Verification
+                    </span>
+                    <span className="text-primary font-medium">Verified owner</span>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -600,6 +714,7 @@ export function ProductPage({ projectId }: ProductPageProps) {
                 </div>
               </Unauthenticated>
             </div>
+            <ReportProjectDialog projectTitle={project.title} />
           </div>
         </div>
       </main>

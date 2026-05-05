@@ -26,10 +26,34 @@ async function getClaimableProject(ctx: QueryCtx | MutationCtx, projectId: Id<"p
   return project;
 }
 
+function normalizeOptionalUrl(value: string | undefined) {
+  const trimmedValue = value?.trim();
+  if (!trimmedValue) return undefined;
+
+  try {
+    const url = new URL(trimmedValue);
+    if (!["http:", "https:"].includes(url.protocol)) {
+      throw new ConvexError("Evidence URL must use http or https");
+    }
+    return url.toString();
+  } catch {
+    throw new ConvexError("Evidence URL must be valid");
+  }
+}
+
+function normalizeOptionalText(value: string | undefined, maxLength: number) {
+  const trimmedValue = value?.trim();
+  if (!trimmedValue) return undefined;
+  if (trimmedValue.length > maxLength) throw new ConvexError("Text is too long");
+  return trimmedValue;
+}
+
 export const submitClaim = mutation({
   args: {
     projectId: v.id("projects"),
     reason: v.optional(v.string()),
+    evidenceUrl: v.optional(v.string()),
+    evidenceText: v.optional(v.string()),
   },
   returns: v.id("claims"),
   handler: async (ctx, args) => {
@@ -61,7 +85,9 @@ export const submitClaim = mutation({
       projectId: args.projectId,
       userId: user._id,
       status: "pending",
-      reason: args.reason,
+      reason: normalizeOptionalText(args.reason, 1000),
+      evidenceUrl: normalizeOptionalUrl(args.evidenceUrl),
+      evidenceText: normalizeOptionalText(args.evidenceText, 2000),
       createdAt: Date.now(),
     });
   },
@@ -137,6 +163,8 @@ export const getPendingClaims = query({
       claimantEmail: v.string(),
       status: v.union(v.literal("pending"), v.literal("approved"), v.literal("rejected")),
       reason: v.optional(v.string()),
+      evidenceUrl: v.optional(v.string()),
+      evidenceText: v.optional(v.string()),
       createdAt: v.number(),
     }),
   ),
@@ -168,6 +196,8 @@ export const getPendingClaims = query({
         claimantEmail: user.email,
         status: claim.status,
         reason: claim.reason,
+        evidenceUrl: claim.evidenceUrl,
+        evidenceText: claim.evidenceText,
         createdAt: claim.createdAt,
       });
     }

@@ -72,6 +72,8 @@ const projectValidator = v.object({
   ownerId: v.optional(v.string()),
   createdBy: v.string(),
   status: v.union(v.literal("pending"), v.literal("approved"), v.literal("rejected")),
+  featured: v.optional(v.boolean()),
+  staffPick: v.optional(v.boolean()),
   createdAt: v.number(),
   updatedAt: v.number(),
   productLogoUrl: v.optional(v.string()),
@@ -120,6 +122,8 @@ type StoredProject = {
   ownerId?: string;
   createdBy: string;
   status: "pending" | "approved" | "rejected";
+  featured?: boolean;
+  staffPick?: boolean;
   createdAt: number;
   updatedAt: number;
   productLogoKey?: string;
@@ -295,6 +299,8 @@ const normalizeProject = async (ctx: QueryCtx, project: StoredProject) => {
     ownerId: project.ownerId,
     createdBy: project.createdBy,
     status: project.status,
+    featured: project.featured,
+    staffPick: project.staffPick,
     createdAt: project.createdAt,
     updatedAt: project.updatedAt,
     productLogoUrl,
@@ -466,13 +472,94 @@ export const updateProject = mutation({
       await ensureUrlIsUnique(ctx, patch.url, id);
     }
 
+    const sensitiveChanged =
+      patch.title !== undefined ||
+      patch.url !== undefined ||
+      patch.type !== undefined ||
+      patch.categorySlug !== undefined;
+    const nextStatus = !isUserAdmin && sensitiveChanged ? "pending" : project.status;
+
     await ctx.db.patch(id, {
       ...patch,
       ...(searchableText ? { searchableText } : {}),
+      status: nextStatus,
       updatedAt: Date.now(),
     });
 
     return null;
+  },
+});
+
+export const setProjectCuration = mutation({
+  args: {
+    id: v.id("projects"),
+    featured: v.optional(v.boolean()),
+    staffPick: v.optional(v.boolean()),
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const { authUser } = await getCurrentAppUser(ctx);
+    if (!(await isAdmin(authUser))) throw new ConvexError("Unauthorized");
+
+    const project = await ctx.db.get(args.id);
+    if (!project) throw new ConvexError("Project not found");
+
+    await ctx.db.patch(args.id, {
+      featured: args.featured,
+      staffPick: args.staffPick,
+      updatedAt: Date.now(),
+    });
+
+    return null;
+  },
+});
+
+export const trackProjectEvent = mutation({
+  args: {
+    projectId: v.id("projects"),
+    event: v.union(v.literal("view"), v.literal("outbound_click")),
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const project = await ctx.db.get(args.projectId);
+    if (!project || project.status !== "approved") {
+      return null;
+    }
+
+    await ctx.db.insert("projectAnalytics", {
+      projectId: args.projectId,
+      event: args.event,
+      ts: Date.now(),
+    });
+
+    return null;
+  },
+});
+
+export const getProjectAnalytics = query({
+  args: { projectId: v.id("projects") },
+  returns: v.object({
+    views: v.number(),
+    outboundClicks: v.number(),
+  }),
+  handler: async (ctx, args) => {
+    const { user, authUser } = await getCurrentAppUser(ctx);
+    const project = await ctx.db.get(args.projectId);
+    if (!project) throw new ConvexError("Project not found");
+
+    const isUserAdmin = await isAdmin(authUser);
+    const isOwner = project.ownerId === user._id || project.createdBy === user._id;
+    if (!isUserAdmin && !isOwner) throw new ConvexError("Unauthorized");
+
+    const events = await ctx.db
+      .query("projectAnalytics")
+      .withIndex("by_projectId", (q) => q.eq("projectId", args.projectId))
+      .collect();
+
+    return {
+      views: events.filter((event) => event.event === "view").length,
+      outboundClicks: events.filter((event) => event.event === "outbound_click").length,
+    };
   },
 });
 

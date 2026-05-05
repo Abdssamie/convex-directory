@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useQuery } from "convex/react";
 import { api } from "@convex-directory/backend/convex/_generated/api";
 import type { FunctionReturnType } from "convex/server";
@@ -178,6 +178,14 @@ function DirectoryCards({ projects }: { projects: DirectoryProject[] }) {
               >
                 {PRODUCT_TYPE_META[project.type].label}
               </Badge>
+              {project.ownerId && (
+                <Badge variant="outline" className="rounded-full px-3 text-xs font-normal">
+                  Verified
+                </Badge>
+              )}
+              {project.staffPick && (
+                <Badge className="rounded-full px-3 text-xs font-normal">Staff pick</Badge>
+              )}
             </div>
           </div>
         </LocalizedLink>
@@ -316,16 +324,48 @@ function ListingSection({
   loadingLabel: string;
   emptyTitle: string;
 }) {
+  const [search, setSearch] = useState("");
+  const visibleProjects = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    const filteredProjects = query
+      ? projects?.filter((project) =>
+          `${project.title} ${project.description} ${project.categorySlug}`
+            .toLowerCase()
+            .includes(query),
+        )
+      : projects;
+
+    return filteredProjects
+      ? [...filteredProjects].sort((a, b) => {
+          const curationDelta = Number(b.featured ?? false) - Number(a.featured ?? false);
+          if (curationDelta !== 0) return curationDelta;
+          return b.createdAt - a.createdAt;
+        })
+      : undefined;
+  }, [projects, search]);
+
   return (
     <section className="container mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       {breadcrumbs}
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <input
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          placeholder="Search products, categories, descriptions..."
+          className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm sm:max-w-md"
+        />
+      </div>
       {projects === undefined && (
         <div className="rounded-3xl border border-dashed border-border bg-card/40 px-8 py-16 text-center text-muted-foreground">
           {loadingLabel}
         </div>
       )}
-      {projects !== undefined && projects.length > 0 && <DirectoryCards projects={projects} />}
-      {projects !== undefined && projects.length === 0 && <EmptyState title={emptyTitle} />}
+      {visibleProjects !== undefined && visibleProjects.length > 0 && (
+        <DirectoryCards projects={visibleProjects} />
+      )}
+      {visibleProjects !== undefined && visibleProjects.length === 0 && (
+        <EmptyState title={emptyTitle} />
+      )}
     </section>
   );
 }

@@ -42,6 +42,8 @@ export const tables = {
     ownerId: v.optional(v.string()),
     createdBy: v.string(),
     status: v.union(v.literal("pending"), v.literal("approved"), v.literal("rejected")),
+    featured: v.optional(v.boolean()),
+    staffPick: v.optional(v.boolean()),
     createdAt: v.number(),
     updatedAt: v.number(),
     productLogoKey: v.optional(v.string()),
@@ -66,12 +68,34 @@ export const tables = {
     userId: v.id("users"),
     status: v.union(v.literal("pending"), v.literal("approved"), v.literal("rejected")),
     reason: v.optional(v.string()),
+    evidenceUrl: v.optional(v.string()),
+    evidenceText: v.optional(v.string()),
     createdAt: v.number(),
   })
     .index("by_projectId", ["projectId"])
     .index("by_projectId_and_userId", ["projectId", "userId"])
     .index("by_userId", ["userId"])
     .index("by_status", ["status"]),
+  projectReports: defineTable({
+    projectId: v.id("projects"),
+    userId: v.optional(v.id("users")),
+    reason: v.string(),
+    details: v.optional(v.string()),
+    status: v.union(v.literal("open"), v.literal("resolved"), v.literal("dismissed")),
+    createdAt: v.number(),
+    resolvedAt: v.optional(v.number()),
+  })
+    .index("by_projectId", ["projectId"])
+    .index("by_status", ["status"])
+    .index("by_userId", ["userId"]),
+  projectAnalytics: defineTable({
+    projectId: v.id("projects"),
+    event: v.union(v.literal("view"), v.literal("outbound_click")),
+    ts: v.number(),
+  })
+    .index("by_projectId", ["projectId"])
+    .index("by_projectId_event", ["projectId", "event"])
+    .index("by_ts", ["ts"]),
 };
 
 export default defineSchema(tables);

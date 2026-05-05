@@ -1,10 +1,13 @@
+import * as React from "react";
 import { BaseLayout } from "@/components/layouts/base-layout";
 import { useIntlayer } from "react-intlayer";
 import { useQuery } from "convex/react";
+import { useMutation } from "convex/react";
 import { api } from "@convex-directory/backend/convex/_generated/api";
+import type { FunctionReturnType } from "convex/server";
 import { LocalizedLink } from "@/components/localized-link";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, ExternalLink } from "lucide-react";
+import { PlusCircle, ExternalLink, Pencil } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -14,6 +17,130 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { PROJECT_CATEGORIES } from "@/lib/project-categories";
+import { toast } from "sonner";
+
+type UserProject = FunctionReturnType<typeof api.projects.getUserProjects>[number];
+
+function EditProjectDialog({ project }: { project: UserProject }) {
+  const updateProject = useMutation(api.projects.updateProject);
+  const analytics = useQuery(api.projects.getProjectAnalytics, { projectId: project._id });
+  const [open, setOpen] = React.useState(false);
+  const [title, setTitle] = React.useState(project.title);
+  const [description, setDescription] = React.useState(project.description);
+  const [url, setUrl] = React.useState(project.url);
+  const [type, setType] = React.useState<UserProject["type"]>(project.type);
+  const [categorySlug, setCategorySlug] = React.useState(project.categorySlug);
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    try {
+      await updateProject({
+        id: project._id,
+        title,
+        description,
+        url,
+        type,
+        categorySlug,
+      });
+      toast.success("Project updated. Sensitive changes may require admin review.");
+      setOpen(false);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Project update failed.");
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="ghost" size="icon">
+          <Pencil className="size-4" />
+          <span className="sr-only">Edit project</span>
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-2xl">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <DialogHeader>
+            <DialogTitle>Edit {project.title}</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label>Title</Label>
+              <Input value={title} onChange={(event) => setTitle(event.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label>URL</Label>
+              <Input value={url} onChange={(event) => setUrl(event.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label>Type</Label>
+              <Select value={type} onValueChange={(value) => setType(value as UserProject["type"])}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="saas">SaaS</SelectItem>
+                  <SelectItem value="tool">Tool</SelectItem>
+                  <SelectItem value="open-source">Open Source</SelectItem>
+                  <SelectItem value="component">Component</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>Category</Label>
+              <Select value={categorySlug} onValueChange={setCategorySlug}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {PROJECT_CATEGORIES.map((category) => (
+                    <SelectItem key={category.slug} value={category.slug}>
+                      {category.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <div className="space-y-2">
+            <Label>Description</Label>
+            <Textarea
+              value={description}
+              onChange={(event) => setDescription(event.target.value)}
+              className="min-h-28"
+            />
+          </div>
+          {analytics && (
+            <div className="rounded-lg border bg-muted/30 p-3 text-sm text-muted-foreground">
+              {analytics.views} views · {analytics.outboundClicks} outbound clicks
+            </div>
+          )}
+          <DialogFooter>
+            <Button type="submit">Save changes</Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
 
 export default function Page() {
   const content = useIntlayer("dashboard");
@@ -100,6 +227,7 @@ export default function Page() {
                       {new Date(project.createdAt).toLocaleDateString()}
                     </TableCell>
                     <TableCell className="text-right">
+                      <EditProjectDialog project={project} />
                       <Button variant="ghost" size="icon" asChild>
                         <a href={project.url} target="_blank" rel="noopener noreferrer">
                           <ExternalLink className="size-4" />
