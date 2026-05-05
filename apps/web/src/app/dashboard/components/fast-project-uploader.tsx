@@ -82,6 +82,19 @@ function resolveCategorySlug(value: string) {
   return matchedCategory?.slug ?? "";
 }
 
+function isValidProjectUrl(value: string) {
+  try {
+    const url = new URL(value.trim());
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+function isValidImageFile(file: File) {
+  return file.type.startsWith("image/") && file.size <= 5 * 1024 * 1024;
+}
+
 function parseBulkInput(raw: string, defaultType: ProjectType): DraftRow[] {
   return raw
     .split("\n")
@@ -125,7 +138,13 @@ export function FastProjectUploader() {
   const canParse = Boolean(rawInput.trim());
 
   const readyRows = rows.filter(
-    (row) => row.title && row.url && row.description && row.categorySlug,
+    (row) =>
+      row.title &&
+      isValidProjectUrl(row.url) &&
+      row.description &&
+      row.categorySlug &&
+      (row.logoFile === null || isValidImageFile(row.logoFile)) &&
+      (row.imageFile === null || isValidImageFile(row.imageFile)),
   );
   const unresolvedCategoryCount = rows.filter(
     (row) =>
@@ -171,6 +190,10 @@ export function FastProjectUploader() {
       const projects = await Promise.all(
         readyRows.map(async (row) => {
           const uploadImageFile = async (file: File) => {
+            if (!isValidImageFile(file)) {
+              throw new Error("Images must be valid image files and 5MB or smaller.");
+            }
+
             const uploadTarget = (await generateUploadUrl({})) as { key: string; url: string };
 
             const uploadResponse = await fetch(uploadTarget.url, {
@@ -462,7 +485,7 @@ export function FastProjectUploader() {
                 <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
                 <span>
                   Storage is keys-only. Missing or broken logos fall back to screenshots. Batch
-                  creates approved projects immediately and sets ownership to admin account.
+                  creates approved, unclaimed projects immediately.
                 </span>
               </div>
               <Button

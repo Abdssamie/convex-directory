@@ -13,7 +13,7 @@ export const logEvent = internalMutation({
     link: v.optional(v.string()),
     ip: v.optional(v.string()),
     userAgent: v.optional(v.string()),
-    payload: v.any(),
+    payload: v.string(),
   },
   handler: async (ctx, args) => {
     await ctx.db.insert("emailEvents", args);

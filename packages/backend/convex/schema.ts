@@ -12,7 +12,7 @@ export const tables = {
     link: v.optional(v.string()),
     ip: v.optional(v.string()),
     userAgent: v.optional(v.string()),
-    payload: v.any(),
+    payload: v.string(),
   })
     .index("by_email", ["email"])
     .index("by_messageId", ["messageId"])
@@ -50,6 +50,7 @@ export const tables = {
   })
     .index("by_status", ["status"])
     .index("by_type", ["type"])
+    .index("by_url", ["url"])
     .index("by_ownerId", ["ownerId"])
     .index("by_createdBy", ["createdBy"])
     .searchIndex("search_all", {
@@ -62,7 +63,7 @@ export const tables = {
   }).index("by_slug", ["slug"]),
   claims: defineTable({
     projectId: v.id("projects"),
-    userId: v.string(),
+    userId: v.id("users"),
     status: v.union(v.literal("pending"), v.literal("approved"), v.literal("rejected")),
     reason: v.optional(v.string()),
     createdAt: v.number(),

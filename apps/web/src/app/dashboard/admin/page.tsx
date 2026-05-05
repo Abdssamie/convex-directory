@@ -16,8 +16,11 @@ import { useIntlayer } from "react-intlayer";
 
 export default function AdminDashboard() {
   const isAdmin = useQuery(api.projects.isAdminQuery);
-  const pendingProjects = useQuery(api.projects.getProjects, { status: "pending" });
-  const pendingClaims = useQuery(api.claims.getPendingClaims);
+  const pendingProjects = useQuery(
+    api.projects.getProjectsForAdmin,
+    isAdmin ? { status: "pending" } : "skip",
+  );
+  const pendingClaims = useQuery(api.claims.getPendingClaims, isAdmin ? {} : "skip");
   const content = useIntlayer("dashboard");
 
   const approveProject = useMutation(api.projects.approveProject);
@@ -129,8 +132,11 @@ export default function AdminDashboard() {
               <Card key={c._id} className="rounded-2xl">
                 <CardHeader className="flex flex-row items-center justify-between">
                   <div>
-                    <CardTitle>Claim for Project ID: {c.projectId}</CardTitle>
-                    <p className="text-sm text-muted-foreground">User Doc ID: {c.userId}</p>
+                    <CardTitle>{c.projectTitle}</CardTitle>
+                    <CardDescription>{c.projectUrl}</CardDescription>
+                    <p className="text-sm text-muted-foreground">
+                      Claimant: {c.claimantName} ({c.claimantEmail})
+                    </p>
                   </div>
                   <div className="flex gap-2">
                     <Button onClick={() => handleApproveClaim(c._id)} className="rounded-xl">

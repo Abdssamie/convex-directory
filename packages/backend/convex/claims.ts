@@ -1,13 +1,30 @@
 import { v, ConvexError } from "convex/values";
 import { mutation, query, type MutationCtx, type QueryCtx } from "./_generated/server";
+import type { Id } from "./_generated/dataModel";
 import { authComponent } from "./auth";
 
 // Helper to check if user is admin
 const isAdmin = async (ctx: QueryCtx | MutationCtx) => {
-  const identity = await ctx.auth.getUserIdentity();
-  if (!identity) return false;
-  return identity.email === process.env.ADMIN_EMAIL;
+  const authUser = await authComponent.safeGetAuthUser(ctx);
+  const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+  const userEmail = authUser?.email?.trim().toLowerCase();
+  return Boolean(adminEmail && userEmail && userEmail === adminEmail);
 };
+
+async function getMirroredUser(ctx: QueryCtx | MutationCtx, authId: string) {
+  return await ctx.db
+    .query("users")
+    .withIndex("by_authId", (q) => q.eq("authId", authId))
+    .unique();
+}
+
+async function getClaimableProject(ctx: QueryCtx | MutationCtx, projectId: Id<"projects">) {
+  const project = await ctx.db.get(projectId);
+  if (!project) throw new ConvexError("Project not found");
+  if (project.status !== "approved") throw new ConvexError("Project is not claimable");
+  if (project.ownerId) throw new ConvexError("Project already has a verified owner");
+  return project;
+}
 
 export const submitClaim = mutation({
   args: {
@@ -18,11 +35,11 @@ export const submitClaim = mutation({
   handler: async (ctx, args) => {
     const authUser = await authComponent.safeGetAuthUser(ctx);
     if (!authUser) throw new ConvexError("Unauthenticated");
-    const user = await ctx.db
-      .query("users")
-      .withIndex("by_authId", (q) => q.eq("authId", authUser._id))
-      .unique();
+    const user = await getMirroredUser(ctx, authUser._id);
     if (!user) throw new ConvexError("Mirrored user not found");
+    const project = await getClaimableProject(ctx, args.projectId);
+    if (project.createdBy === user._id)
+      throw new ConvexError("Project submitter already controls it");
 
     const existingClaim = await ctx.db
       .query("claims")
@@ -32,6 +49,13 @@ export const submitClaim = mutation({
       .unique();
 
     if (existingClaim) throw new ConvexError("Claim already exists");
+    const existingPendingClaim = await ctx.db
+      .query("claims")
+      .withIndex("by_projectId", (q) => q.eq("projectId", args.projectId))
+      .filter((q) => q.eq(q.field("status"), "pending"))
+      .first();
+
+    if (existingPendingClaim) throw new ConvexError("Project already has a pending claim");
 
     return await ctx.db.insert("claims", {
       projectId: args.projectId,
@@ -51,6 +75,8 @@ export const approveClaim = mutation({
 
     const claim = await ctx.db.get("claims", args.claimId);
     if (!claim) throw new ConvexError("Claim not found");
+    if (claim.status !== "pending") throw new ConvexError("Claim is already resolved");
+    await getClaimableProject(ctx, claim.projectId);
 
     // Update project owner
     await ctx.db.patch("projects", claim.projectId, {
@@ -87,6 +113,7 @@ export const rejectClaim = mutation({
 
     const claim = await ctx.db.get("claims", args.claimId);
     if (!claim) throw new ConvexError("Claim not found");
+    if (claim.status !== "pending") throw new ConvexError("Claim is already resolved");
 
     await ctx.db.patch("claims", args.claimId, {
       status: "rejected",
@@ -103,7 +130,11 @@ export const getPendingClaims = query({
       _id: v.id("claims"),
       _creationTime: v.number(),
       projectId: v.id("projects"),
-      userId: v.string(),
+      userId: v.id("users"),
+      projectTitle: v.string(),
+      projectUrl: v.string(),
+      claimantName: v.string(),
+      claimantEmail: v.string(),
       status: v.union(v.literal("pending"), v.literal("approved"), v.literal("rejected")),
       reason: v.optional(v.string()),
       createdAt: v.number(),
@@ -111,10 +142,37 @@ export const getPendingClaims = query({
   ),
   handler: async (ctx) => {
     if (!(await isAdmin(ctx))) throw new ConvexError("Unauthorized");
-    return await ctx.db
+    const claims = await ctx.db
       .query("claims")
       .withIndex("by_status", (q) => q.eq("status", "pending"))
       .collect();
+
+    const enrichedClaims = [];
+
+    for (const claim of claims) {
+      const project = await ctx.db.get(claim.projectId);
+      const user = await ctx.db.get(claim.userId);
+
+      if (!project || !user) {
+        continue;
+      }
+
+      enrichedClaims.push({
+        _id: claim._id,
+        _creationTime: claim._creationTime,
+        projectId: claim.projectId,
+        userId: claim.userId,
+        projectTitle: project.title,
+        projectUrl: project.url,
+        claimantName: user.name,
+        claimantEmail: user.email,
+        status: claim.status,
+        reason: claim.reason,
+        createdAt: claim.createdAt,
+      });
+    }
+
+    return enrichedClaims;
   },
 });
 
@@ -159,7 +217,13 @@ export const getProjectClaimStatus = query({
     const hasPendingClaim = claim?.status === "pending";
     const hasApprovedClaim = claim?.status === "approved";
     const hasRejectedClaim = claim?.status === "rejected";
-    const canClaim = !isOwner && !hasPendingClaim && !hasApprovedClaim;
+    const canClaim =
+      project.status === "approved" &&
+      !project.ownerId &&
+      project.createdBy !== user._id &&
+      !isOwner &&
+      !hasPendingClaim &&
+      !hasApprovedClaim;
 
     return { isOwner, hasPendingClaim, hasApprovedClaim, hasRejectedClaim, canClaim };
   },

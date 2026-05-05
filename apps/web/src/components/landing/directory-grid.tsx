@@ -13,9 +13,7 @@ import { useLandingContent } from "./content";
 type DirectoryProject = FunctionReturnType<typeof api.projects.getProjects>[number];
 
 export function DirectoryGrid() {
-  const projects = useQuery(api.projects.getProjects, {
-    status: "approved",
-  });
+  const projects = useQuery(api.projects.getProjects, {});
   const content = useLandingContent();
 
   const saasProjects = projects?.filter((p: DirectoryProject) => p.type === "saas") || [];

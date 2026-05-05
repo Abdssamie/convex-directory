@@ -31,14 +31,23 @@ export function SubmitProjectForm() {
   const syncMetadata = useMutation(api.r2.syncMetadata);
   const content = useIntlayer("submit-project-form");
 
+  const optionalImageList = z
+    .instanceof(FileList)
+    .optional()
+    .refine((files) => !files?.[0] || files[0].type.startsWith("image/"), "File must be an image")
+    .refine(
+      (files) => !files?.[0] || files[0].size <= 5 * 1024 * 1024,
+      "Image must be 5MB or smaller",
+    );
+
   const formSchema = z.object({
     title: z.string().min(2, content.validation.titleMin.value),
     description: z.string().min(10, content.validation.descMin.value),
     url: z.string().url(content.validation.urlInvalid.value),
     type: z.enum(["saas", "tool", "open-source", "component"]),
     categorySlug: z.string(),
-    logo: z.any().optional(),
-    screenshot: z.any().optional(),
+    logo: optionalImageList,
+    screenshot: optionalImageList,
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -82,8 +91,8 @@ export function SubmitProjectForm() {
       await submitProject({ ...projectData, productLogoKey, screenshotKey });
       toast.success(content.success.value);
       form.reset();
-    } catch {
-      toast.error(content.error.value);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : content.error.value);
     }
   }
 

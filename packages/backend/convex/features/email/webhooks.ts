@@ -123,7 +123,7 @@ export const brevo = httpAction(async (ctx, request) => {
       link,
       ip,
       userAgent,
-      payload: event,
+      payload: JSON.stringify(event),
     });
   }
 

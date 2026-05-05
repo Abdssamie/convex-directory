@@ -332,7 +332,7 @@ function ListingSection({
 
 export function DirectoryPage() {
   const content = useLandingContent();
-  const projects = useQuery(api.projects.getProjects, { status: "approved" });
+  const projects = useQuery(api.projects.getProjects, {});
   const saasProjects = useMemo(
     () => (projects ? projects.filter((project) => project.type === "saas") : undefined),
     [projects],
@@ -355,7 +355,7 @@ export function DirectoryPage() {
 export function ProductTypePage({ productType }: { productType: ProductType }) {
   const content = useLandingContent();
   const meta = PRODUCT_TYPE_META[productType];
-  const projects = useQuery(api.projects.getProjects, { status: "approved", type: productType });
+  const projects = useQuery(api.projects.getProjects, { type: productType });
 
   return (
     <PageShell>
@@ -380,7 +380,7 @@ export function ProductTypePage({ productType }: { productType: ProductType }) {
 export function CategoryDirectoryPage({ categorySlug }: { categorySlug: string }) {
   const content = useLandingContent();
   const categoryName = formatCategoryName(categorySlug);
-  const projects = useQuery(api.projects.getProjects, { status: "approved", type: "saas" });
+  const projects = useQuery(api.projects.getProjects, { type: "saas" });
   const categoryProjects = useMemo(
     () =>
       projects ? projects.filter((project) => project.categorySlug === categorySlug) : undefined,
