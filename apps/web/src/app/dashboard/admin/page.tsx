@@ -31,8 +31,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { FastProjectUploader } from "@/app/dashboard/components/fast-project-uploader";
+import { ProjectLogoField, ProjectScreenshotField } from "@/components/project-media-fields";
 import { PROJECT_CATEGORIES } from "@/lib/project-categories";
-import { Check, ExternalLink, ImagePlus, Loader2, Search, Star, X } from "lucide-react";
+import { Check, ExternalLink, Loader2, Search, Star, X } from "lucide-react";
 import { toast } from "sonner";
 import { useIntlayer } from "react-intlayer";
 
@@ -142,12 +143,6 @@ function ProjectTableRow({
   const [categorySlug, setCategorySlug] = React.useState(project.categorySlug);
   const [logoFile, setLogoFile] = React.useState<File | null>(null);
   const [screenshotFile, setScreenshotFile] = React.useState<File | null>(null);
-  const [logoPreviewUrl, setLogoPreviewUrl] = React.useState<string | undefined>(
-    project.productLogoUrl,
-  );
-  const [screenshotPreviewUrl, setScreenshotPreviewUrl] = React.useState<string | undefined>(
-    project.screenshotUrl,
-  );
 
   React.useEffect(() => {
     setTitle(project.title);
@@ -157,27 +152,7 @@ function ProjectTableRow({
     setCategorySlug(project.categorySlug);
     setLogoFile(null);
     setScreenshotFile(null);
-    setLogoPreviewUrl(project.productLogoUrl);
-    setScreenshotPreviewUrl(project.screenshotUrl);
   }, [project]);
-
-  React.useEffect(() => {
-    if (!logoFile) {
-      return;
-    }
-    const objectUrl = URL.createObjectURL(logoFile);
-    setLogoPreviewUrl(objectUrl);
-    return () => URL.revokeObjectURL(objectUrl);
-  }, [logoFile]);
-
-  React.useEffect(() => {
-    if (!screenshotFile) {
-      return;
-    }
-    const objectUrl = URL.createObjectURL(screenshotFile);
-    setScreenshotPreviewUrl(objectUrl);
-    return () => URL.revokeObjectURL(objectUrl);
-  }, [screenshotFile]);
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -279,46 +254,16 @@ function ProjectTableRow({
       </TableCell>
       <TableCell className="min-w-[280px] align-top">
         <div className="space-y-4">
-          <div className="space-y-2">
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">Logo</p>
-            {logoPreviewUrl ? (
-              <img
-                src={logoPreviewUrl}
-                alt={`${project.title} logo`}
-                className="h-16 w-16 rounded-xl border object-cover"
-              />
-            ) : (
-              <div className="flex h-16 w-16 items-center justify-center rounded-xl border border-dashed text-muted-foreground">
-                <ImagePlus className="size-4" />
-              </div>
-            )}
-            <Input
-              type="file"
-              accept="image/*"
-              onChange={(event) => setLogoFile(event.target.files?.[0] ?? null)}
-              className="rounded-xl"
-            />
-          </div>
-          <div className="space-y-2">
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">Screenshot</p>
-            {screenshotPreviewUrl ? (
-              <img
-                src={screenshotPreviewUrl}
-                alt={`${project.title} screenshot`}
-                className="aspect-video w-full rounded-xl border object-cover"
-              />
-            ) : (
-              <div className="flex aspect-video w-full items-center justify-center rounded-xl border border-dashed text-muted-foreground">
-                <ImagePlus className="size-4" />
-              </div>
-            )}
-            <Input
-              type="file"
-              accept="image/*"
-              onChange={(event) => setScreenshotFile(event.target.files?.[0] ?? null)}
-              className="rounded-xl"
-            />
-          </div>
+          <ProjectLogoField
+            file={logoFile}
+            currentUrl={project.productLogoUrl}
+            onFileChange={setLogoFile}
+          />
+          <ProjectScreenshotField
+            file={screenshotFile}
+            currentUrl={project.screenshotUrl}
+            onFileChange={setScreenshotFile}
+          />
         </div>
       </TableCell>
       <TableCell className="min-w-[260px] align-top">

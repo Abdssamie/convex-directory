@@ -29,6 +29,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { ProjectLogoField, ProjectScreenshotField } from "@/components/project-media-fields";
 import { PROJECT_CATEGORIES } from "@/lib/project-categories";
 import { toast } from "sonner";
 import { useIntlayer } from "react-intlayer";
@@ -373,42 +374,16 @@ export function FastProjectUploader() {
                         />
                       </TableCell>
                       <TableCell className="align-top">
-                        <div className="space-y-2 min-w-56">
-                          <Input
-                            type="file"
-                            accept="image/*"
-                            onChange={(event) =>
-                              updateRow(row.id, {
-                                imageFile: event.target.files?.[0] ?? null,
-                              })
-                            }
-                            className="rounded-xl"
-                          />
-                          {row.imageFile && (
-                            <p className="text-xs text-muted-foreground">
-                              File: {row.imageFile.name}
-                            </p>
-                          )}
-                        </div>
+                        <ProjectScreenshotField
+                          file={row.imageFile}
+                          onFileChange={(file) => updateRow(row.id, { imageFile: file })}
+                        />
                       </TableCell>
                       <TableCell className="align-top">
-                        <div className="space-y-2 min-w-56">
-                          <Input
-                            type="file"
-                            accept="image/*"
-                            onChange={(event) =>
-                              updateRow(row.id, {
-                                logoFile: event.target.files?.[0] ?? null,
-                              })
-                            }
-                            className="rounded-xl"
-                          />
-                          {row.logoFile && (
-                            <p className="text-xs text-muted-foreground">
-                              File: {row.logoFile.name}
-                            </p>
-                          )}
-                        </div>
+                        <ProjectLogoField
+                          file={row.logoFile}
+                          onFileChange={(file) => updateRow(row.id, { logoFile: file })}
+                        />
                       </TableCell>
                       <TableCell className="align-top">
                         <Select

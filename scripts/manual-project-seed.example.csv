@@ -1,0 +1,3 @@
+url,title,description,categorySlug,type
+https://example.com/,Example Project,"Short manual description from your own research.",developer-tools,saas
+https://github.com/example/project,Example OSS Project,"Short manual description from your own research.",,open-source
