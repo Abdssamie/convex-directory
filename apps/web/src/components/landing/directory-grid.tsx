@@ -12,6 +12,33 @@ import { useLandingContent } from "./content";
 
 type DirectoryProject = FunctionReturnType<typeof api.projects.getProjects>[number];
 
+function formatCategoryName(slug: string) {
+  return (
+    PROJECT_CATEGORIES.find((category) => category.slug === slug)?.name ??
+    slug
+      .split("-")
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+      .join(" ")
+  );
+}
+
+function getProjectCardTag(project: DirectoryProject) {
+  if (project.type === "saas" && project.categorySlug && project.categorySlug !== "uncategorized") {
+    return formatCategoryName(project.categorySlug);
+  }
+
+  switch (project.type) {
+    case "open-source":
+      return "Open source";
+    case "component":
+      return "Components";
+    case "tool":
+      return "Tools";
+    default:
+      return "SaaS";
+  }
+}
+
 export function DirectoryGrid() {
   const projects = useQuery(api.projects.getProjects, {});
   const content = useLandingContent();
@@ -98,7 +125,7 @@ export function DirectoryGrid() {
                       variant="secondary"
                       className="rounded-full text-xs px-3 font-normal capitalize"
                     >
-                      {project.type}
+                      {getProjectCardTag(project)}
                     </Badge>
                   </div>
                 </div>

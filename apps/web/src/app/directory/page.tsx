@@ -63,6 +63,14 @@ function formatCategoryName(slug: string) {
   );
 }
 
+function getProjectCardTag(project: DirectoryProject) {
+  if (project.type === "saas" && project.categorySlug && project.categorySlug !== "uncategorized") {
+    return formatCategoryName(project.categorySlug);
+  }
+
+  return PRODUCT_TYPE_META[project.type].label;
+}
+
 function PageShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-background font-sans">
@@ -176,7 +184,7 @@ function DirectoryCards({ projects }: { projects: DirectoryProject[] }) {
                 variant="secondary"
                 className="rounded-full px-3 text-xs font-normal capitalize"
               >
-                {PRODUCT_TYPE_META[project.type].label}
+                {getProjectCardTag(project)}
               </Badge>
               {project.ownerId && (
                 <Badge variant="outline" className="rounded-full px-3 text-xs font-normal">
