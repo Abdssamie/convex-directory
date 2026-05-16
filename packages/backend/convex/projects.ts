@@ -320,18 +320,26 @@ export const getProjects = query({
         v.literal("component"),
       ),
     ),
+    categorySlug: v.optional(v.string()),
   },
   returns: v.array(projectValidator),
   handler: async (ctx, args) => {
     const q = ctx.db.query("projects").withIndex("by_status", (j) => j.eq("status", "approved"));
 
     const projects = await q.collect();
-    const normalizedProjects = await Promise.all(
+    let normalizedProjects = await Promise.all(
       projects.map((project) => normalizeProject(ctx, project as StoredProject)),
     );
 
     if (args.type) {
-      return normalizedProjects.filter((p) => p.type === args.type);
+      normalizedProjects = normalizedProjects.filter((p) => p.type === args.type);
+    }
+
+    if (args.categorySlug) {
+      const normalizedCategorySlug = args.categorySlug.trim().toLowerCase();
+      normalizedProjects = normalizedProjects.filter(
+        (project) => project.categorySlug === normalizedCategorySlug,
+      );
     }
 
     return normalizedProjects;

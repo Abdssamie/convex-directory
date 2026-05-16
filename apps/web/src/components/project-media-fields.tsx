@@ -64,7 +64,7 @@ function ProjectMediaPasteField({
   const previewUrl = localPreviewUrl ?? currentUrl;
   const previewClassName =
     aspect === "square"
-      ? "h-16 w-16 rounded-xl border object-cover"
+      ? "h-16 w-16 rounded-xl border border-white/80 bg-white object-cover shadow-[0_0_0_1px_rgba(255,255,255,0.5)]"
       : "aspect-video w-full rounded-xl border object-cover";
   const emptyClassName =
     aspect === "square"

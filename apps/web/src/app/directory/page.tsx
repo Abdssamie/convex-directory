@@ -420,12 +420,10 @@ export function ProductTypePage({ productType }: { productType: ProductType }) {
 export function CategoryDirectoryPage({ categorySlug }: { categorySlug: string }) {
   const content = useLandingContent();
   const categoryName = formatCategoryName(categorySlug);
-  const projects = useQuery(api.projects.getProjects, { type: "saas" });
-  const categoryProjects = useMemo(
-    () =>
-      projects ? projects.filter((project) => project.categorySlug === categorySlug) : undefined,
-    [categorySlug, projects],
-  );
+  const categoryProjects = useQuery(api.projects.getProjects, {
+    type: "saas",
+    categorySlug,
+  });
 
   return (
     <PageShell>
