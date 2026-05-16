@@ -43,6 +43,7 @@ type ProjectType = AdminProject["type"];
 
 const STATUS_OPTIONS: AdminProjectStatus[] = ["approved", "pending", "rejected"];
 const TYPE_OPTIONS: ProjectType[] = ["saas", "tool", "open-source", "component"];
+const NO_CATEGORY_VALUE = "__no_category__";
 
 function formatDate(value: number) {
   return new Intl.DateTimeFormat("en", {
@@ -140,7 +141,9 @@ function ProjectTableRow({
   const [description, setDescription] = React.useState(project.description);
   const [url, setUrl] = React.useState(project.url);
   const [type, setType] = React.useState<ProjectType>(project.type);
-  const [categorySlug, setCategorySlug] = React.useState(project.categorySlug);
+  const [categorySlug, setCategorySlug] = React.useState(
+    project.categorySlug === "uncategorized" ? NO_CATEGORY_VALUE : project.categorySlug,
+  );
   const [logoFile, setLogoFile] = React.useState<File | null>(null);
   const [screenshotFile, setScreenshotFile] = React.useState<File | null>(null);
 
@@ -149,7 +152,9 @@ function ProjectTableRow({
     setDescription(project.description);
     setUrl(project.url);
     setType(project.type);
-    setCategorySlug(project.categorySlug);
+    setCategorySlug(
+      project.categorySlug === "uncategorized" ? NO_CATEGORY_VALUE : project.categorySlug,
+    );
     setLogoFile(null);
     setScreenshotFile(null);
   }, [project]);
@@ -173,7 +178,7 @@ function ProjectTableRow({
         description,
         url,
         type,
-        categorySlug,
+        ...(categorySlug !== NO_CATEGORY_VALUE ? { categorySlug } : {}),
         ...(productLogoKey ? { productLogoKey } : {}),
         ...(screenshotKey ? { screenshotKey } : {}),
       });
@@ -244,6 +249,7 @@ function ProjectTableRow({
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
+            <SelectItem value={NO_CATEGORY_VALUE}>No subcategory</SelectItem>
             {PROJECT_CATEGORIES.map((category) => (
               <SelectItem key={category.slug} value={category.slug}>
                 {category.name}
