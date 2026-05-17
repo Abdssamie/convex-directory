@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as PopoverPrimitive from "@radix-ui/react-popover";
 
-import { cn } from "@convex-directory/ui/lib/utils";
+import { cn } from "@convex-hub/ui/lib/utils";
 
 const Popover = PopoverPrimitive.Root;
 

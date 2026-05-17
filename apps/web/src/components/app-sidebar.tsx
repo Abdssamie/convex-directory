@@ -13,7 +13,7 @@ import {
   ShieldCheck,
   type LucideIcon,
 } from "lucide-react";
-import { api } from "@convex-directory/backend/convex/_generated/api";
+import { api } from "@convex-hub/backend/convex/_generated/api";
 import { useQuery } from "convex/react";
 import { type To } from "@/components/localized-link";
 import { useIntlayer } from "react-intlayer";
@@ -78,8 +78,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <Logo size={24} white />
         </div>
         <div className="grid flex-1 text-left text-sm leading-tight">
-          <span className="truncate font-semibold text-sidebar-foreground">Convex Directory</span>
-          <span className="truncate text-xs text-sidebar-foreground/60">Modern SaaS Directory</span>
+          <span className="truncate font-semibold text-sidebar-foreground">Convex Hub</span>
+          <span className="truncate text-xs text-sidebar-foreground/60">Modern Convex Hub</span>
         </div>
       </SidebarHeader>
       <SidebarContent>
@@ -92,7 +92,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarFooter>
         <NavUser
           user={{
-            name: user?.name ?? "ConvexZen",
+            name: user?.name ?? "Convex Hub",
             email:
               user?.email ??
               ((content.signedIn as unknown as { value: string })?.value || "Signed in"),

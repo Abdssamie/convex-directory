@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "convex/react";
 import { Authenticated, Unauthenticated } from "convex/react";
-import { api } from "@convex-directory/backend/convex/_generated/api";
-import type { Id } from "@convex-directory/backend/convex/_generated/dataModel";
+import { api } from "@convex-hub/backend/convex/_generated/api";
+import type { Id } from "@convex-hub/backend/convex/_generated/dataModel";
 import {
   ExternalLink,
   Calendar,
@@ -19,10 +19,10 @@ import {
   Flag,
 } from "lucide-react";
 import { toast } from "sonner";
-import { Button } from "@convex-directory/ui/components/button";
-import { Badge } from "@convex-directory/ui/components/badge";
-import { Separator } from "@convex-directory/ui/components/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@convex-directory/ui/components/tabs";
+import { Button } from "@convex-hub/ui/components/button";
+import { Badge } from "@convex-hub/ui/components/badge";
+import { Separator } from "@convex-hub/ui/components/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@convex-hub/ui/components/tabs";
 import {
   Dialog,
   DialogContent,
@@ -30,10 +30,10 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@convex-directory/ui/components/dialog";
-import { Textarea } from "@convex-directory/ui/components/textarea";
-import { Label } from "@convex-directory/ui/components/label";
-import { Input } from "@convex-directory/ui/components/input";
+} from "@convex-hub/ui/components/dialog";
+import { Textarea } from "@convex-hub/ui/components/textarea";
+import { Label } from "@convex-hub/ui/components/label";
+import { Input } from "@convex-hub/ui/components/input";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -51,20 +51,6 @@ import { formatProjectCategoryName } from "@/lib/project-categories";
 interface ProductPageProps {
   projectId: Id<"projects">;
 }
-
-const PRODUCT_TYPE_ROUTE = {
-  saas: "/saas",
-  tool: "/tools",
-  component: "/components",
-  "open-source": "/open-source",
-} as const;
-
-const PRODUCT_TYPE_LABEL = {
-  saas: "SaaS",
-  tool: "Tools",
-  component: "Components",
-  "open-source": "Open source",
-} as const;
 
 export function ProductPage({ projectId }: ProductPageProps) {
   const project = useQuery(api.projects.getProjectById, { id: projectId });
@@ -355,14 +341,7 @@ export function ProductPage({ projectId }: ProductPageProps) {
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink asChild>
-                <LocalizedLink to={PRODUCT_TYPE_ROUTE[project.type]}>
-                  {PRODUCT_TYPE_LABEL[project.type]}
-                </LocalizedLink>
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            {project.type === "saas" && primaryCategorySlug && primaryCategoryName && (
+            {primaryCategorySlug && primaryCategoryName && (
               <>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
@@ -409,12 +388,6 @@ export function ProductPage({ projectId }: ProductPageProps) {
                     <h1 className="text-2xl font-bold tracking-tight text-foreground leading-tight">
                       {project.title}
                     </h1>
-                    <Badge
-                      variant="secondary"
-                      className="rounded-full text-xs capitalize font-medium shrink-0"
-                    >
-                      {project.type}
-                    </Badge>
                     {categoryNames.map((categoryName) => (
                       <Badge
                         key={categoryName}
@@ -478,11 +451,9 @@ export function ProductPage({ projectId }: ProductPageProps) {
                     </p>
                   </div>
 
-                  {/* Category & Type */}
+                  {/* Categories */}
                   <div className="p-6">
-                    <h2 className="text-sm font-semibold text-foreground mb-3">
-                      Category &amp; Type
-                    </h2>
+                    <h2 className="text-sm font-semibold text-foreground mb-3">Categories</h2>
                     <div className="flex flex-wrap gap-2">
                       {categoryNames.map((categoryName) => (
                         <Badge
@@ -494,12 +465,6 @@ export function ProductPage({ projectId }: ProductPageProps) {
                           {categoryName}
                         </Badge>
                       ))}
-                      <Badge
-                        variant="outline"
-                        className="rounded-full px-3 py-1 text-xs capitalize font-normal"
-                      >
-                        {project.type}
-                      </Badge>
                     </div>
                   </div>
                 </div>

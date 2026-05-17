@@ -1,9 +1,9 @@
 "use client";
 
 import { ArrowRight, TrendingUp, Package, Github } from "lucide-react";
-import { Button } from "@convex-directory/ui/components/button";
-import { Badge } from "@convex-directory/ui/components/badge";
-import { Separator } from "@convex-directory/ui/components/separator";
+import { Button } from "@convex-hub/ui/components/button";
+import { Badge } from "@convex-hub/ui/components/badge";
+import { Separator } from "@convex-hub/ui/components/separator";
 
 export function CTASection() {
   return (

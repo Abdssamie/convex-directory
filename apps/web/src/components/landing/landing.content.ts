@@ -5,16 +5,16 @@ export default {
   content: {
     seo: {
       title: t({
-        en: "Convex Directory - Discover Apps, Tools & Components",
-        fr: "Convex Directory - Découvrez des applications, outils et composants",
+        en: "Convex Hub - Discover Apps, Tools & Components",
+        fr: "Convex Hub - Découvrez des applications, outils et composants",
       }),
       description: t({
-        en: "The ultimate directory for projects built with Convex. Explore SaaS apps, open-source tools, and UI components from the community.",
-        fr: "Le répertoire ultime des projets créés avec Convex. Explorez des applications SaaS, des outils open-source et des composants UI de la communauté.",
+        en: "The central hub for projects built with Convex. Explore SaaS apps, open-source tools, and UI components from the community.",
+        fr: "Le hub central des projets créés avec Convex. Explorez des applications SaaS, des outils open-source et des composants UI de la communauté.",
       }),
       ogTitle: t({
-        en: "Convex Directory - Built with Convex",
-        fr: "Convex Directory - Créé avec Convex",
+        en: "Convex Hub - Built with Convex",
+        fr: "Convex Hub - Créé avec Convex",
       }),
       ogDescription: t({
         en: "Explore the ecosystem of apps, tools, and components powered by Convex.",
@@ -33,14 +33,14 @@ export default {
         en: "Discover what the community is building with Convex. From SaaS prototypes to production-grade tools and open-source components.",
         fr: "Découvrez ce que la communauté crée avec Convex. Des prototypes SaaS aux outils de production et composants open-source.",
       }),
-      getStartedFree: t({ en: "Explore Directory", fr: "Explorer le répertoire" }),
+      getStartedFree: t({ en: "Explore Hub", fr: "Explorer le hub" }),
       watchDemo: t({ en: "Submit Project", fr: "Soumettre un projet" }),
     },
     navbar: {
       directory: t({ en: "Home", fr: "Accueil" }),
       submit: t({ en: "Submit", fr: "Soumettre" }),
       searchPlaceholder: t({ en: "Search projects...", fr: "Rechercher des projets..." }),
-      title: "Convex Directory",
+      title: "Convex Hub",
       dashboard: t({ en: "Dashboard", fr: "Tableau de bord" }),
       signIn: t({ en: "Sign in", fr: "Connexion" }),
       submitShort: t({ en: "Submit", fr: "Soumettre" }),
@@ -85,8 +85,8 @@ export default {
     },
     footer: {
       brandDescription: t({
-        en: "A curated directory of apps, tools, and open-source projects built on Convex — the reactive backend for modern web apps.",
-        fr: "Un répertoire organisé d'applications, d'outils et de projets open-source construits sur Convex — le backend réactif pour les applications web modernes.",
+        en: "A curated hub of apps, tools, and open-source projects built on Convex — the reactive backend for modern web apps.",
+        fr: "Un hub organisé d'applications, d'outils et de projets open-source construits sur Convex — le backend réactif pour les applications web modernes.",
       }),
       sections: {
         directory: t({ en: "Directory", fr: "Répertoire" }),

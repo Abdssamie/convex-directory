@@ -3,11 +3,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Button } from "@convex-directory/ui/components/button";
-import { Badge } from "@convex-directory/ui/components/badge";
-import { Input } from "@convex-directory/ui/components/input";
-import { Textarea } from "@convex-directory/ui/components/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@convex-directory/ui/components/card";
+import { Button } from "@convex-hub/ui/components/button";
+import { Badge } from "@convex-hub/ui/components/badge";
+import { Input } from "@convex-hub/ui/components/input";
+import { Textarea } from "@convex-hub/ui/components/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@convex-hub/ui/components/card";
 import {
   Form,
   FormControl,
@@ -15,7 +15,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@convex-directory/ui/components/form";
+} from "@convex-hub/ui/components/form";
 import { Mail, Github, BookOpen } from "lucide-react";
 
 const contactFormSchema = z.object({
@@ -66,7 +66,7 @@ export function ContactSection() {
             Need help or have questions?
           </h2>
           <p className="text-lg text-muted-foreground">
-            Our team is here to help you get the most out of Convex Zen.
+            Our team is here to help you get the most out of Convex Hub.
           </p>
         </div>
 
@@ -191,7 +191,7 @@ export function ContactSection() {
                           <FormLabel>Message</FormLabel>
                           <FormControl>
                             <Textarea
-                              placeholder="Tell us how we can help you with Convex Zen..."
+                              placeholder="Tell us how we can help you with Convex Hub..."
                               rows={10}
                               className="min-h-50"
                               {...field}

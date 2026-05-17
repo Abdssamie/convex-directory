@@ -13,15 +13,12 @@ export function useLandingContent() {
 
   return {
     seo: {
-      title: getTranslation(
-        content?.seo?.title,
-        "Convex Directory - Discover Apps, Tools & Components",
-      ),
+      title: getTranslation(content?.seo?.title, "Convex Hub - Discover Apps, Tools & Components"),
       description: getTranslation(
         content?.seo?.description,
-        "The ultimate directory for projects built with Convex.",
+        "The central hub for projects built with Convex.",
       ),
-      ogTitle: getTranslation(content?.seo?.ogTitle, "Convex Directory - Built with Convex"),
+      ogTitle: getTranslation(content?.seo?.ogTitle, "Convex Hub - Built with Convex"),
       ogDescription: getTranslation(
         content?.seo?.ogDescription,
         "Explore the ecosystem of apps, tools, and components powered by Convex.",
@@ -36,14 +33,14 @@ export function useLandingContent() {
         content?.hero?.description,
         "Discover what the community is building with Convex.",
       ),
-      getStartedFree: getTranslation(content?.hero?.getStartedFree, "Explore Directory"),
+      getStartedFree: getTranslation(content?.hero?.getStartedFree, "Explore Hub"),
       watchDemo: getTranslation(content?.hero?.watchDemo, "Submit Project"),
     },
     navbar: {
       directory: getTranslation(content?.navbar?.directory, "Directory"),
       submit: getTranslation(content?.navbar?.submit, "Submit a project"),
       searchPlaceholder: getTranslation(content?.navbar?.searchPlaceholder, "Search projects..."),
-      title: getTranslation(content?.navbar?.title, "Convex Directory"),
+      title: getTranslation(content?.navbar?.title, "Convex Hub"),
       dashboard: getTranslation(content?.navbar?.dashboard, "Dashboard"),
       signIn: getTranslation(content?.navbar?.signIn, "Sign in"),
       submitShort: getTranslation(content?.navbar?.submitShort, "Submit"),
@@ -89,7 +86,7 @@ export function useLandingContent() {
     footer: {
       brandDescription: getTranslation(
         content?.footer?.brandDescription,
-        "A curated directory of apps, tools, and open-source projects built on Convex.",
+        "A curated hub of apps, tools, and open-source projects built on Convex.",
       ),
       sections: {
         directory: getTranslation(content?.footer?.sections?.directory, "Directory"),

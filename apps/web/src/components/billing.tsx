@@ -1,10 +1,10 @@
 import { CheckoutLink, CustomerPortalLink } from "@convex-dev/polar/react";
-import { api } from "@convex-directory/backend/convex/_generated/api";
+import { api } from "@convex-hub/backend/convex/_generated/api";
 import { useAction, useQuery } from "convex/react";
 import { Check } from "lucide-react";
 import { useState } from "react";
 
-import { Button } from "@convex-directory/ui/components/button";
+import { Button } from "@convex-hub/ui/components/button";
 
 import {
   formatPlanPrice,

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useMutation } from "convex/react";
-import { api } from "@convex-directory/backend/convex/_generated/api";
+import { api } from "@convex-hub/backend/convex/_generated/api";
 import { AlertCircle, ImagePlus, Loader2, Upload, WandSparkles } from "lucide-react";
 import {
   Card,
@@ -8,19 +8,19 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@convex-directory/ui/components/card";
-import { Button } from "@convex-directory/ui/components/button";
-import { Input } from "@convex-directory/ui/components/input";
-import { Textarea } from "@convex-directory/ui/components/textarea";
-import { Label } from "@convex-directory/ui/components/label";
-import { Badge } from "@convex-directory/ui/components/badge";
+} from "@convex-hub/ui/components/card";
+import { Button } from "@convex-hub/ui/components/button";
+import { Input } from "@convex-hub/ui/components/input";
+import { Textarea } from "@convex-hub/ui/components/textarea";
+import { Label } from "@convex-hub/ui/components/label";
+import { Badge } from "@convex-hub/ui/components/badge";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@convex-directory/ui/components/select";
+} from "@convex-hub/ui/components/select";
 import {
   Table,
   TableBody,

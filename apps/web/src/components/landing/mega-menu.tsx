@@ -96,7 +96,7 @@ const menuSections = [
       },
       {
         title: "Design System",
-        description: "Convex Zen standards and customization",
+        description: "Convex Hub standards and customization",
         icon: Zap,
         href: "#design-system",
       },

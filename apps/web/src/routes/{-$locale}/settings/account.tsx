@@ -6,11 +6,11 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@convex-directory/ui/components/card";
-import { Badge } from "@convex-directory/ui/components/badge";
+} from "@convex-hub/ui/components/card";
+import { Badge } from "@convex-hub/ui/components/badge";
 import { LocalizedLink } from "@/components/localized-link";
 import { useQuery } from "convex/react";
-import { api } from "@convex-directory/backend/convex/_generated/api";
+import { api } from "@convex-hub/backend/convex/_generated/api";
 import { useIntlayer } from "react-intlayer";
 
 export const Route = createFileRoute("/{-$locale}/settings/account")({

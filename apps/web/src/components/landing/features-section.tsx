@@ -11,8 +11,8 @@ import {
   Layout,
   Palette,
 } from "lucide-react";
-import { Button } from "@convex-directory/ui/components/button";
-import { Badge } from "@convex-directory/ui/components/badge";
+import { Button } from "@convex-hub/ui/components/button";
+import { Badge } from "@convex-hub/ui/components/badge";
 import { Image3D } from "@/components/image-3d";
 
 const mainFeatures = [

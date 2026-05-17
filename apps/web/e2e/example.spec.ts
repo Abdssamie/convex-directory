@@ -4,7 +4,7 @@ test("has title", async ({ page }) => {
   await page.goto("/");
 
   // Expect a title "to contain" a substring.
-  await expect(page).toHaveTitle(/ConvexZen/);
+  await expect(page).toHaveTitle(/Convex Hub/);
 });
 
 test("get started link", async ({ page }) => {

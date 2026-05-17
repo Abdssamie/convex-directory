@@ -4,7 +4,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@convex-directory/ui/components/card";
+} from "@convex-hub/ui/components/card";
 import type { ReactNode } from "react";
 
 export default function AuthLayout({

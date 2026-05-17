@@ -1,11 +1,11 @@
 {
-  "extends": "@convex-directory/config/tsconfig.base.json",
+  "extends": "@convex-hub/config/tsconfig.base.json",
   "compilerOptions": {
     "baseUrl": ".",
     "jsx": "react-jsx",
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "paths": {
-      "@convex-directory/ui/*": ["./src/*"]
+      "@convex-hub/ui/*": ["./src/*"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"],

@@ -13,8 +13,8 @@
   "iconLibrary": "lucide",
   "aliases": {
     "components": "@/components",
-    "utils": "@convex-directory/ui/lib/utils",
-    "ui": "@convex-directory/ui/components",
+    "utils": "@convex-hub/ui/lib/utils",
+    "ui": "@convex-hub/ui/components",
     "lib": "@/lib",
     "hooks": "@/hooks"
   },

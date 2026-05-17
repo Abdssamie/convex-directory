@@ -1,15 +1,15 @@
 "use client";
 
 import { CheckoutLink } from "@convex-dev/polar/react";
-import { api } from "@convex-directory/backend/convex/_generated/api";
+import { api } from "@convex-hub/backend/convex/_generated/api";
 import { LocalizedLink } from "@/components/localized-link";
 import { useAction, useQuery } from "convex/react";
 import { Check } from "lucide-react";
 import { useState } from "react";
 
-import { Badge } from "@convex-directory/ui/components/badge";
-import { Button } from "@convex-directory/ui/components/button";
-import { ToggleGroup, ToggleGroupItem } from "@convex-directory/ui/components/toggle-group";
+import { Badge } from "@convex-hub/ui/components/badge";
+import { Button } from "@convex-hub/ui/components/button";
+import { ToggleGroup, ToggleGroupItem } from "@convex-hub/ui/components/toggle-group";
 
 import { authClient } from "@/lib/auth-client";
 import {

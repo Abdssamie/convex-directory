@@ -1,5 +1,5 @@
 {
-  "name": "@convex-directory/ui",
+  "name": "@convex-hub/ui",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -57,7 +57,7 @@
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@convex-directory/config": "workspace:*",
+    "@convex-hub/config": "workspace:*",
     "@tailwindcss/cli": "^4.2.2",
     "@types/node": "^24.12.2",
     "@types/react": "catalog:",

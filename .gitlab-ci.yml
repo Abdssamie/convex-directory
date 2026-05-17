@@ -1,52 +1,119 @@
 image: node:22
 
 stages:
-  - lint
-  - typecheck
+  - setup
+  - generate
+  - validate
   - test
+  - deploy
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
+  PNPM_HOME: "$CI_PROJECT_DIR/.pnpm"
+  PNPM_STORE_DIR: "$CI_PROJECT_DIR/.pnpm-store"
+
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+
+.pnpm_setup:
+  before_script:
+    - export PATH="$PNPM_HOME:$PATH"
+    - corepack enable
+    - corepack prepare pnpm@10.33.2 --activate
+    - pnpm config set store-dir "$PNPM_STORE_DIR"
 
 cache:
-  key: ${CI_COMMIT_REF_SLUG}
+  key:
+    files:
+      - pnpm-lock.yaml
   paths:
-    - .pnpm-store
+    - .pnpm-store/
 
-install-deps:
-  stage: .pre
+install:
+  stage: setup
+  extends: .pnpm_setup
   script:
-    - corepack enable
-    - corepack prepare pnpm@latest --activate
     - pnpm install --frozen-lockfile
-  cache:
-    key: pnpm-${CI_COMMIT_SHORT_SHA}
-    paths:
-      - .pnpm-store
-      - node_modules
   artifacts:
     paths:
       - node_modules/
-      - .pnpm-store/
+      - apps/web/node_modules/
+      - packages/backend/node_modules/
+      - packages/config/node_modules/
+      - packages/env/node_modules/
+      - packages/ui/node_modules/
+    expire_in: 1 hour
+
+codegen:
+  stage: generate
+  extends: .pnpm_setup
+  needs:
+    - job: install
+      artifacts: true
+  script:
+    - cd packages/backend
+    - npx convex codegen
+  artifacts:
+    paths:
+      - packages/backend/convex/_generated/
     expire_in: 1 hour
 
 lint:
-  stage: lint
-  needs: [install-deps]
+  stage: validate
+  extends: .pnpm_setup
+  needs:
+    - job: install
+      artifacts: true
+    - job: codegen
+      artifacts: true
   script:
     - pnpm lint
-  allow_failure: false
 
 typecheck:
-  stage: typecheck
-  needs: [install-deps]
+  stage: validate
+  extends: .pnpm_setup
+  needs:
+    - job: install
+      artifacts: true
+    - job: codegen
+      artifacts: true
   script:
     - pnpm typecheck
-  allow_failure: false
 
-test:
+backend_tests:
   stage: test
-  needs: [install-deps]
+  extends: .pnpm_setup
+  needs:
+    - job: install
+      artifacts: true
+    - job: codegen
+      artifacts: true
   script:
-    - pnpm --filter @convex-directory/backend run test
-  allow_failure: false
+    - pnpm --filter @convex-hub/backend run test
+
+deploy:
+  stage: deploy
+  extends: .pnpm_setup
+  needs:
+    - job: install
+      artifacts: true
+    - job: lint
+    - job: typecheck
+    - job: backend_tests
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+      when: manual
+  environment:
+    name: production
+  script:
+    - pnpm run sync:project-config
+    - node scripts/sync-secrets.mjs
+    - pnpm run doctor:deploy
+    - cd packages/backend
+    - npx convex deploy
+    - cd ../../apps/web
+    - pnpm run deploy

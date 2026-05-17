@@ -11,7 +11,7 @@ export function Logo({ size = 24, className, white, ...props }: LogoProps) {
       src={white ? "/logo-small-white.png" : "/logo-small.png"}
       width={size}
       height={size}
-      alt="Convex Directory Logo"
+      alt="Convex Hub Logo"
       className={className}
       {...props}
     />

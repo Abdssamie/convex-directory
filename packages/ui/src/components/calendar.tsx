@@ -2,8 +2,8 @@ import * as React from "react";
 import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { DayButton, DayPicker, getDefaultClassNames } from "react-day-picker";
 
-import { cn } from "@convex-directory/ui/lib/utils";
-import { Button, buttonVariants } from "@convex-directory/ui/components/button";
+import { cn } from "@convex-hub/ui/lib/utils";
+import { Button, buttonVariants } from "@convex-hub/ui/components/button";
 
 function Calendar({
   className,

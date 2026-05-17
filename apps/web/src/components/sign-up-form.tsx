@@ -1,6 +1,6 @@
-import { Button } from "@convex-directory/ui/components/button";
-import { Input } from "@convex-directory/ui/components/input";
-import { Label } from "@convex-directory/ui/components/label";
+import { Button } from "@convex-hub/ui/components/button";
+import { Input } from "@convex-hub/ui/components/input";
+import { Label } from "@convex-hub/ui/components/label";
 import { LocalizedLink } from "@/components/localized-link";
 import { useLocalizedNavigate } from "@/hooks/useLocalizedNavigate";
 import { useForm } from "@tanstack/react-form";

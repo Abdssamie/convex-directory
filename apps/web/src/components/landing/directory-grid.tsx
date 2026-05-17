@@ -1,8 +1,8 @@
 "use client";
 
 import { useQuery } from "convex/react";
-import { api } from "@convex-directory/backend/convex/_generated/api";
-import { Badge } from "@convex-directory/ui/components/badge";
+import { api } from "@convex-hub/backend/convex/_generated/api";
+import { Badge } from "@convex-hub/ui/components/badge";
 import type { FunctionReturnType } from "convex/server";
 import { PROJECT_CATEGORIES, formatProjectCategoryName } from "@/lib/project-categories";
 import { LocalizedLink } from "@/components/localized-link";

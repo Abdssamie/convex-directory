@@ -9,7 +9,7 @@ import { Search, Loader2, Folder, X as XIcon } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { useQuery } from "convex/react";
-import { api } from "@convex-directory/backend/convex/_generated/api";
+import { api } from "@convex-hub/backend/convex/_generated/api";
 
 const Command = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive>,

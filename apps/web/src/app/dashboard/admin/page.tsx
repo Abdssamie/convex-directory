@@ -1,8 +1,8 @@
 import * as React from "react";
 import { useMutation, useQuery } from "convex/react";
 import type { FunctionReturnType } from "convex/server";
-import { api } from "@convex-directory/backend/convex/_generated/api";
-import type { Id } from "@convex-directory/backend/convex/_generated/dataModel";
+import { api } from "@convex-hub/backend/convex/_generated/api";
+import type { Id } from "@convex-hub/backend/convex/_generated/dataModel";
 import { BaseLayout } from "@/components/layouts/base-layout";
 import {
   Card,
@@ -10,8 +10,8 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@convex-directory/ui/components/card";
-import { Button } from "@convex-directory/ui/components/button";
+} from "@convex-hub/ui/components/card";
+import { Button } from "@convex-hub/ui/components/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";

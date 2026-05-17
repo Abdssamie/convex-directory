@@ -1,7 +1,7 @@
 "use client";
 
-import { Separator } from "@convex-directory/ui/components/separator";
-import { Button } from "@convex-directory/ui/components/button";
+import { Separator } from "@convex-hub/ui/components/separator";
+import { Button } from "@convex-hub/ui/components/button";
 import { Logo } from "@/components/logo";
 import { Github, Twitter, Heart } from "lucide-react";
 import { LocalizedLink } from "@/components/localized-link";

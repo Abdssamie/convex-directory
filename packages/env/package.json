@@ -1,5 +1,5 @@
 {
-  "name": "@convex-directory/env",
+  "name": "@convex-hub/env",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -12,7 +12,7 @@
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@convex-directory/config": "workspace:*",
+    "@convex-hub/config": "workspace:*",
     "typescript": "^5"
   }
 }

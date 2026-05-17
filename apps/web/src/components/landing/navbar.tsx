@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import { Menu, X, LayoutDashboard, Search } from "lucide-react";
-import { Button } from "@convex-directory/ui/components/button";
+import { Button } from "@convex-hub/ui/components/button";
 import {
   Sheet,
   SheetContent,
   SheetTrigger,
   SheetHeader,
   SheetTitle,
-} from "@convex-directory/ui/components/sheet";
+} from "@convex-hub/ui/components/sheet";
 import { Logo } from "@/components/logo";
 import { ModeToggle } from "@/components/mode-toggle";
 import { LocaleSwitcher } from "@/components/locale-switcher";

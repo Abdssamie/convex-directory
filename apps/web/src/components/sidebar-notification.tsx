@@ -35,12 +35,12 @@ export function SidebarNotification() {
                 rel="noopener noreferrer"
                 className="text-primary hover:underline"
               >
-                Convex Zen
+                Convex Hub
               </a>
             </div>
           </h3>
           <p className="text-sm text-muted-foreground dark:text-neutral-400 leading-relaxed">
-            Explore our premium Convex Zen boilerplate with TanStack Start and Convex to build your
+            Explore our premium Convex Hub boilerplate with TanStack Start and Convex to build your
             next project faster.
           </p>
         </div>

@@ -1,8 +1,8 @@
 "use client";
 
-import { Card, CardContent } from "@convex-directory/ui/components/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@convex-directory/ui/components/avatar";
-import { Badge } from "@convex-directory/ui/components/badge";
+import { Card, CardContent } from "@convex-hub/ui/components/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@convex-hub/ui/components/avatar";
+import { Badge } from "@convex-hub/ui/components/badge";
 
 type Testimonial = {
   name: string;

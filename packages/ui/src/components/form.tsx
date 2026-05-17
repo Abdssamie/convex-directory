@@ -10,8 +10,8 @@ import {
   type FieldValues,
 } from "react-hook-form";
 
-import { cn } from "@convex-directory/ui/lib/utils";
-import { Label } from "@convex-directory/ui/components/label";
+import { cn } from "@convex-hub/ui/lib/utils";
+import { Label } from "@convex-hub/ui/components/label";
 
 const Form = FormProvider;
 

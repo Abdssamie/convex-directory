@@ -1,5 +1,5 @@
-import { api } from "@convex-directory/backend/convex/_generated/api";
-import { Button } from "@convex-directory/ui/components/button";
+import { api } from "@convex-hub/backend/convex/_generated/api";
+import { Button } from "@convex-hub/ui/components/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,7 +8,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@convex-directory/ui/components/dropdown-menu";
+} from "@convex-hub/ui/components/dropdown-menu";
 import { useQuery } from "convex/react";
 
 import { authClient } from "@/lib/auth-client";

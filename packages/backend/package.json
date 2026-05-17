@@ -1,5 +1,5 @@
 {
-  "name": "@convex-directory/backend",
+  "name": "@convex-hub/backend",
   "version": "1.0.0",
   "description": "",
   "license": "ISC",
@@ -27,7 +27,7 @@
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@convex-directory/config": "workspace:*",
+    "@convex-hub/config": "workspace:*",
     "@types/node": "^25.6.0",
     "@vitest/coverage-v8": "^4.1.4",
     "convex-test": "^0.0.48",

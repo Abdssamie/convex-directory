@@ -3,7 +3,7 @@ import { BaseLayout } from "@/components/layouts/base-layout";
 import { useIntlayer } from "react-intlayer";
 import { useQuery } from "convex/react";
 import { useMutation } from "convex/react";
-import { api } from "@convex-directory/backend/convex/_generated/api";
+import { api } from "@convex-hub/backend/convex/_generated/api";
 import type { FunctionReturnType } from "convex/server";
 import { LocalizedLink } from "@/components/localized-link";
 import { Button } from "@/components/ui/button";

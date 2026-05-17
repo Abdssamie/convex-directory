@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { cn } from "@convex-directory/ui/lib/utils";
+import { cn } from "@convex-hub/ui/lib/utils";
 
 const Table = React.forwardRef<HTMLTableElement, React.HTMLAttributes<HTMLTableElement>>(
   ({ className, ...props }, ref) => (

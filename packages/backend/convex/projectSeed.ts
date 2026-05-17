@@ -210,7 +210,7 @@ async function fetchSiteMetadata(url: string) {
   const response = await fetch(url, {
     redirect: "follow",
     headers: {
-      "User-Agent": "Mozilla/5.0 (compatible; ConvexDirectorySeeder/1.0)",
+      "User-Agent": "Mozilla/5.0 (compatible; ConvexHubSeeder/1.0)",
     },
   });
 
@@ -234,7 +234,7 @@ async function uploadFaviconFromUrl(ctx: ActionCtx, faviconUrl: string, sourceUr
   const response = await fetch(faviconUrl, {
     redirect: "follow",
     headers: {
-      "User-Agent": "Mozilla/5.0 (compatible; ConvexDirectorySeeder/1.0)",
+      "User-Agent": "Mozilla/5.0 (compatible; ConvexHubSeeder/1.0)",
     },
   });
 

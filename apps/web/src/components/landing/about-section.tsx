@@ -1,9 +1,9 @@
 "use client";
 
-import { Button } from "@convex-directory/ui/components/button";
-import { Badge } from "@convex-directory/ui/components/badge";
-import { Card, CardContent } from "@convex-directory/ui/components/card";
-import { CardDecorator } from "@convex-directory/ui/components/card-decorator";
+import { Button } from "@convex-hub/ui/components/button";
+import { Badge } from "@convex-hub/ui/components/badge";
+import { Card, CardContent } from "@convex-hub/ui/components/card";
+import { CardDecorator } from "@convex-hub/ui/components/card-decorator";
 import { Github, Code, Palette, Layout, Crown } from "lucide-react";
 
 const values = [
@@ -40,7 +40,7 @@ export function AboutSection() {
         {/* Section Header */}
         <div className="mx-auto max-w-4xl text-center mb-16">
           <Badge variant="outline" className="mb-4">
-            About Convex Zen
+            About Convex Hub
           </Badge>
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-6">
             Built for developers, by developers

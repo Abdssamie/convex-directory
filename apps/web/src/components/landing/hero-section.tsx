@@ -1,8 +1,8 @@
 "use client";
 
 import { ArrowRight, Play, Star } from "lucide-react";
-import { Button } from "@convex-directory/ui/components/button";
-import { Badge } from "@convex-directory/ui/components/badge";
+import { Button } from "@convex-hub/ui/components/button";
+import { Badge } from "@convex-hub/ui/components/badge";
 import { DotPattern } from "@/components/dot-pattern";
 import { LocalizedLink } from "@/components/localized-link";
 import { useLandingContent } from "./content";

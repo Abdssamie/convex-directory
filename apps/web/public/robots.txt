@@ -8,4 +8,4 @@ Disallow: /forgot-password
 Disallow: /reset-password
 Disallow: /verify-email
 
-Sitemap: https://convex-directory.com/sitemap.xml
+Sitemap: https://convex-hub.com/sitemap.xml

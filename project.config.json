@@ -1,6 +1,6 @@
 {
-  "projectName": "convex-directory",
-  "workerName": "convex-directory-web-abdssamie",
+  "projectName": "convex-hub",
+  "workerName": "convex-hub-web-abdssamie",
   "cloudflare": {
     "compatibilityDate": "2026-04-17",
     "compatibilityFlags": ["nodejs_compat"],
