@@ -55,6 +55,10 @@ const submitProjectFormDictionary = {
         fr: "La description doit faire au moins 10 caractères",
       }),
       urlInvalid: t({ en: "Must be a valid URL", fr: "Doit être une URL valide" }),
+      categoryRequired: t({
+        en: "Select at least one category",
+        fr: "Sélectionnez au moins une catégorie",
+      }),
     },
   },
 } satisfies Dictionary;

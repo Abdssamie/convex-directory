@@ -25,3 +25,42 @@ export const PROJECT_CATEGORIES = [
 ] as const;
 
 export type ProjectCategorySlug = (typeof PROJECT_CATEGORIES)[number]["slug"];
+
+export function formatProjectCategoryName(slug: string) {
+  return (
+    PROJECT_CATEGORIES.find((category) => category.slug === slug)?.name ??
+    slug
+      .split("-")
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+      .join(" ")
+  );
+}
+
+function normalizeCategoryValue(value: string) {
+  return value.trim().toLowerCase();
+}
+
+export function resolveProjectCategorySlug(value: string) {
+  const normalizedValue = normalizeCategoryValue(value);
+  if (!normalizedValue) {
+    return "";
+  }
+
+  const matchedCategory = PROJECT_CATEGORIES.find((category) => {
+    return (
+      normalizeCategoryValue(category.name) === normalizedValue ||
+      normalizeCategoryValue(category.slug) === normalizedValue
+    );
+  });
+
+  return matchedCategory?.slug ?? "";
+}
+
+export function resolveProjectCategorySlugs(value: string) {
+  const categorySlugs = value
+    .split(",")
+    .map((part) => resolveProjectCategorySlug(part))
+    .filter(Boolean);
+
+  return [...new Set(categorySlugs)];
+}

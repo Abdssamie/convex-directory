@@ -31,8 +31,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { FastProjectUploader } from "@/app/dashboard/components/fast-project-uploader";
+import { ProjectCategorySelector } from "@/components/project-category-selector";
 import { ProjectLogoField, ProjectScreenshotField } from "@/components/project-media-fields";
-import { PROJECT_CATEGORIES } from "@/lib/project-categories";
 import { Check, ExternalLink, Loader2, Search, Star, X } from "lucide-react";
 import { toast } from "sonner";
 import { useIntlayer } from "react-intlayer";
@@ -43,7 +43,6 @@ type ProjectType = AdminProject["type"];
 
 const STATUS_OPTIONS: AdminProjectStatus[] = ["approved", "pending", "rejected"];
 const TYPE_OPTIONS: ProjectType[] = ["saas", "tool", "open-source", "component"];
-const NO_CATEGORY_VALUE = "__no_category__";
 
 function formatDate(value: number) {
   return new Intl.DateTimeFormat("en", {
@@ -62,7 +61,7 @@ function matchesQuery(project: AdminProject, query: string) {
     project.title,
     project.description,
     project.url,
-    project.categorySlug,
+    project.categorySlugs.join(" "),
     project.type,
     project.status,
   ].some((value) => value.toLowerCase().includes(normalizedQuery));
@@ -141,9 +140,7 @@ function ProjectTableRow({
   const [description, setDescription] = React.useState(project.description);
   const [url, setUrl] = React.useState(project.url);
   const [type, setType] = React.useState<ProjectType>(project.type);
-  const [categorySlug, setCategorySlug] = React.useState(
-    project.categorySlug === "uncategorized" ? NO_CATEGORY_VALUE : project.categorySlug,
-  );
+  const [categorySlugs, setCategorySlugs] = React.useState(project.categorySlugs);
   const [logoFile, setLogoFile] = React.useState<File | null>(null);
   const [screenshotFile, setScreenshotFile] = React.useState<File | null>(null);
 
@@ -152,9 +149,7 @@ function ProjectTableRow({
     setDescription(project.description);
     setUrl(project.url);
     setType(project.type);
-    setCategorySlug(
-      project.categorySlug === "uncategorized" ? NO_CATEGORY_VALUE : project.categorySlug,
-    );
+    setCategorySlugs(project.categorySlugs);
     setLogoFile(null);
     setScreenshotFile(null);
   }, [project]);
@@ -178,7 +173,7 @@ function ProjectTableRow({
         description,
         url,
         type,
-        ...(categorySlug !== NO_CATEGORY_VALUE ? { categorySlug } : {}),
+        categorySlugs,
         ...(productLogoKey ? { productLogoKey } : {}),
         ...(screenshotKey ? { screenshotKey } : {}),
       });
@@ -243,20 +238,12 @@ function ProjectTableRow({
           </SelectContent>
         </Select>
       </TableCell>
-      <TableCell className="min-w-[190px] align-top">
-        <Select value={categorySlug} onValueChange={setCategorySlug}>
-          <SelectTrigger className="rounded-xl">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={NO_CATEGORY_VALUE}>No subcategory</SelectItem>
-            {PROJECT_CATEGORIES.map((category) => (
-              <SelectItem key={category.slug} value={category.slug}>
-                {category.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+      <TableCell className="min-w-[280px] align-top">
+        <ProjectCategorySelector
+          value={categorySlugs}
+          onChange={setCategorySlugs}
+          allowEmpty={type === "open-source"}
+        />
       </TableCell>
       <TableCell className="min-w-[280px] align-top">
         <div className="space-y-4">

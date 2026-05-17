@@ -29,8 +29,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { ProjectCategorySelector } from "@/components/project-category-selector";
 import { ProjectLogoField, ProjectScreenshotField } from "@/components/project-media-fields";
-import { PROJECT_CATEGORIES } from "@/lib/project-categories";
+import { PROJECT_CATEGORIES, resolveProjectCategorySlugs } from "@/lib/project-categories";
 import { toast } from "sonner";
 import { useIntlayer } from "react-intlayer";
 
@@ -42,8 +43,8 @@ type DraftRow = {
   url: string;
   description: string;
   type: ProjectType;
-  categoryLabel: string;
-  categorySlug: string;
+  categoryLabels: string;
+  categorySlugs: string[];
   logoFile: File | null;
   imageFile: File | null;
 };
@@ -61,26 +62,6 @@ function normalizeCellValue(value: string) {
   }
 
   return trimmedValue;
-}
-
-function normalizeCategoryValue(value: string) {
-  return value.trim().toLowerCase();
-}
-
-function resolveCategorySlug(value: string) {
-  const normalizedValue = normalizeCategoryValue(value);
-  if (!normalizedValue) {
-    return "";
-  }
-
-  const matchedCategory = PROJECT_CATEGORIES.find((category) => {
-    return (
-      normalizeCategoryValue(category.name) === normalizedValue ||
-      normalizeCategoryValue(category.slug) === normalizedValue
-    );
-  });
-
-  return matchedCategory?.slug ?? "";
 }
 
 function isValidProjectUrl(value: string) {
@@ -108,7 +89,7 @@ function parseBulkInput(raw: string, defaultType: ProjectType): DraftRow[] {
 
       const [title = "", url = "", description = "", fourth = ""] = parts;
       const trimmedFourth = normalizeCellValue(fourth);
-      const resolvedCategorySlug = resolveCategorySlug(trimmedFourth);
+      const resolvedCategorySlugs = resolveProjectCategorySlugs(trimmedFourth);
 
       return {
         id: makeRowId(),
@@ -116,8 +97,8 @@ function parseBulkInput(raw: string, defaultType: ProjectType): DraftRow[] {
         url: normalizeCellValue(url),
         description: normalizeCellValue(description),
         type: defaultType,
-        categoryLabel: trimmedFourth,
-        categorySlug: resolvedCategorySlug,
+        categoryLabels: trimmedFourth,
+        categorySlugs: resolvedCategorySlugs,
         logoFile: null,
         imageFile: null,
       };
@@ -143,25 +124,29 @@ export function FastProjectUploader() {
       row.title &&
       isValidProjectUrl(row.url) &&
       row.description &&
-      row.categorySlug &&
+      (row.type === "open-source" || row.categorySlugs.length > 0) &&
       (row.logoFile === null || isValidImageFile(row.logoFile)) &&
       (row.imageFile === null || isValidImageFile(row.imageFile)),
   );
   const unresolvedCategoryCount = rows.filter(
     (row) =>
-      row.title && row.url && row.description && row.categoryLabel.trim() && !row.categorySlug,
+      row.title &&
+      row.url &&
+      row.description &&
+      row.categoryLabels.trim() &&
+      row.categorySlugs.length === 0,
   ).length;
 
   const handleParse = () => {
     const nextRows = parseBulkInput(rawInput, defaultType);
 
     if (nextRows.length === 0) {
-      toast.error("No valid rows found. Use title | url | description | optional category.");
+      toast.error("No valid rows found. Use title | url | description | optional categories.");
       return;
     }
 
     setRows(nextRows);
-    if (nextRows.some((row) => row.categoryLabel.trim() && !row.categorySlug)) {
+    if (nextRows.some((row) => row.categoryLabels.trim() && row.categorySlugs.length === 0)) {
       toast.warning("Some rows have unmatched categories. Fix them before publishing.");
     } else {
       toast.success(`${nextRows.length} projects ready.`);
@@ -219,8 +204,8 @@ export function FastProjectUploader() {
           const screenshotKey =
             row.imageFile !== null ? await uploadImageFile(row.imageFile) : undefined;
 
-          if (!row.categorySlug) {
-            throw new Error(`Unknown category: ${row.categoryLabel || "empty"}`);
+          if (row.type !== "open-source" && row.categorySlugs.length === 0) {
+            throw new Error(`Unknown category: ${row.categoryLabels || "empty"}`);
           }
 
           return {
@@ -228,7 +213,7 @@ export function FastProjectUploader() {
             url: row.url.trim(),
             description: row.description.trim(),
             type: row.type,
-            categorySlug: row.categorySlug,
+            categorySlugs: row.categorySlugs,
             productLogoKey,
             screenshotKey,
           };
@@ -299,8 +284,8 @@ export function FastProjectUploader() {
           />
           <p className="text-sm text-muted-foreground">
             Use <code>|</code> or tab-separated columns. Format:{" "}
-            <code>title | url | description | optional category</code>. Category can be name or
-            slug.
+            <code>title | url | description | optional categories</code>. Categories can be names or
+            slugs, separated by commas.
           </p>
         </div>
 
@@ -328,7 +313,7 @@ export function FastProjectUploader() {
         {unresolvedCategoryCount > 0 ? (
           <div className="rounded-2xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm text-amber-900 dark:text-amber-200">
             {unresolvedCategoryCount} row{unresolvedCategoryCount === 1 ? "" : "s"} have unmatched
-            categories. Fix them in the Category column before publishing.
+            categories. Fix them in the Categories column before publishing.
           </div>
         ) : null}
 
@@ -344,7 +329,7 @@ export function FastProjectUploader() {
                     <TableHead>Screenshot</TableHead>
                     <TableHead>Logo</TableHead>
                     <TableHead>Type</TableHead>
-                    <TableHead>Category</TableHead>
+                    <TableHead>Categories</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -404,48 +389,27 @@ export function FastProjectUploader() {
                         </Select>
                       </TableCell>
                       <TableCell className="align-top">
-                        <div className="min-w-52 space-y-2">
+                        <div className="min-w-64 space-y-2">
                           <Input
-                            value={row.categoryLabel}
+                            value={row.categoryLabels}
                             onChange={(event) =>
                               updateRow(row.id, {
-                                categoryLabel: event.target.value,
-                                categorySlug: resolveCategorySlug(event.target.value),
+                                categoryLabels: event.target.value,
+                                categorySlugs: resolveProjectCategorySlugs(event.target.value),
                               })
                             }
-                            placeholder="Developer Tools"
+                            placeholder="Developer Tools, AI"
                             className="rounded-xl"
                           />
-                          <Select
-                            value={row.categorySlug || "__unresolved__"}
-                            onValueChange={(value) =>
-                              updateRow(row.id, {
-                                categorySlug: value === "__unresolved__" ? "" : value,
-                                categoryLabel:
-                                  value === "__unresolved__"
-                                    ? row.categoryLabel
-                                    : (PROJECT_CATEGORIES.find(
-                                        (category) => category.slug === value,
-                                      )?.name ?? row.categoryLabel),
-                              })
-                            }
-                          >
-                            <SelectTrigger className="rounded-xl">
-                              <SelectValue placeholder="Pick existing category" />
-                            </SelectTrigger>
-                            <SelectContent className="rounded-xl">
-                              <SelectItem value="__unresolved__">Unmatched / choose one</SelectItem>
-                              {PROJECT_CATEGORIES.map((category) => (
-                                <SelectItem key={category.slug} value={category.slug}>
-                                  {category.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                          <ProjectCategorySelector
+                            value={row.categorySlugs}
+                            onChange={(categorySlugs) => updateRow(row.id, { categorySlugs })}
+                            allowEmpty={row.type === "open-source"}
+                          />
                           <p className="text-xs text-muted-foreground">
-                            {row.categorySlug
-                              ? "Matched existing category"
-                              : "Unmatched category. Pick existing category."}
+                            {row.categorySlugs.length > 0 || row.type === "open-source"
+                              ? "Categories resolved"
+                              : "Unmatched categories. Fix the typed list or tick them below."}
                           </p>
                         </div>
                       </TableCell>

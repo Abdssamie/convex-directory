@@ -4,7 +4,7 @@ import { useQuery } from "convex/react";
 import { api } from "@convex-directory/backend/convex/_generated/api";
 import { Badge } from "@convex-directory/ui/components/badge";
 import type { FunctionReturnType } from "convex/server";
-import { PROJECT_CATEGORIES } from "@/lib/project-categories";
+import { PROJECT_CATEGORIES, formatProjectCategoryName } from "@/lib/project-categories";
 import { LocalizedLink } from "@/components/localized-link";
 import { ProjectBrandmark } from "@/components/project-brandmark";
 import { ProjectScreenshot } from "@/components/project-screenshot";
@@ -12,19 +12,9 @@ import { useLandingContent } from "./content";
 
 type DirectoryProject = FunctionReturnType<typeof api.projects.getProjects>[number];
 
-function formatCategoryName(slug: string) {
-  return (
-    PROJECT_CATEGORIES.find((category) => category.slug === slug)?.name ??
-    slug
-      .split("-")
-      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-      .join(" ")
-  );
-}
-
 function getProjectCardTag(project: DirectoryProject) {
-  if (project.type === "saas" && project.categorySlug && project.categorySlug !== "uncategorized") {
-    return formatCategoryName(project.categorySlug);
+  if (project.type === "saas" && project.categorySlugs[0]) {
+    return formatProjectCategoryName(project.categorySlugs[0]);
   }
 
   switch (project.type) {
@@ -52,20 +42,17 @@ export function DirectoryGrid() {
         projects
           .filter((project) => project.type === "saas")
           .reduce((acc, project) => {
-            const next = acc.get(project.categorySlug) ?? { slug: project.categorySlug, count: 0 };
-            next.count += 1;
-            acc.set(project.categorySlug, next);
+            for (const categorySlug of project.categorySlugs) {
+              const next = acc.get(categorySlug) ?? { slug: categorySlug, count: 0 };
+              next.count += 1;
+              acc.set(categorySlug, next);
+            }
             return acc;
           }, new Map<string, { slug: string; count: number }>()),
       )
         .map(([, stat]) => ({
           ...stat,
-          name:
-            categoriesBySlug.get(stat.slug)?.name ??
-            stat.slug
-              .split("-")
-              .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-              .join(" "),
+          name: categoriesBySlug.get(stat.slug)?.name ?? formatProjectCategoryName(stat.slug),
         }))
         .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))
     : [];

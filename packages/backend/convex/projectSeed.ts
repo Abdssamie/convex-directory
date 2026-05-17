@@ -44,6 +44,7 @@ const seedProjectValidator = v.object({
   title: v.string(),
   description: v.string(),
   categorySlug: v.optional(categorySlugValidator),
+  categorySlugs: v.optional(v.array(categorySlugValidator)),
   type: projectTypeValidator,
 });
 
@@ -133,11 +134,43 @@ function normalizeProjectInput(input: {
     | "media"
     | "open-source"
     | "components";
+  categorySlugs?: Array<
+    | "developer-tools"
+    | "productivity"
+    | "finance"
+    | "health"
+    | "ai"
+    | "analytics"
+    | "marketing"
+    | "sales"
+    | "customer-support"
+    | "design"
+    | "collaboration"
+    | "education"
+    | "e-commerce"
+    | "security"
+    | "infrastructure"
+    | "operations"
+    | "hr"
+    | "legal"
+    | "real-estate"
+    | "travel"
+    | "media"
+    | "open-source"
+    | "components"
+  >;
   productLogoKey?: string;
 }) {
   const title = input.title.trim();
   const description = normalizeWhitespace(input.description);
-  const categorySlug = input.categorySlug?.trim().toLowerCase();
+  const categorySlugs = [
+    ...new Set(
+      [input.categorySlug, ...(input.categorySlugs ?? [])]
+        .map((categorySlug) => categorySlug?.trim().toLowerCase())
+        .filter((categorySlug): categorySlug is string => Boolean(categorySlug)),
+    ),
+  ];
+  const categorySlug = categorySlugs[0];
 
   if (title.length < 2 || title.length > 120) {
     throw new ConvexError("Project title must be between 2 and 120 characters");
@@ -147,12 +180,17 @@ function normalizeProjectInput(input: {
     throw new ConvexError("Project description must be between 10 and 1000 characters");
   }
 
+  if (input.type !== "open-source" && categorySlugs.length === 0) {
+    throw new ConvexError("Project must have at least one category");
+  }
+
   return {
     title,
     description,
     url: normalizeUrl(input.url),
     type: input.type,
     ...(categorySlug ? { categorySlug } : {}),
+    categorySlugs,
     productLogoKey: normalizeOptionalKey(input.productLogoKey),
   };
 }
@@ -240,6 +278,7 @@ export const insertImportedProject = internalMutation({
     url: v.string(),
     type: projectTypeValidator,
     categorySlug: v.optional(categorySlugValidator),
+    categorySlugs: v.optional(v.array(categorySlugValidator)),
     productLogoKey: v.optional(v.string()),
   },
   returns: v.id("projects"),
@@ -250,7 +289,8 @@ export const insertImportedProject = internalMutation({
 
     return await ctx.db.insert("projects", {
       ...project,
-      searchableText: `${project.title} ${project.description}`.toLowerCase(),
+      searchableText:
+        `${project.title} ${project.description} ${project.categorySlugs.join(" ")}`.toLowerCase(),
       createdBy: "seed:production-import",
       status: "approved",
       createdAt: now,
@@ -300,6 +340,7 @@ export const seedProjectsFromRemote = action({
             url: item.url,
             type: item.type,
             ...(item.categorySlug ? { categorySlug: item.categorySlug } : {}),
+            ...(item.categorySlugs ? { categorySlugs: item.categorySlugs } : {}),
             ...(productLogoKey ? { productLogoKey } : {}),
           },
         );

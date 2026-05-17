@@ -9,7 +9,7 @@ import { LocalizedLink } from "@/components/localized-link";
 import { ProjectBrandmark } from "@/components/project-brandmark";
 import { ProjectScreenshot } from "@/components/project-screenshot";
 import { useLandingContent } from "@/components/landing/content";
-import { PROJECT_CATEGORIES } from "@/lib/project-categories";
+import { formatProjectCategoryName } from "@/lib/project-categories";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -53,19 +53,9 @@ const PRODUCT_TYPE_META: Record<
   },
 };
 
-function formatCategoryName(slug: string) {
-  return (
-    PROJECT_CATEGORIES.find((category) => category.slug === slug)?.name ??
-    slug
-      .split("-")
-      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-      .join(" ")
-  );
-}
-
 function getProjectCardTag(project: DirectoryProject) {
-  if (project.type === "saas" && project.categorySlug && project.categorySlug !== "uncategorized") {
-    return formatCategoryName(project.categorySlug);
+  if (project.type === "saas" && project.categorySlugs[0]) {
+    return formatProjectCategoryName(project.categorySlugs[0]);
   }
 
   return PRODUCT_TYPE_META[project.type].label;
@@ -266,15 +256,21 @@ function CategoryLinksSection({ projects }: { projects: DirectoryProject[] }) {
   const categoryStats = useMemo(() => {
     return Array.from(
       projects.reduce((acc, project) => {
-        const current = acc.get(project.categorySlug) ?? { slug: project.categorySlug, count: 0 };
-        current.count += 1;
-        acc.set(project.categorySlug, current);
+        if (project.type !== "saas") {
+          return acc;
+        }
+
+        for (const categorySlug of project.categorySlugs) {
+          const current = acc.get(categorySlug) ?? { slug: categorySlug, count: 0 };
+          current.count += 1;
+          acc.set(categorySlug, current);
+        }
         return acc;
       }, new Map<string, { slug: string; count: number }>()),
     )
       .map(([, stat]) => ({
         ...stat,
-        name: formatCategoryName(stat.slug),
+        name: formatProjectCategoryName(stat.slug),
       }))
       .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
   }, [projects]);
@@ -337,7 +333,7 @@ function ListingSection({
     const query = search.trim().toLowerCase();
     const filteredProjects = query
       ? projects?.filter((project) =>
-          `${project.title} ${project.description} ${project.categorySlug}`
+          `${project.title} ${project.description} ${project.categorySlugs.join(" ")}`
             .toLowerCase()
             .includes(query),
         )
@@ -427,7 +423,7 @@ export function ProductTypePage({ productType }: { productType: ProductType }) {
 
 export function CategoryDirectoryPage({ categorySlug }: { categorySlug: string }) {
   const content = useLandingContent();
-  const categoryName = formatCategoryName(categorySlug);
+  const categoryName = formatProjectCategoryName(categorySlug);
   const categoryProjects = useQuery(api.projects.getProjects, {
     type: "saas",
     categorySlug,

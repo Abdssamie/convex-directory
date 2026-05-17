@@ -46,7 +46,7 @@ import { LandingNavbar } from "@/components/landing/navbar";
 import { LandingFooter } from "@/components/landing/footer";
 import { LocalizedLink } from "@/components/localized-link";
 import { ProjectBrandmark } from "@/components/project-brandmark";
-import { PROJECT_CATEGORIES } from "@/lib/project-categories";
+import { formatProjectCategoryName } from "@/lib/project-categories";
 
 interface ProductPageProps {
   projectId: Id<"projects">;
@@ -81,12 +81,11 @@ export function ProductPage({ projectId }: ProductPageProps) {
     }
   }, [project?._id, trackProjectEvent]);
 
-  const categoryName =
-    PROJECT_CATEGORIES.find((c) => c.slug === project?.categorySlug)?.name ??
-    project?.categorySlug
-      ?.split("-")
-      .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
-      .join(" ");
+  const primaryCategorySlug = project?.categorySlugs[0] ?? project?.categorySlug;
+  const categoryNames = project?.categorySlugs.map((slug) => formatProjectCategoryName(slug)) ?? [];
+  const primaryCategoryName = primaryCategorySlug
+    ? formatProjectCategoryName(primaryCategorySlug)
+    : undefined;
 
   const formattedDate = project
     ? new Date(project.createdAt).toLocaleDateString("en-US", {
@@ -363,16 +362,16 @@ export function ProductPage({ projectId }: ProductPageProps) {
                 </LocalizedLink>
               </BreadcrumbLink>
             </BreadcrumbItem>
-            {project.type === "saas" && categoryName && (
+            {project.type === "saas" && primaryCategorySlug && primaryCategoryName && (
               <>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
                   <BreadcrumbLink asChild>
                     <LocalizedLink
                       to="/saas/$categorySlug"
-                      params={{ categorySlug: project.categorySlug }}
+                      params={{ categorySlug: primaryCategorySlug }}
                     >
-                      {categoryName}
+                      {primaryCategoryName}
                     </LocalizedLink>
                   </BreadcrumbLink>
                 </BreadcrumbItem>
@@ -416,6 +415,15 @@ export function ProductPage({ projectId }: ProductPageProps) {
                     >
                       {project.type}
                     </Badge>
+                    {categoryNames.map((categoryName) => (
+                      <Badge
+                        key={categoryName}
+                        variant="outline"
+                        className="rounded-full text-xs font-medium shrink-0"
+                      >
+                        {categoryName}
+                      </Badge>
+                    ))}
                     {isAdmin && (
                       <Badge
                         variant="outline"
@@ -476,15 +484,16 @@ export function ProductPage({ projectId }: ProductPageProps) {
                       Category &amp; Type
                     </h2>
                     <div className="flex flex-wrap gap-2">
-                      {categoryName && (
+                      {categoryNames.map((categoryName) => (
                         <Badge
+                          key={categoryName}
                           variant="outline"
                           className="rounded-full px-3 py-1 text-xs gap-1.5 font-normal"
                         >
                           <Tag className="h-3 w-3 text-primary" />
                           {categoryName}
                         </Badge>
-                      )}
+                      ))}
                       <Badge
                         variant="outline"
                         className="rounded-full px-3 py-1 text-xs capitalize font-normal"

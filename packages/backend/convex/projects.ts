@@ -69,6 +69,7 @@ const projectValidator = v.object({
     v.literal("component"),
   ),
   categorySlug: categorySlugValidator,
+  categorySlugs: v.array(categorySlugValidator),
   ownerId: v.optional(v.string()),
   createdBy: v.string(),
   status: v.union(v.literal("pending"), v.literal("approved"), v.literal("rejected")),
@@ -95,6 +96,7 @@ const adminOwnershipProjectValidator = v.object({
     v.literal("component"),
   ),
   categorySlug: categorySlugValidator,
+  categorySlugs: v.array(categorySlugValidator),
   ownerId: v.optional(v.string()),
   createdBy: v.string(),
   status: v.union(v.literal("pending"), v.literal("approved"), v.literal("rejected")),
@@ -118,6 +120,7 @@ type StoredProject = {
   url: string;
   type: "saas" | "tool" | "open-source" | "component";
   categorySlug?: string;
+  categorySlugs?: string[];
   categoryId?: Id<"categories">;
   ownerId?: string;
   createdBy: string;
@@ -135,7 +138,8 @@ type ProjectInput = {
   description: string;
   url: string;
   type: StoredProject["type"];
-  categorySlug: string;
+  categorySlug?: string;
+  categorySlugs?: string[];
   productLogoKey?: string;
   screenshotKey?: string;
 };
@@ -167,10 +171,39 @@ function normalizeOptionalKey(value: string | undefined) {
   return trimmedValue ? trimmedValue : undefined;
 }
 
+function normalizeCategorySlugs(
+  type: StoredProject["type"],
+  input: Pick<ProjectInput, "categorySlug" | "categorySlugs">,
+) {
+  const normalizedCategorySlugs = [
+    ...new Set(
+      (input.categorySlugs ?? []).map((slug) => slug.trim().toLowerCase()).filter(Boolean),
+    ),
+  ];
+  const singleCategorySlug = input.categorySlug?.trim().toLowerCase();
+
+  if (singleCategorySlug && !normalizedCategorySlugs.includes(singleCategorySlug)) {
+    normalizedCategorySlugs.unshift(singleCategorySlug);
+  }
+
+  for (const categorySlug of normalizedCategorySlugs) {
+    if (!allowedCategorySlugs.has(categorySlug)) {
+      throw new ConvexError("Project category is not supported");
+    }
+  }
+
+  if (type !== "open-source" && normalizedCategorySlugs.length === 0) {
+    throw new ConvexError("Project must have at least one category");
+  }
+
+  return normalizedCategorySlugs;
+}
+
 function normalizeProjectInput(input: ProjectInput) {
   const title = input.title.trim();
   const description = input.description.trim();
-  const categorySlug = input.categorySlug.trim().toLowerCase();
+  const categorySlugs = normalizeCategorySlugs(input.type, input);
+  const categorySlug = categorySlugs[0];
 
   if (title.length < 2 || title.length > 120) {
     throw new ConvexError("Project title must be between 2 and 120 characters");
@@ -180,16 +213,13 @@ function normalizeProjectInput(input: ProjectInput) {
     throw new ConvexError("Project description must be between 10 and 1000 characters");
   }
 
-  if (!allowedCategorySlugs.has(categorySlug)) {
-    throw new ConvexError("Project category is not supported");
-  }
-
   return {
     title,
     description,
     url: normalizeUrl(input.url),
     type: input.type,
-    categorySlug,
+    ...(categorySlug ? { categorySlug } : {}),
+    categorySlugs,
     productLogoKey: normalizeOptionalKey(input.productLogoKey),
     screenshotKey: normalizeOptionalKey(input.screenshotKey),
   };
@@ -212,6 +242,12 @@ async function ensureUrlIsUnique(
 
 function normalizeProjectPatch(project: StoredProject, patch: Partial<ProjectInput>) {
   const normalizedPatch: Partial<ProjectInput> = {};
+  const currentCategorySlugs =
+    project.categorySlugs && project.categorySlugs.length > 0
+      ? project.categorySlugs
+      : project.categorySlug
+        ? [project.categorySlug]
+        : [];
 
   if (patch.title !== undefined) {
     normalizedPatch.title = patch.title.trim();
@@ -235,11 +271,18 @@ function normalizeProjectPatch(project: StoredProject, patch: Partial<ProjectInp
     normalizedPatch.type = patch.type;
   }
 
-  if (patch.categorySlug !== undefined) {
-    normalizedPatch.categorySlug = patch.categorySlug.trim().toLowerCase();
-    if (!allowedCategorySlugs.has(normalizedPatch.categorySlug)) {
-      throw new ConvexError("Project category is not supported");
-    }
+  if (patch.categorySlug !== undefined || patch.categorySlugs !== undefined) {
+    const nextType = normalizedPatch.type ?? project.type;
+    const categorySlugs = normalizeCategorySlugs(nextType, {
+      categorySlug: patch.categorySlug,
+      categorySlugs: patch.categorySlugs,
+    });
+    normalizedPatch.categorySlugs = categorySlugs;
+    normalizedPatch.categorySlug = categorySlugs[0];
+  } else if (normalizedPatch.type !== undefined) {
+    normalizeCategorySlugs(normalizedPatch.type, {
+      categorySlugs: currentCategorySlugs,
+    });
   }
 
   if (patch.productLogoKey !== undefined) {
@@ -256,8 +299,10 @@ function normalizeProjectPatch(project: StoredProject, patch: Partial<ProjectInp
   return {
     patch: normalizedPatch,
     searchableText:
-      normalizedPatch.title !== undefined || normalizedPatch.description !== undefined
-        ? `${nextTitle} ${nextDescription}`.toLowerCase()
+      normalizedPatch.title !== undefined ||
+      normalizedPatch.description !== undefined ||
+      normalizedPatch.categorySlugs !== undefined
+        ? `${nextTitle} ${nextDescription} ${(normalizedPatch.categorySlugs ?? currentCategorySlugs).join(" ")}`.toLowerCase()
         : undefined,
   };
 }
@@ -281,6 +326,12 @@ const resolveLegacyCategorySlug = async (
 const normalizeProject = async (ctx: QueryCtx, project: StoredProject) => {
   const categorySlug =
     project.categorySlug ?? (await resolveLegacyCategorySlug(ctx, project.categoryId));
+  const categorySlugs =
+    project.categorySlugs && project.categorySlugs.length > 0
+      ? [...new Set(project.categorySlugs)]
+      : categorySlug
+        ? [categorySlug]
+        : [];
   const productLogoUrl = project.productLogoKey
     ? getPublicObjectUrl(project.productLogoKey)
     : undefined;
@@ -296,6 +347,7 @@ const normalizeProject = async (ctx: QueryCtx, project: StoredProject) => {
     url: project.url,
     type: project.type,
     categorySlug: categorySlug ?? "uncategorized",
+    categorySlugs,
     ownerId: project.ownerId,
     createdBy: project.createdBy,
     status: project.status,
@@ -338,7 +390,9 @@ export const getProjects = query({
     if (args.categorySlug) {
       const normalizedCategorySlug = args.categorySlug.trim().toLowerCase();
       normalizedProjects = normalizedProjects.filter(
-        (project) => project.categorySlug === normalizedCategorySlug,
+        (project) =>
+          project.categorySlug === normalizedCategorySlug ||
+          project.categorySlugs.includes(normalizedCategorySlug),
       );
     }
 
@@ -421,7 +475,8 @@ export const submitProject = mutation({
       v.literal("open-source"),
       v.literal("component"),
     ),
-    categorySlug: categorySlugValidator,
+    categorySlug: v.optional(categorySlugValidator),
+    categorySlugs: v.optional(v.array(categorySlugValidator)),
     productLogoKey: v.optional(v.string()),
     screenshotKey: v.optional(v.string()),
   },
@@ -433,7 +488,8 @@ export const submitProject = mutation({
 
     return await ctx.db.insert("projects", {
       ...project,
-      searchableText: `${project.title} ${project.description}`.toLowerCase(),
+      searchableText:
+        `${project.title} ${project.description} ${project.categorySlugs.join(" ")}`.toLowerCase(),
       createdBy: user._id,
       status: "pending",
       createdAt: Date.now(),
@@ -457,6 +513,7 @@ export const updateProject = mutation({
       ),
     ),
     categorySlug: v.optional(categorySlugValidator),
+    categorySlugs: v.optional(v.array(categorySlugValidator)),
     productLogoKey: v.optional(v.string()),
     screenshotKey: v.optional(v.string()),
   },
@@ -484,7 +541,8 @@ export const updateProject = mutation({
       patch.title !== undefined ||
       patch.url !== undefined ||
       patch.type !== undefined ||
-      patch.categorySlug !== undefined;
+      patch.categorySlug !== undefined ||
+      patch.categorySlugs !== undefined;
     const nextStatus = !isUserAdmin && sensitiveChanged ? "pending" : project.status;
 
     await ctx.db.patch(id, {
@@ -584,7 +642,8 @@ export const bulkCreateProjectsByAdmin = mutation({
           v.literal("open-source"),
           v.literal("component"),
         ),
-        categorySlug: categorySlugValidator,
+        categorySlug: v.optional(categorySlugValidator),
+        categorySlugs: v.optional(v.array(categorySlugValidator)),
         productLogoKey: v.optional(v.string()),
         screenshotKey: v.optional(v.string()),
       }),
@@ -632,7 +691,8 @@ export const bulkCreateProjectsByAdmin = mutation({
     for (const project of normalizedProjects) {
       const createdId = await ctx.db.insert("projects", {
         ...project,
-        searchableText: `${project.title} ${project.description}`.toLowerCase(),
+        searchableText:
+          `${project.title} ${project.description} ${project.categorySlugs.join(" ")}`.toLowerCase(),
         createdBy: user._id,
         status: "approved",
         createdAt: now,

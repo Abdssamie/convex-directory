@@ -35,7 +35,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { PROJECT_CATEGORIES } from "@/lib/project-categories";
+import { ProjectCategorySelector } from "@/components/project-category-selector";
 import { toast } from "sonner";
 
 type UserProject = FunctionReturnType<typeof api.projects.getUserProjects>[number];
@@ -48,7 +48,7 @@ function EditProjectDialog({ project }: { project: UserProject }) {
   const [description, setDescription] = React.useState(project.description);
   const [url, setUrl] = React.useState(project.url);
   const [type, setType] = React.useState<UserProject["type"]>(project.type);
-  const [categorySlug, setCategorySlug] = React.useState(project.categorySlug);
+  const [categorySlugs, setCategorySlugs] = React.useState(project.categorySlugs);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -59,7 +59,7 @@ function EditProjectDialog({ project }: { project: UserProject }) {
         description,
         url,
         type,
-        categorySlug,
+        categorySlugs,
       });
       toast.success("Project updated. Sensitive changes may require admin review.");
       setOpen(false);
@@ -105,19 +105,12 @@ function EditProjectDialog({ project }: { project: UserProject }) {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label>Category</Label>
-              <Select value={categorySlug} onValueChange={setCategorySlug}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {PROJECT_CATEGORIES.map((category) => (
-                    <SelectItem key={category.slug} value={category.slug}>
-                      {category.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Label>Categories</Label>
+              <ProjectCategorySelector
+                value={categorySlugs}
+                onChange={setCategorySlugs}
+                allowEmpty={type === "open-source"}
+              />
             </div>
           </div>
           <div className="space-y-2">

@@ -21,7 +21,7 @@ import {
   SelectValue,
 } from "@convex-directory/ui/components/select";
 import { Button } from "@convex-directory/ui/components/button";
-import { PROJECT_CATEGORIES } from "@/lib/project-categories";
+import { ProjectCategorySelector } from "@/components/project-category-selector";
 import { toast } from "sonner";
 import { useIntlayer } from "react-intlayer";
 
@@ -40,15 +40,25 @@ export function SubmitProjectForm() {
       "Image must be 5MB or smaller",
     );
 
-  const formSchema = z.object({
-    title: z.string().min(2, content.validation.titleMin.value),
-    description: z.string().min(10, content.validation.descMin.value),
-    url: z.string().url(content.validation.urlInvalid.value),
-    type: z.enum(["saas", "tool", "open-source", "component"]),
-    categorySlug: z.string(),
-    logo: optionalImageList,
-    screenshot: optionalImageList,
-  });
+  const formSchema = z
+    .object({
+      title: z.string().min(2, content.validation.titleMin.value),
+      description: z.string().min(10, content.validation.descMin.value),
+      url: z.string().url(content.validation.urlInvalid.value),
+      type: z.enum(["saas", "tool", "open-source", "component"]),
+      categorySlugs: z.array(z.string()),
+      logo: optionalImageList,
+      screenshot: optionalImageList,
+    })
+    .superRefine((values, ctx) => {
+      if (values.type !== "open-source" && values.categorySlugs.length === 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: content.validation.categoryRequired.value,
+          path: ["categorySlugs"],
+        });
+      }
+    });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -57,9 +67,11 @@ export function SubmitProjectForm() {
       description: "",
       url: "",
       type: "saas",
-      categorySlug: "",
+      categorySlugs: [],
     },
   });
+
+  const selectedType = form.watch("type");
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
@@ -184,32 +196,25 @@ export function SubmitProjectForm() {
               </FormItem>
             )}
           />
-
-          <FormField
-            control={form.control}
-            name="categorySlug"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{content.fields.category.label}</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger className="rounded-xl">
-                      <SelectValue placeholder={content.fields.category.placeholder.value} />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent className="rounded-xl">
-                    {PROJECT_CATEGORIES.map((category) => (
-                      <SelectItem key={category.slug} value={category.slug}>
-                        {category.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
         </div>
+
+        <FormField
+          control={form.control}
+          name="categorySlugs"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{content.fields.category.label}</FormLabel>
+              <FormControl>
+                <ProjectCategorySelector
+                  value={field.value}
+                  onChange={field.onChange}
+                  allowEmpty={selectedType === "open-source"}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField

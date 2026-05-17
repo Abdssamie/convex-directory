@@ -38,6 +38,7 @@ export const tables = {
       v.literal("component"),
     ),
     categorySlug: v.optional(v.string()),
+    categorySlugs: v.optional(v.array(v.string())),
     categoryId: v.optional(v.id("categories")),
     ownerId: v.optional(v.string()),
     createdBy: v.string(),
